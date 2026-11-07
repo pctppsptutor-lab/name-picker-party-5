@@ -154,7 +154,7 @@ const BASES = (() => {
       if (cache[id] !== undefined) return cache[id];
       if (!BUILD[id]) return cache[id] = null;
       const c = document.createElement('canvas'); c.width = 1920; c.height = 1080; g = c.getContext('2d'); g.scale(1920 / W, 1080 / H);   // paint at full canvas resolution
-      BUILD[id](); g = null;
+      BUILD[id](); DECOR.paint(g, id); g = null;
       return cache[id] = c;
     }
   };

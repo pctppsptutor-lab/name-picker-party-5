@@ -271,6 +271,7 @@ function makeFakes(r, from) {
 const activeFake = (r, t) => (r.fakes || []).find(f => t >= f.at && t < f.at + f.dur) || null;
 </script>
 <script src="games/fx.js"></script>
+<script src="games/decor.js"></script>
 <script src="games/bases.js"></script>
 <script src="games/scenes.js"></script>
 <script src="games/g25-weather.js"></script>
@@ -639,7 +640,9 @@ function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcT
 function drawImg(name, cx, cy, w, { anchor = 'center', alpha = 1, rot = 0, flip = false } = {}) {
   const im = IMG[name]; if (!im) return 0;
   const h = im.height * w / im.width;
+  if (anchor === 'bottom' && alpha > .5 && !rot) contactShadow(cx, cy - 2, w * .9, .26 * alpha);   // grounded props cast a shadow
   ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(cx, cy); if (rot) ctx.rotate(rot); if (flip) ctx.scale(-1, 1);
+  if (alpha > .6 && w > 60) { ctx.shadowColor = 'rgba(20,20,60,.25)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3; }
   ctx.drawImage(im, -w / 2, anchor === 'bottom' ? -h : -h / 2, w, h);
   ctx.restore(); return h;
 }
@@ -1177,10 +1180,18 @@ function tagC(text, cx, y, lead) {
   drawTag(text, cx + w / 2, y, lead);
 }
 // draw a character pose of the current game, anchored at its feet; returns the drawn width
+// soft oval shadow on the ground where something stands
+function contactShadow(x, y, w, a = .3) {
+  ctx.save(); ctx.globalAlpha *= a;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, w * .5); g.addColorStop(0, 'rgba(20,20,50,.9)'); g.addColorStop(1, 'rgba(20,20,50,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, w * .5, w * .13, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+}
 function charImg(av, pose, x, y, h, opt = {}) {
   const im = IMG['c' + av + '_' + pose] || IMG['c' + av + '_' + (opt.fallback || 'idle')]; if (!im) return 0;
-  const w = im.width * h / im.height;
-  ctx.save(); ctx.globalAlpha *= opt.alpha ?? 1; ctx.translate(x, y); if (opt.rot) ctx.rotate(opt.rot); if (opt.flip) ctx.scale(-1, 1);
+  const w = im.width * h / im.height, a = opt.alpha ?? 1;
+  if (opt.shadow !== false && a > .3) contactShadow(x, y - 2, Math.min(w, h * .7) * 1.05, .32 * a);
+  ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); if (opt.rot) ctx.rotate(opt.rot); if (opt.flip) ctx.scale(-1, 1);
+  if (a > .5 && !store.settings.calm) { ctx.shadowColor = 'rgba(20,20,60,.35)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4; }   // lifts the figure off the background
   ctx.drawImage(im, -w / 2, -h, w, h); ctx.restore(); return w;
 }
 const curGame = () => store.settings.game5 || 'g25';
