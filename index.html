@@ -1,0 +1,1499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Name Picker Party 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#1b2a6b; --bg2:#3a1f73; --ink:#1c2550; --muted:#6a74a0; --line:#e3e6f5; --panel:#ffffff; --soft:#f3f5ff;
+  --blue:#3b82f6; --blue-d:#2559c7; --violet:#7c5cff; --violet-d:#5638d6; --sun:#ffc531; --sun-d:#d99a00;
+  --green:#22c55e; --green-d:#15913f; --red:#f04e5e; --red-d:#c2283a; --pink:#ff6fae;
+  --r:22px; --font:"Baloo 2","Segoe UI",system-ui,sans-serif; --title:"Fredoka","Baloo 2",system-ui,sans-serif;
+  --lift:0 5px 0 rgba(20,24,60,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;color:var(--ink);font-family:var(--font);
+  background:radial-gradient(1200px 600px at 10% -10%,#4f6bff55,transparent 60%),radial-gradient(900px 600px at 110% 10%,#ff6fae44,transparent 60%),linear-gradient(160deg,var(--bg1),var(--bg2));
+  background-attachment:fixed}
+button{font-family:inherit;cursor:pointer;transition:transform .08s,box-shadow .08s,filter .15s}
+button:hover:not(:disabled){filter:brightness(1.06)}
+button:disabled{cursor:not-allowed;opacity:.5}
+.hidden{display:none!important}
+/* candy button: coloured face with a darker "edge" below that collapses when pressed */
+.candy{border:0;border-radius:999px;color:#fff;font-weight:800;letter-spacing:.2px;background:var(--c,var(--blue));box-shadow:0 5px 0 var(--cd,var(--blue-d)),0 8px 18px rgba(0,0,0,.18)}
+.candy:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--cd,var(--blue-d))}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;padding:14px 22px 10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;font-family:var(--title);font-weight:700;font-size:30px;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,#ffd84a,#ff9f43);box-shadow:0 4px 0 #c46a00;transform:rotate(-6deg)}
+.brand small{display:block;font-family:var(--font);font-size:13px;font-weight:600;color:#c9d2ff;text-shadow:none;margin-top:-6px}
+.classBtn{--c:var(--sun);--cd:var(--sun-d);color:#4a3000;padding:9px 18px;font-size:17px;display:flex;align-items:center;gap:8px}
+.classBtn .pill{background:#fff6;border-radius:999px;padding:0 9px;font-size:14px}
+.spacer{flex:1}
+.toolBtn{display:flex;align-items:center;gap:6px;border:2px solid #ffffff38;background:#ffffff1c;color:#fff;border-radius:14px;padding:7px 13px;font-size:15px;font-weight:700;backdrop-filter:blur(6px)}
+.toolBtn:active{transform:translateY(2px)}
+.toolBtn.off{color:#ffffff88;background:#00000022;text-decoration:line-through}
+
+/* game picker */
+.tabs{display:flex;gap:12px;padding:6px 22px 16px;overflow-x:auto;scrollbar-width:thin}
+.tab{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-width:205px;border:0;border-radius:18px;padding:9px 14px 9px 9px;text-align:left;background:#ffffffe8;color:var(--ink);box-shadow:var(--lift)}
+.tab .ico{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:24px;background:var(--soft)}
+.tab b{display:block;font-size:12px;letter-spacing:1px;color:var(--muted)}
+.tab .nm{font-size:16px;font-weight:800;line-height:1.1}
+.tab.active{background:linear-gradient(135deg,#fff,#eef0ff);outline:3px solid var(--sun);box-shadow:0 5px 0 var(--sun-d),0 0 0 6px #ffc53133}
+.tab.active .ico{background:linear-gradient(135deg,#ffd84a,#ff9f43)}
+
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;padding:0 22px 22px;align-items:start}
+@media (max-width:1050px){.layout{grid-template-columns:1fr}}
+.stageWrap{position:relative;border-radius:26px;overflow:hidden;background:#10204a;container-type:inline-size;aspect-ratio:16/9;
+  box-shadow:0 0 0 6px #ffffff22,0 0 0 10px #ffffff10,0 24px 50px rgba(0,0,0,.4)}
+#stage{display:block;width:100%;height:100%}
+.stageWrap:fullscreen{border-radius:0;background:#0b1430;display:flex;align-items:center;justify-content:center;aspect-ratio:auto;box-shadow:none}
+.stageWrap:fullscreen #stage{width:min(100vw,177.78vh);height:auto;aspect-ratio:16/9}
+
+/* result card */
+.result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#0b1a4588,#0b1a45cc);animation:fade .3s}
+.card{position:relative;background:#fff;border-radius:3cqw;padding:3.4cqw 5cqw 2.6cqw;text-align:center;max-width:80cqw;
+  box-shadow:0 1cqw 0 #d9ddf3,0 3cqw 7cqw rgba(0,0,0,.4);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.ribbon{position:absolute;left:50%;top:-2.2cqw;transform:translateX(-50%);white-space:nowrap;background:linear-gradient(var(--pink),#e2448d);color:#fff;
+  font-size:2.2cqw;font-weight:800;padding:.6cqw 3cqw;border-radius:1.2cqw;box-shadow:0 .5cqw 0 #b0306c}
+.card img{height:17cqw;display:block;margin:0 auto;filter:drop-shadow(0 .6cqw .6cqw rgba(0,0,0,.2))}
+.card .name{font-family:var(--title);font-size:7.2cqw;font-weight:700;line-height:1.05;margin:.6cqw 0 1.8cqw;word-break:break-word;
+  background:linear-gradient(90deg,#3b82f6,#7c5cff,#ff6fae);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card .btns{display:flex;gap:1.4cqw;justify-content:center}
+.card button{font-size:2cqw;padding:.9cqw 2.6cqw}
+.btnGo{--c:var(--green);--cd:var(--green-d)}
+.btnSoft{--c:#eef0ff;--cd:#c9cfee;color:var(--ink)!important}
+@keyframes pop{from{transform:scale(.4) rotate(-4deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes fade{from{opacity:0}}
+
+/* sidebar */
+.side{display:flex;flex-direction:column;gap:16px}
+.panel{background:var(--panel);border-radius:var(--r);padding:16px 18px;box-shadow:0 6px 0 #00000026,0 14px 30px rgba(0,0,0,.18)}
+.panel h3{margin:0 0 10px;font-family:var(--title);font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px}
+.panel h3 .badge{margin-left:auto;background:var(--soft);color:var(--violet);border-radius:999px;padding:0 10px;font-size:15px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lab{font-size:13px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+/* segmented control for the durations */
+#durChips{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--soft);padding:4px;border-radius:14px}
+.chip{border:0;background:transparent;border-radius:10px;padding:6px 0;font-size:16px;font-weight:800;color:var(--muted)}
+.chip.on{background:#fff;color:var(--violet);box-shadow:0 2px 0 #d5d9f2,0 2px 8px rgba(60,60,140,.12)}
+/* switches */
+.check{display:flex;gap:10px;align-items:center;font-weight:600;font-size:15px;margin-top:10px;cursor:pointer;line-height:1.25}
+.check input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:44px;height:26px;border-radius:999px;background:#d9ddef;position:relative;cursor:pointer;transition:background .2s;margin:0}
+.check input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:left .2s}
+.check input:checked{background:var(--green)}
+.check input:checked::after{left:21px}
+.check small{display:block;color:var(--muted);font-weight:500;font-size:13px}
+select{font-family:inherit;font-size:15px;font-weight:700;padding:6px 10px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);flex:1}
+.startBtn{--c:linear-gradient(180deg,#3ee07a,#1fb555);--cd:#13853d;width:100%;font-family:var(--title);font-size:30px;padding:16px 10px;border-radius:24px;animation:breathe 2.4s ease-in-out infinite}
+.startBtn:disabled{animation:none}
+@keyframes breathe{50%{transform:scale(1.025)}}
+.hint{text-align:center;font-size:14px;color:#c9d2ff;margin-top:8px}
+.hint kbd{background:#fff;color:var(--ink);border-radius:6px;padding:0 7px;box-shadow:0 2px 0 #b8bfe0;font-family:inherit;font-weight:800}
+.status{font-size:15px;font-weight:700;color:var(--muted);margin:0 0 10px}
+.status.done{color:var(--red)}
+.meter{height:10px;border-radius:999px;background:var(--soft);overflow:hidden;margin:-4px 0 12px}
+.meter i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--violet));transition:width .4s}
+.called{list-style:none;margin:0;padding:0;max-height:250px;overflow:auto;display:flex;flex-direction:column;gap:5px}
+.called li{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:700;background:var(--soft);border-radius:12px;padding:4px 10px}
+.called li i{font-style:normal;font-size:12px;font-weight:800;color:#fff;background:var(--violet);border-radius:999px;min-width:24px;height:24px;display:grid;place-items:center}
+.called .empty{background:none;color:var(--muted);font-weight:600}
+.resetBtn{margin-top:12px;width:100%;border:2px dashed #cfd4ee;background:#fff;border-radius:14px;padding:7px;font-size:15px;font-weight:800;color:var(--muted)}
+.resetBtn.confirm{border-style:solid;border-color:var(--red);color:var(--red);background:#fff3f4}
+.note{font-size:13px;color:var(--muted);line-height:1.45}
+.side>.note{color:#c9d2ff;padding:0 6px}
+body.running .lockable{pointer-events:none;opacity:.45}
+
+/* class page */
+.modal{position:fixed;inset:0;background:rgba(10,16,48,.6);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:28px 12px;overflow:auto;z-index:50}
+.sheet{background:#fff;border-radius:26px;width:min(920px,100%);padding:22px 24px;box-shadow:0 8px 0 #00000030,0 30px 70px rgba(0,0,0,.45);animation:pop .35s ease-out}
+.sheet h2{margin:0 0 12px;font-family:var(--title);font-size:28px}
+.sheet .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:760px){.sheet .grid{grid-template-columns:1fr}}
+.sheet input[type=text]{font-family:inherit;font-size:17px;font-weight:700;padding:8px 12px;border:2px solid var(--line);border-radius:12px;width:100%;color:var(--ink)}
+.sheet input[type=text]:focus,textarea:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 4px #7c5cff22}
+textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2px solid var(--line);border-radius:14px;padding:10px 12px;color:var(--ink);resize:vertical;line-height:1.45;background:var(--soft)}
+.smallBtn{border:2px solid var(--line);background:#fff;border-radius:12px;padding:4px 12px;font-size:14px;font-weight:800;color:var(--ink);box-shadow:0 3px 0 var(--line)}
+.smallBtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.smallBtn.add{border-color:#cbbcff;color:var(--violet);box-shadow:0 3px 0 #cbbcff}
+.smallBtn.danger.confirm{border-color:var(--red);color:var(--red);background:#fff3f4;box-shadow:0 3px 0 #f6b5bc}
+.smallBtn.on{background:var(--violet);border-color:var(--violet);color:#fff;box-shadow:0 3px 0 var(--violet-d)}
+.numBox{display:flex;align-items:center;gap:10px;margin:6px 0}
+.numBox input[type=range]{flex:1;accent-color:var(--violet)}
+.numBox b{font-family:var(--title);font-size:28px;min-width:48px;text-align:center;color:var(--violet)}
+.gchips{display:flex;flex-wrap:wrap;gap:6px;max-height:300px;overflow:auto}
+.gchip{border:2px solid #bcd3ff;background:#eef4ff;border-radius:999px;padding:2px 11px;font-size:15px;font-weight:700;color:#2559c7}
+.gchip.f{border-color:#ffc2dc;background:#fff0f7;color:#c2306f}
+.done{--c:var(--green);--cd:var(--green-d);font-size:20px;padding:9px 32px}
+.backup{margin-top:18px;padding:12px 14px;border-radius:16px;background:var(--soft);display:flex;flex-direction:column;gap:8px;font-size:15px}
+.sheetFoot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 20px;border-radius:999px;font-weight:700;z-index:60;animation:fade .2s;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">🥕</span><span>Name Picker Party 5<small>Six more mini-games for calling on students</small></span></div>
+  <button id="classBtn" class="candy classBtn lockable">👩‍🏫 <span id="classLabel">Sample class · 10</span></button>
+  <div class="spacer"></div>
+  <button id="musicBtn" class="toolBtn">🎵 Music</button>
+  <button id="soundBtn" class="toolBtn">🔊 Sound</button>
+  <button id="fsBtn" class="toolBtn">⛶ Full screen</button>
+</header>
+
+<nav id="gameTabs" class="tabs lockable"></nav>
+
+<main class="layout">
+  <section class="stageWrap" id="stageWrap">
+    <canvas id="stage" width="1920" height="1080"></canvas>
+    <div id="result" class="result hidden">
+      <div class="card">
+        <div class="ribbon">🎉 And the pick is…</div>
+        <img id="resImg" alt="">
+        <div class="name" id="resName"></div>
+        <div class="btns">
+          <button class="candy btnGo" id="contBtn">Next round ▶</button>
+          <button class="candy btnSoft" id="sayBtn">🔈 Say it again</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div>
+      <button class="candy startBtn" id="startBtn">▶ Pick a name!</button>
+      <div class="hint">or press <kbd>Space</kbd></div>
+    </div>
+
+    <div class="panel lockable">
+      <h3>⚙️ Settings</h3>
+      <div class="lab">Round length</div>
+      <div id="durChips"></div>
+      <label class="check"><input type="checkbox" id="restChk"><span>Skip students already picked</span></label>
+      <label class="check"><input type="checkbox" id="calmChk"><span>Reduce motion<small>No screen shake or zoom</small></span></label>
+      <label class="check"><input type="checkbox" id="paintedChk"><span>Painted backgrounds<small>Games 2–6, about 200 KB more each</small></span></label>
+      <div class="lab">Read the name aloud</div>
+      <div class="row">
+        <select id="voiceSel">
+          <option value="en">English</option>
+          <option value="vi">Vietnamese</option>
+          <option value="off">Off</option>
+        </select>
+        <button class="smallBtn" id="testBtn">Test sound</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>📋 Picked so far <span class="badge" id="calledCount"></span></h3>
+      <div class="status" id="status"></div>
+      <div class="meter"><i id="meterBar"></i></div>
+      <ol class="called" id="calledList"></ol>
+      <button class="resetBtn lockable" id="resetBtn">↺ Start over</button>
+    </div>
+    <div class="note">Every pick is truly random. The winner is chosen the moment you press Pick; the near-misses are just for suspense.</div>
+  </aside>
+</main>
+
+<!-- Class list page -->
+<div id="classPage" class="modal hidden">
+  <div class="sheet">
+    <h2>👩‍🏫 Class lists</h2>
+    <div class="row" id="classTabs"></div>
+    <div class="grid" style="margin-top:14px">
+      <div>
+        <div class="lab">Class name</div>
+        <input type="text" id="className" maxlength="40">
+        <div class="lab">Call students by</div>
+        <div class="row">
+          <button class="smallBtn" data-mode="names">Name</button>
+          <button class="smallBtn" data-mode="numbers">Number</button>
+        </div>
+        <div id="numPane" class="hidden">
+          <div class="lab">Class size (calls “No. 1, No. 2…”)</div>
+          <div class="numBox">
+            <button class="smallBtn" id="numMinus">−</button>
+            <input type="range" min="2" max="50" id="numRange">
+            <button class="smallBtn" id="numPlus">+</button>
+            <b id="numVal">30</b>
+          </div>
+        </div>
+        <div id="namePane">
+          <div class="lab">One name per line — short names read best</div>
+          <textarea id="namesBox" spellcheck="false" placeholder="Emma&#10;Liam&#10;Alex (girl)"></textarea>
+          <div class="row" style="margin-top:8px">
+            <button class="smallBtn" id="importBtn">📄 Import .txt / .csv</button>
+            <input type="file" id="fileIn" accept=".txt,.csv,text/plain,text/csv" class="hidden">
+            <button class="smallBtn" id="sortBtn">A→Z Sort</button>
+            <button class="smallBtn" id="copyBtn">Copy</button>
+            <button class="smallBtn danger" id="clearBtn">Clear all</button>
+          </div>
+        </div>
+      </div>
+      <div id="genderPane">
+        <div class="lab">Characters — tap a name to switch boy/girl (✓ = set by hand)</div>
+        <div class="gchips" id="gchips"></div>
+        <div class="note" style="margin-top:8px">Tip: add <b>(boy)</b> or <b>(girl)</b> after a name, e.g. <code>Alex (girl)</code>.</div>
+      </div>
+    </div>
+    <div class="backup">
+      <div><b>💾 Backup</b> — save every class and its picked list to a file, to move to another computer or in case the browser data gets cleared.</div>
+      <div class="row">
+        <button class="smallBtn add" id="exportBtn">⬇ Export backup</button>
+        <button class="smallBtn" id="importBackupBtn">⬆ Import backup</button>
+        <input type="file" id="backupIn" accept=".json,application/json" class="hidden">
+      </div>
+      <div class="note" id="backupNote"></div>
+    </div>
+    <div class="sheetFoot">
+      <button class="smallBtn danger" id="delClassBtn">Delete class</button>
+      <button class="candy done" id="doneBtn">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Shared helpers for games 2-6 (each game registers itself in GAME_IMPL)
+window.GAME_IMPL = {};
+const COMMON_ASSETS = ['name_plate', 'vfx_almost_selected', 'vfx_selected', 'vfx_wrong_turn', 'vfx_win'];
+const gAssets = (poses, extra) => [...COMMON_ASSETS, ...extra, ...[...Array(10).keys()].flatMap(i => poses.map(p => 'c' + i + '_' + p))];
+const spread = (n, total = 10) => [...Array(n)].map((_, k) => Math.floor(k * total / n));        // n slots spread over total
+// near-misses before the reveal: who gets teased and when
+function makeFakes(r, from) {
+  const k = r.T <= 10 ? 2 : r.T <= 15 ? 3 : r.T <= 20 ? 4 : 5, span = r.TW - from - .5, pool = r.decoys.length ? r.decoys : [r.winner];
+  return [...Array(k)].map((_, j) => ({ at: from + (j + .15) * span / k, dur: Math.min(1.2, span / k * .75), p: j === 0 && Math.random() < .3 ? r.winner : pool[(j + 1) % pool.length] }));
+}
+const activeFake = (r, t) => (r.fakes || []).find(f => t >= f.at && t < f.at + f.dur) || null;
+</script>
+<script src="games/fx.js"></script>
+<script src="games/bases.js"></script>
+<script src="games/scenes.js"></script>
+<script src="games/g25-weather.js"></script>
+<script src="games/g26-time.js"></script>
+<script src="games/g27-puppies.js"></script>
+<script src="games/g28-cloak.js"></script>
+<script src="games/g29-vending.js"></script>
+<script src="games/g30-bunny.js"></script>
+<script>
+'use strict';
+/* ================= Storage ================= */
+const LS_KEY = 'goiTenVuiNhon.v1';
+const SAMPLE = ['Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Lucas', 'Mia', 'Ethan', 'Sophie', 'Leo'];
+const uid = () => Math.random().toString(36).slice(2, 9);
+function defaultStore() {
+  const id = uid();
+  return {
+    classes: [{ id, name: 'Sample class', mode: 'names', count: 30, text: SAMPLE.join('\n'), gender: {} }],
+    activeId: id,
+    settings: { duration: 15, rest: true, voice: 'en', sound: true, music: true, calm: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) },
+    called: {}
+  };
+}
+function loadStore() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LS_KEY));
+    if (s && Array.isArray(s.classes) && s.classes.length) {
+      const d = defaultStore();
+      s.settings = Object.assign(d.settings, s.settings || {});
+      s.called = s.called || {};
+      if (!s.classes.find(c => c.id === s.activeId)) s.activeId = s.classes[0].id;
+      return s;
+    }
+  } catch (e) {}
+  return defaultStore();
+}
+let store = loadStore();
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {} }
+const activeClass = () => store.classes.find(c => c.id === store.activeId);
+
+/* ================= Roster ================= */
+const FEMALE = new Set(('linh ngọc hà lan hương hoa mai trang thảo vy vi nhi ngân hằng hạnh huyền hồng nga nhung quyên thư trâm uyên yến xuân diễm diệp giang hiền châu chi dung duyên hân hoài kiều ly loan my mỹ nguyệt nhàn oanh phương quỳnh thùy thuỳ thủy thuỷ tiên trinh tuyết vân ánh thu thơ như nhã hảo huệ cúc đào lụa liên liễu mơ na sương thắm thoa thúy thuý trà xinh băng bích cẩm đan gấm khuê miên phượng quế sen hồng nhiên ngà diệu tuyền thanh-tâm').split(' '));
+const FEMALE_EN = new Set('emma olivia ava mia sophie sophia isabella amelia charlotte grace lily chloe ella zoe hannah emily anna lucy alice ruby ivy luna nora sarah sara jessica emily madison abigail harper evelyn ellie molly rose daisy poppy freya isla maya leah amy katie kate laura julia clara elena victoria natalie hailey'.split(' '));
+function guessGender(name) {
+  const w = name.toLowerCase().normalize('NFC').split(/\s+/).filter(Boolean);
+  if (w.includes('thị')) return 'f';
+  if (FEMALE_EN.has(w[0]) || FEMALE_EN.has(w[w.length - 1])) return 'f';
+  return FEMALE.has(w[w.length - 1]) ? 'f' : 'm';
+}
+function parseLine(line) {
+  let tag = null;
+  const name = line.normalize('NFC').replace(/\s*\((nam|nữ|nu|boy|girl|m|f)\)\s*$/i, (m, x) => { tag = /^(nam|boy|m)$/i.test(x) ? 'm' : 'f'; return ''; }).trim();
+  return { name, tag };
+}
+function roster(cls) {
+  if (cls.mode === 'numbers') return Array.from({ length: cls.count }, (_, i) => ({ name: 'No. ' + (i + 1), gender: null, manual: false }));
+  const seen = {}, out = [];
+  for (const raw of cls.text.split(/\r?\n/)) {
+    const line = raw.trim(); if (!line) continue;
+    let { name, tag } = parseLine(line); if (!name) continue;
+    if (seen[name]) name = name + ' (' + (++seen[name]) + ')'; else seen[name] = 1;
+    const over = cls.gender[name];
+    out.push({ name, gender: over || tag || guessGender(name), manual: !!(over || tag) });
+  }
+  return out;
+}
+const calledOf = cls => (store.called[cls.id] = store.called[cls.id] || []);
+function eligible(cls) {
+  const all = roster(cls);
+  if (!store.settings.rest) return all;
+  const c = new Set(calledOf(cls));
+  return all.filter(s => !c.has(s.name));
+}
+function randInt(n) { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+/* ================= Sound ================= */
+// One AudioContext, two buses (sfx / music) into a compressor so loud moments don't clip.
+const AUD = {
+  ctx: null, sfx: null, music: null, noiseBuf: null,
+  get() {
+    if (!this.ctx) {
+      try {
+        const c = new (window.AudioContext || window.webkitAudioContext)();
+        const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(c.destination);
+        this.sfx = c.createGain(); this.sfx.gain.value = .9; this.sfx.connect(comp);
+        this.music = c.createGain(); this.music.gain.value = .34; this.music.connect(comp);
+        const b = c.createBuffer(1, c.sampleRate, c.sampleRate), d = b.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        this.noiseBuf = b; this.ctx = c;
+      } catch (e) { return null; }
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    return this.ctx;
+  },
+  duck(on) { if (this.music) this.music.gain.setTargetAtTime(on ? .1 : .34, this.ctx.currentTime, .15); }
+};
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+// low-level voices, all scheduled at absolute time t on the given bus
+function voice(c, bus, { f, t, dur, type = 'sine', vol = .2, to = null, toAt = null, attack = .005, lp = null, vib = 0, vibRate = 28 }) {
+  const o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.setValueAtTime(f, t);
+  if (to) o.frequency.exponentialRampToValueAtTime(to, t + (toAt || dur));
+  if (vib) { const l = c.createOscillator(), lg = c.createGain(); l.frequency.value = vibRate; lg.gain.value = vib; l.connect(lg).connect(o.frequency); l.start(t); l.stop(t + dur + .05); }
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  let out = o;
+  if (lp) { const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = lp; o.connect(fl); out = fl; }
+  out.connect(g).connect(bus); o.start(t); o.stop(t + dur + .05);
+}
+function noiseVoice(c, bus, { t, dur, vol = .2, f = 1000, to = null, q = 1, type = 'bandpass', attack = .002 }) {
+  const s = c.createBufferSource(); s.buffer = AUD.noiseBuf; s.loop = true;
+  const fl = c.createBiquadFilter(); fl.type = type; fl.Q.value = q; fl.frequency.setValueAtTime(f, t);
+  if (to) fl.frequency.exponentialRampToValueAtTime(to, t + dur);
+  const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(fl).connect(g).connect(bus); s.start(t, Math.random() * .5); s.stop(t + dur + .05);
+}
+const DRUM = {
+  kick(c, bus, t, v = .9) { voice(c, bus, { f: 150, to: 42, toAt: .12, t, dur: .22, vol: v }); },
+  snare(c, bus, t, v = .35) { noiseVoice(c, bus, { t, dur: .16, vol: v, f: 1800, type: 'highpass', q: .5 }); voice(c, bus, { f: 210, to: 160, t, dur: .1, vol: v * .5, type: 'triangle' }); },
+  hat(c, bus, t, v = .12, open = false) { noiseVoice(c, bus, { t, dur: open ? .14 : .04, vol: v, f: 7500, type: 'highpass', q: .7 }); },
+  clap(c, bus, t, v = .3) { [0, .012, .024].forEach(d => noiseVoice(c, bus, { t: t + d, dur: .09, vol: v, f: 1400, q: 1.2 })); }
+};
+
+// recorded outcome stings from the asset pack (HTMLAudio so they also play from file://)
+const STINGSETS = {};
+function loadStings(set, base) {
+  if (STINGSETS[set]) return STINGSETS[set];
+  const s = STINGSETS[set] = {};
+  ['almost_selected', 'selected', 'wrong_turn', 'win'].forEach(n => { const a = new Audio(base + 'sfx_' + n + '.wav'); a.preload = 'auto'; s[n] = a; });
+  return s;
+}
+let STINGS = {};
+const SFX = {
+  sting(n, vol = .9) { if (!store.settings.sound || !STINGS[n]) return; const a = STINGS[n].cloneNode(); a.volume = vol; a.play().catch(() => {}); },
+  ok() { return store.settings.sound ? AUD.get() : null; },
+  run(fn) { const c = this.ok(); if (c) fn(c, AUD.sfx, c.currentTime); },
+  tone(f, dur, o = {}) { this.run((c, b, now) => voice(c, b, { f, dur, t: now + (o.delay || 0), ...o })); },
+  noise(dur, o = {}) { this.run((c, b, now) => noiseVoice(c, b, { dur, t: now + (o.delay || 0), ...o })); },
+  click() { this.tone(1400, .05, { type: 'triangle', vol: .08, to: 900 }); },
+  whistle() { this.tone(2300, .32, { vol: .12, vib: 90 }); this.tone(2300, .6, { vol: .13, vib: 90, delay: .38 }); },
+  cheer() {   // crowd "yay": swelling filtered noise + claps
+    this.run((c, b, now) => {
+      noiseVoice(c, b, { t: now, dur: 1.6, vol: .16, f: 900, to: 1600, q: .6, attack: .25 });
+      for (let i = 0; i < 18; i++) DRUM.clap(c, b, now + .1 + Math.random() * 1.3, .12 + Math.random() * .1);
+    });
+  },
+  applause() { this.run((c, b, now) => { for (let i = 0; i < 60; i++) DRUM.clap(c, b, now + Math.random() * 2.6, .08 + Math.random() * .12); noiseVoice(c, b, { t: now, dur: 2.8, vol: .1, f: 1500, q: .4, attack: .2 }); }); },
+  pop() { this.tone(500, .08, { to: 1300, vol: .14 }); },
+  wheee(d = 0) { this.run((c, b, now) => { const t = now + d, o = c.createOscillator(), g = c.createGain(); o.type = 'square';
+    o.frequency.setValueAtTime(520, t); o.frequency.linearRampToValueAtTime(1250, t + .22); o.frequency.exponentialRampToValueAtTime(420, t + .7);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.04, t + .03); g.gain.exponentialRampToValueAtTime(.0001, t + .7);
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200; o.connect(lp).connect(g).connect(b); o.start(t); o.stop(t + .75); }); },
+  splash(d = 0) { this.noise(.4, { vol: .26, f: 1100, to: 280, q: .8, delay: d }); this.noise(.12, { vol: .12, f: 4000, type: 'highpass', delay: d }); },
+  paddle() { this.noise(.07, { vol: .05 + Math.random() * .04, f: 700 + Math.random() * 600, q: 1.5 }); },
+  quack(d = 0, p = 1) { this.tone(420 * p, .16, { type: 'sawtooth', vol: .08, to: 260 * p, delay: d, lp: 1600 }); this.tone(430 * p, .12, { type: 'square', vol: .03, to: 300 * p, delay: d + .03, lp: 1400 }); },
+  leader() { this.tone(1319, .18, { type: 'triangle', vol: .12 }); this.tone(1976, .3, { type: 'triangle', vol: .12, delay: .08 }); this.noise(.25, { vol: .06, f: 600, to: 3000, q: 2 }); },
+  sparkle() { [0, .07, .14, .21, .28].forEach((d, i) => this.tone(1760 + i * 330, .3, { vol: .06, delay: d })); },
+  bloop() { this.tone(700, .3, { vol: .16, to: 160 }); },
+  bubbles() { for (let i = 0; i < 9; i++) this.tone(380 + Math.random() * 600, .09, { vol: .07, to: 900 + Math.random() * 500, delay: i * .1 + Math.random() * .05 }); },
+  sadTrombone() { [67, 66, 65].forEach((m, i) => this.tone(mtof(m - 12), .3, { type: 'sawtooth', vol: .1, lp: 1100, delay: .15 + i * .32 })); this.tone(mtof(64 - 12), 1.0, { type: 'sawtooth', vol: .1, lp: 1100, vib: 4, vibRate: 6, delay: 1.11 }); },
+  swoosh() { this.noise(1.6, { vol: .3, f: 250, to: 2600, q: 2.2 }); this.noise(1.2, { vol: .12, f: 3000, to: 400, q: 3, delay: .4 }); },
+  boing() { this.tone(180, .5, { type: 'triangle', vol: .2, to: 520, vib: 30, vibRate: 18 }); },
+  heartbeat() { this.run((c, b, now) => { DRUM.kick(c, b, now, .7); DRUM.kick(c, b, now + .16, .45); }); this.tone(1000, .06, { type: 'square', vol: .04 }); },
+  ding() { this.tone(1320, .5, { vol: .12 }); this.tone(1980, .4, { vol: .06 }); },
+  victory() {  // brass-ish fanfare with drums, then a held major chord
+    this.run((c, b, now) => {
+      const n = [[72, 0, .14], [72, .15, .14], [72, .3, .14], [76, .45, .5], [74, .98, .14], [76, 1.13, .14], [79, 1.28, 1.1]];
+      n.forEach(([m, d, dur]) => { voice(c, b, { f: mtof(m), t: now + d, dur, type: 'sawtooth', vol: .1, lp: 2600, attack: .02 }); voice(c, b, { f: mtof(m + 12), t: now + d, dur, type: 'square', vol: .035, lp: 3000, attack: .02 }); });
+      [60, 64, 67, 72].forEach(m => voice(c, b, { f: mtof(m), t: now + 1.28, dur: 1.4, type: 'triangle', vol: .08, attack: .03 }));
+      [0, .45, .98, 1.28].forEach(d => { DRUM.kick(c, b, now + d, .8); DRUM.hat(c, b, now + d, .1, true); });
+      for (let i = 0; i < 6; i++) DRUM.snare(c, b, now + .98 + i * .05, .12 + i * .04);
+      noiseVoice(c, b, { t: now + 1.28, dur: 1.5, vol: .1, f: 8000, type: 'highpass', q: .5 }); // cymbal
+    });
+  },
+  confettiPops() { for (let i = 0; i < 6; i++) this.noise(.08, { vol: .18, f: 2200, q: .8, delay: i * .07 + Math.random() * .04 }); }
+};
+
+/* ================= Background music ================= */
+// A tiny step sequencer (16 steps per bar, I–vi–IV–V in C). Modes: idle (chill), race (upbeat), tension (last seconds).
+const CHORDS = [{ root: 36, tri: [60, 64, 67] }, { root: 33, tri: [57, 60, 64] }, { root: 29, tri: [53, 57, 60] }, { root: 31, tri: [55, 59, 62] }];
+const _ = null;
+const MELODY = [
+  76, _, 79, _, 84, _, 79, _, 81, 79, 76, _, 74, _, 76, _,
+  72, _, 76, _, 81, _, 76, _, 79, 76, 72, _, 74, _, 76, _,
+  77, _, 81, _, 84, _, 81, _, 79, _, 77, _, 76, _, 74, _,
+  74, _, 79, _, 83, _, 86, _, 84, _, 83, _, 79, _, _, _];
+const BASS_IDLE = [0, _, _, _, _, _, 7, _, 12, _, _, _, 7, _, _, _];
+const Music = {
+  mode: null, step: 0, next: 0, timer: null, bpm: { idle: 100, race: 150, tension: 150 },
+  play(mode) {
+    if (this.mode === mode) return;
+    this.mode = mode; this.step = 0;
+    const c = AUD.ctx; if (c) this.next = c.currentTime + .06;
+    if (!this.timer) this.timer = setInterval(() => this.pump(), 25);
+    if (mode === 'tension' && c && store.settings.music) noiseVoice(c, AUD.music, { t: c.currentTime, dur: 3.2, vol: .25, f: 300, to: 5000, q: 1.5, attack: 2.8 });
+  },
+  stop() { this.mode = null; },
+  pump() {
+    const c = AUD.ctx; if (!c || !this.mode || c.state !== 'running') return;
+    const spb = 60 / this.bpm[this.mode] / 4;
+    if (this.next < c.currentTime - .05) this.next = c.currentTime + .02;   // tab was throttled: skip, don't burst
+    while (this.next < c.currentTime + .12) {
+      if (store.settings.music) this.note(this.step, this.next, spb);
+      this.next += spb; this.step++;
+    }
+  },
+  note(s, t, spb) {
+    const c = AUD.ctx, b = AUD.music, i = s % 16, bar = Math.floor(s / 16) % 4, ch = CHORDS[bar];
+    if (this.mode === 'idle') {
+      if (i === 0 || i === 10) DRUM.kick(c, b, t, .5);
+      if (i % 4 === 2) DRUM.hat(c, b, t, .06);
+      if (i === 8) DRUM.snare(c, b, t, .12);
+      if (BASS_IDLE[i] !== null) voice(c, b, { f: mtof(ch.root + 12 + BASS_IDLE[i]), t, dur: spb * 3, type: 'triangle', vol: .32 });
+      if ([0, 3, 6, 10, 12].includes(i)) ch.tri.forEach((m, k) => voice(c, b, { f: mtof(m), t: t + k * .012, dur: .35, type: 'triangle', vol: .07 }));
+      const m = MELODY[s % 64]; if (m && i % 4 === 0 && Math.floor(s / 64) % 2) voice(c, b, { f: mtof(m + 12), t, dur: .5, vol: .06 });
+      return;
+    }
+    if (this.mode === 'race') {
+      if (i % 4 === 0) DRUM.kick(c, b, t, .85);
+      if (i === 4 || i === 12) { DRUM.snare(c, b, t, .32); DRUM.clap(c, b, t, .12); }
+      DRUM.hat(c, b, t, i % 4 === 2 ? .13 : .05, i % 4 === 2);
+      if (i % 2 === 0) voice(c, b, { f: mtof(ch.root + (i % 4 === 2 ? 24 : 12)), t, dur: spb * 1.8, type: 'square', vol: .16, lp: 900 });
+      voice(c, b, { f: mtof(ch.tri[i % 3] + (i % 6 < 3 ? 0 : 12)), t, dur: spb * .9, type: 'triangle', vol: .045 });
+      const m = MELODY[s % 64];
+      if (m && s >= 32) { voice(c, b, { f: mtof(m), t, dur: spb * 1.7, type: 'square', vol: .07, lp: 3200 }); voice(c, b, { f: mtof(m + 12), t, dur: spb * 1.2, vol: .03 }); }
+      if (i === 15 && bar === 3) DRUM.snare(c, b, t, .2);
+      return;
+    }
+    if (this.mode === 'tension') {
+      const lift = Math.min(5, Math.floor(s / 8));        // climbs a semitone every half bar
+      if (i % 8 === 0) DRUM.kick(c, b, t, .9);
+      if (s >= 8 || i % 2 === 0) DRUM.snare(c, b, t, .1 + Math.min(.25, s * .006));
+      if (i % 2 === 0) voice(c, b, { f: mtof(31 + 12 + lift), t, dur: spb * 1.8, type: 'sawtooth', vol: .16, lp: 500 + s * 40 });
+      if (i % 4 === 0) [55, 59, 62, 65].forEach(m => voice(c, b, { f: mtof(m + lift), t, dur: spb * 3.5, type: 'triangle', vol: .035 }));
+    }
+  }
+};
+// browsers only allow audio after a user gesture
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, function unlock() {
+  if (AUD.get()) { if (!Music.mode) Music.play(race && race.phase === 'run' ? 'race' : 'idle'); else Music.next = AUD.ctx.currentTime + .05; }
+}, { once: true }));
+
+/* ================= Speech ================= */
+function speak(name) {
+  const v = store.settings.voice; if (v === 'off' || !('speechSynthesis' in window)) return;
+  const lang = v === 'vi' ? 'vi-VN' : 'en-US';
+  let text = name;
+  text = v === 'en' ? name.replace(/^No\. (\d+)$/, 'Number $1') : name.replace(/^No\. (\d+)$/, 'Số $1');
+  const u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = .9;
+  u.onstart = () => AUD.duck(true); u.onend = u.onerror = () => AUD.duck(false);
+  const voice = speechSynthesis.getVoices().find(x => x.lang && x.lang.replace('_', '-').toLowerCase().startsWith(lang.slice(0, 2)));
+  if (voice) u.voice = voice;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
+
+/* ================= Assets ================= */
+const IMGSETS = { g1: {} };
+let IMG = IMGSETS.g1;          // images of the game being shown
+function loadImages(set, base, names) {
+  const dict = IMGSETS[set] = IMGSETS[set] || {};
+  return Promise.all(names.map(n => dict[n] ? 0 : new Promise(res => {
+    const im = new Image(); im.onload = () => { dict[n] = im; res(); }; im.onerror = res; im.src = base + n + '.webp';
+  })));
+}
+const ASSET_NAMES = ['name_plate', 'vfx_almost_selected', 'vfx_selected', 'vfx_wrong_turn', 'vfx_win', 'buoy_gold', 'buoy_red', 'tornado', 'splash_wave', 'bubble', 'whirl', 'splash_crown', 'splash_up', 'splash_s', 'wave1', 'wave2', 'wave3', 'ripple_spark',
+  'turtle_idle', 'turtle_whistle', 'turtle_point', 'turtle_point2', 'turtle_shock', 'turtle_cheer',
+  'float_a0', 'float_a1', 'float_a2', 'float_a3', 'float_b0', 'float_b1', 'float_b2', 'float_b3', 'float_c0', 'float_c1', 'float_c2', 'float_c3'];
+for (let i = 0; i < 10; i++) ASSET_NAMES.push('duck' + i + '_swim', 'duck' + i + '_dive', 'duck' + i + '_win');
+// head position (fraction of width/height) on each swim sprite, used to place the bow
+const HEAD = [[.593, .004], [.648, .005], [.626, .006], [.6, .005], [.525, 0], [.595, .005], [.61, 0], [.605, .004], [.632, .007], [.647, .005]];
+const FLOATS = ['float_a0', 'float_a1', 'float_a2', 'float_a3', 'float_b0', 'float_b1', 'float_b2', 'float_b3', 'float_c0', 'float_c1', 'float_c2', 'float_c3'];
+const assetsReady = Promise.resolve();   // Vol. 5 has no duck race
+
+/* ================= Stage / scene ================= */
+const W = 1600, H = 900;
+const RIVER_TOP = 250, RIVER_BOT = 862;
+const START_X = 400, FINISH_X = 1440, RACE_LEN = 1000;
+const BUOY = { x: 1500, y: 560 };
+const CHUTE = [[188, 112], [330, 108], [250, 318], [372, 316]];
+const DUCK_W = 104;
+const cv = document.getElementById('stage'), ctx = cv.getContext('2d');
+const SCALE = cv.width / W;
+const bezier = (p, t) => { const u = 1 - t; return [0, 1].map(k => u * u * u * p[0][k] + 3 * u * u * t * p[1][k] + 3 * u * t * t * p[2][k] + t * t * t * p[3][k]); };
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const lerp = (a, b, t) => a + (b - a) * t;
+
+let bgCanvas = null;
+function buildBackground() {
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+  // sky
+  let gr = g.createLinearGradient(0, 0, 0, RIVER_TOP); gr.addColorStop(0, '#9fdcff'); gr.addColorStop(1, '#e9f9ff');
+  g.fillStyle = gr; g.fillRect(0, 0, W, RIVER_TOP);
+  // clouds
+  g.fillStyle = 'rgba(255,255,255,.9)';
+  [[520, 70, 1], [880, 48, .8], [1180, 92, .9], [330, 150, .6]].forEach(([x, y, s]) => {
+    [[0, 0, 34], [36, -14, 40], [76, 0, 32], [38, 12, 34]].forEach(([dx, dy, r]) => { g.beginPath(); g.arc(x + dx * s, y + dy * s, r * s, 0, 7); g.fill(); });
+  });
+  // far hills
+  g.fillStyle = '#a6dd84';
+  g.beginPath(); g.moveTo(0, 215);
+  for (let x = 0; x <= W; x += 40) g.lineTo(x, 190 - Math.sin(x / 170) * 26 - Math.sin(x / 63) * 8);
+  g.lineTo(W, RIVER_TOP); g.lineTo(0, RIVER_TOP); g.fill();
+  g.fillStyle = '#86cc63';
+  g.beginPath(); g.moveTo(0, 230);
+  for (let x = 0; x <= W; x += 40) g.lineTo(x, 214 - Math.sin(x / 120 + 2) * 14);
+  g.lineTo(W, RIVER_TOP); g.lineTo(0, RIVER_TOP); g.fill();
+  // trees on far bank
+  [[470, 205], [610, 198], [760, 210], [990, 200], [1120, 208], [1260, 202]].forEach(([x, y], i) => {
+    g.fillStyle = '#7a5a3a'; g.fillRect(x - 5, y - 10, 10, 26);
+    g.fillStyle = i % 2 ? '#4fae4a' : '#5cbc55';
+    g.beginPath(); g.arc(x, y - 26, 26, 0, 7); g.arc(x - 18, y - 12, 18, 0, 7); g.arc(x + 18, y - 12, 18, 0, 7); g.fill();
+  });
+  // near bank strip
+  g.fillStyle = '#5cb84a'; g.fillRect(0, RIVER_TOP - 18, W, 26);
+  g.fillStyle = '#e8d29a'; g.fillRect(0, RIVER_TOP + 2, W, 8);
+  // river
+  gr = g.createLinearGradient(0, RIVER_TOP, 0, RIVER_BOT); gr.addColorStop(0, '#6fd3f2'); gr.addColorStop(.5, '#3db5e6'); gr.addColorStop(1, '#2595cf');
+  g.fillStyle = gr; g.fillRect(0, RIVER_TOP + 8, W, RIVER_BOT - RIVER_TOP - 8);
+  // bottom bank
+  g.fillStyle = '#e8d29a'; g.fillRect(0, RIVER_BOT, W, 10);
+  g.fillStyle = '#5cb84a'; g.fillRect(0, RIVER_BOT + 8, W, H - RIVER_BOT);
+  for (let x = 10; x < W; x += 46) { g.fillStyle = (x / 46) % 3 < 1 ? '#ffd35c' : '#ff8fb1'; g.beginPath(); g.arc(x + (x % 17), RIVER_BOT + 24 + (x % 9), 4, 0, 7); g.fill(); }
+  // reeds near finish
+  g.strokeStyle = '#3f9a3c'; g.lineWidth = 4; g.lineCap = 'round';
+  for (let i = 0; i < 9; i++) { const x = 1555 + (i % 3) * 12, y = RIVER_BOT + 4; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x - 6, y - 30, x + (i % 2 ? 8 : -8), y - 50 - (i % 4) * 8); g.stroke(); }
+  // start line
+  g.save(); g.globalAlpha = .55;
+  for (let y = RIVER_TOP + 14; y < RIVER_BOT - 6; y += 18) { g.fillStyle = ((y / 18) | 0) % 2 ? '#fff' : '#1d3557'; g.fillRect(START_X - 40, y, 9, 18); }
+  g.restore();
+  drawTower(g);
+  bgCanvas = c;
+}
+function drawTower(g) {
+  // legs & braces
+  g.strokeStyle = '#9b6a3f'; g.lineWidth = 12; g.lineCap = 'round';
+  [[52, 120, 40, 300], [176, 120, 190, 300]].forEach(([x1, y1, x2, y2]) => { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); });
+  g.lineWidth = 7; g.strokeStyle = '#b5814f';
+  [[48, 160, 182, 220], [182, 160, 48, 220], [44, 230, 186, 285], [186, 230, 44, 285]].forEach(([a, b, c2, d]) => { g.beginPath(); g.moveTo(a, b); g.lineTo(c2, d); g.stroke(); });
+  // ladder
+  g.strokeStyle = '#c99561'; g.lineWidth = 5;
+  g.beginPath(); g.moveTo(16, 300); g.lineTo(40, 112); g.moveTo(40, 300); g.lineTo(62, 112); g.stroke();
+  for (let i = 0; i < 7; i++) { const t = i / 7, y = 290 - t * 170; g.beginPath(); g.moveTo(18 + t * 24, y); g.lineTo(42 + t * 22, y); g.stroke(); }
+  // platform
+  g.fillStyle = '#c98b52'; roundRect(g, 32, 98, 168, 22, 6); g.fill();
+  g.fillStyle = '#a86c39'; g.fillRect(36, 116, 160, 6);
+  // railing
+  g.strokeStyle = '#ffffff'; g.lineWidth = 5;
+  g.beginPath(); g.moveTo(40, 98); g.lineTo(40, 66); g.lineTo(128, 66); g.lineTo(128, 98); g.moveTo(84, 66); g.lineTo(84, 98); g.stroke();
+  // flag
+  g.strokeStyle = '#555'; g.lineWidth = 4; g.beginPath(); g.moveTo(60, 66); g.lineTo(60, 18); g.stroke();
+  g.fillStyle = '#ef5b5b'; g.beginPath(); g.moveTo(60, 20); g.lineTo(104, 32); g.lineTo(60, 44); g.fill();
+  // chute supports
+  g.strokeStyle = '#d9d9d9'; g.lineWidth = 6;
+  [.35, .6].forEach(t => { const [x, y] = bezier(CHUTE, t); g.beginPath(); g.moveTo(x, y + 14); g.lineTo(x, RIVER_TOP + 6); g.stroke(); });
+  // chute body
+  const path = () => { g.beginPath(); g.moveTo(...CHUTE[0]); g.bezierCurveTo(...CHUTE[1], ...CHUTE[2], ...CHUTE[3]); };
+  g.lineCap = 'round';
+  path(); g.strokeStyle = '#b4520f'; g.lineWidth = 44; g.stroke();
+  path(); g.strokeStyle = '#ff8a2a'; g.lineWidth = 36; g.stroke();
+  path(); g.strokeStyle = '#8fe0ff'; g.lineWidth = 22; g.stroke();
+  path(); g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 4; g.setLineDash([18, 14]); g.stroke(); g.setLineDash([]);
+}
+function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+
+function drawImg(name, cx, cy, w, { anchor = 'center', alpha = 1, rot = 0, flip = false } = {}) {
+  const im = IMG[name]; if (!im) return 0;
+  const h = im.height * w / im.width;
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(cx, cy); if (rot) ctx.rotate(rot); if (flip) ctx.scale(-1, 1);
+  ctx.drawImage(im, -w / 2, anchor === 'bottom' ? -h : -h / 2, w, h);
+  ctx.restore(); return h;
+}
+
+function drawWater(t) {
+  // flowing streaks
+  ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.28)'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  for (let i = 0; i < 26; i++) {
+    const y = RIVER_TOP + 30 + (i * 97) % (RIVER_BOT - RIVER_TOP - 50);
+    const x = ((i * 233 + t * 60) % (W + 200)) - 100;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 25, y - 6, x + 50, y); ctx.quadraticCurveTo(x + 75, y + 6, x + 100, y); ctx.stroke();
+  }
+  ctx.restore();
+  // float ropes along banks
+  for (let x = 20, k = 0; x < W; x += 54, k++) {
+    drawImg(FLOATS[k % 12], x, RIVER_TOP + 18 + Math.sin(t * 2 + k) * 2, 44);
+    drawImg(FLOATS[(k + 5) % 12], x + 20, RIVER_BOT - 10 + Math.sin(t * 2 + k + 1) * 2, 44);
+  }
+  // finish rope (vertical)
+  for (let y = RIVER_TOP + 50, k = 0; y < RIVER_BOT - 30; y += 34, k++) {
+    if (Math.abs(y - BUOY.y) < 70) continue;
+    drawImg(FLOATS[(k * 7) % 12], FINISH_X + Math.sin(t * 2 + k) * 2, y, 42, { rot: Math.PI / 2 });
+  }
+}
+function drawBuoy(t, glow) {
+  const bob = Math.sin(t * 2.2) * 4;
+  drawImg('ripple_spark', BUOY.x, BUOY.y + 18, 200, { alpha: glow ? 1 : .75 });
+  drawImg('buoy_gold', BUOY.x, BUOY.y + 30 + bob, 92, { anchor: 'bottom' });
+}
+function drawTurtle(pose, t) {
+  const bounce = pose === 'turtle_cheer' ? Math.abs(Math.sin(t * 8)) * 10 : 0;
+  drawImg(pose, 1515, RIVER_TOP + 10 - bounce, 128, { anchor: 'bottom' });
+}
+
+/* ---- duck rendering ---- */
+function duckH(sp, w = DUCK_W) { const im = IMG['duck' + sp + '_swim']; return im ? im.height * w / im.width : 70; }
+function drawBow(x, y, s) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.rotate(-.25);
+  ctx.fillStyle = '#e8283c'; ctx.strokeStyle = '#7a0f1c'; ctx.lineWidth = 2;
+  [-1, 1].forEach(d => { ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(d * 12, -12, d * 16, -2); ctx.quadraticCurveTo(d * 14, 10, 0, 0); ctx.fill(); ctx.stroke(); });
+  ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.restore();
+}
+// long names: keep the last two words, then shrink the font, then cut with an ellipsis
+const TAG_MAX = 170;
+function fitTag(text) {
+  let t = text, size = 25;
+  ctx.font = `700 ${size}px "Baloo 2","Segoe UI",sans-serif`;
+  if (ctx.measureText(t).width > TAG_MAX) { const w = t.split(/\s+/); if (w.length > 2) t = w.slice(-2).join(' '); }
+  while (ctx.measureText(t).width > TAG_MAX && size > 19) { size -= 1; ctx.font = `700 ${size}px "Baloo 2","Segoe UI",sans-serif`; }
+  if (ctx.measureText(t).width > TAG_MAX) { while (t.length > 3 && ctx.measureText(t + '…').width > TAG_MAX) t = t.slice(0, -1); t = t.trimEnd() + '…'; }
+  return t;
+}
+function drawTag(text, xRight, y, lead) {
+  ctx.save(); text = fitTag(text);
+  const w = ctx.measureText(text).width + 22, h = 34, x = xRight - w;
+  ctx.fillStyle = lead ? '#ffd54a' : 'rgba(255,255,255,.95)';
+  ctx.strokeStyle = lead ? '#c98a00' : 'rgba(29,53,87,.25)'; ctx.lineWidth = 2;
+  roundRect(ctx, x, y - h / 2, w, h, 17); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#1d3557'; ctx.textBaseline = 'middle'; ctx.fillText(text, x + 11, y + 2);
+  ctx.restore();
+}
+function drawSwimDuck(d, x, y, t, { rot = 0, w = DUCK_W, wake = true, alpha = 1 } = {}) {
+  const im = IMG['duck' + d.sp + '_swim']; if (!im) return;
+  const h = im.height * w / im.width, bob = Math.sin(t * 5 + d.seed * 6) * 2.5;
+  ctx.save(); ctx.globalAlpha = alpha;
+  if (wake) {
+    ctx.strokeStyle = 'rgba(255,255,255,.65)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(x, y + 4, w * .55, 9, 0, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x - w * .5, y + 2); ctx.lineTo(x - w * .5 - 30, y - 8); ctx.moveTo(x - w * .5, y + 6); ctx.lineTo(x - w * .5 - 30, y + 16); ctx.stroke();
+  }
+  ctx.translate(x, y + bob); ctx.rotate(rot + Math.sin(t * 4 + d.seed * 9) * .04);
+  ctx.drawImage(im, -w / 2, -h + 8, w, h);
+  if (d.gender === 'f') { const hd = HEAD[d.sp]; drawBow(-w / 2 + hd[0] * w - 10, -h + 8 + hd[1] * h + 8, w / 104); }
+  ctx.restore();
+}
+
+/* ================= Race logic ================= */
+let race = null;          // current race state
+let idleDucks = [];
+function makeIdle() {
+  idleDucks = Array.from({ length: 10 }, (_, i) => ({ sp: i, seed: Math.random(), x: 520 + (i % 5) * 190 + (i > 4 ? 90 : 0), y: 470 + (i > 4 ? 190 : 0) + (i % 2) * 20, gender: 'm' }));
+}
+makeIdle();
+
+function buildCurve(end, boosts, seed) {
+  const K = 240, sp = [], P = new Float32Array(K + 1);
+  const a1 = seed * 7, a2 = seed * 13, f1 = 1.5 + seed * 2, f2 = 4 + seed * 3;
+  for (let k = 0; k <= K; k++) {
+    const u = k / K; let s = 1 + .3 * Math.sin(f1 * u * 6.283 + a1) + .18 * Math.sin(f2 * u * 6.283 + a2);
+    for (const b of boosts) s += b.amp * Math.exp(-Math.pow((u - b.c) / b.w, 2));
+    sp.push(Math.max(.2, s));
+  }
+  let acc = 0; P[0] = 0;
+  for (let k = 1; k <= K; k++) { acc += (sp[k] + sp[k - 1]) / 2; P[k] = acc; }
+  for (let k = 0; k <= K; k++) P[k] = P[k] / acc * end;
+  return P;
+}
+const sampleCurve = (P, u) => { const K = P.length - 1, f = clamp(u) * K, i = Math.min(K - 1, f | 0); return P[i] + (P[i + 1] - P[i]) * (f - i); };
+
+/* ================= Finish twists ================= */
+// Every twist runs in the last 3.2 s (te = 0 → 3.2) and must land the winner on GOAL at te = 3.2.
+// The winner is already decided; a twist only changes how the reveal looks.
+const GOAL = [BUOY.x - 82, BUOY.y + 22];
+const quad = (a, b, c, k) => (1 - k) * (1 - k) * a + 2 * (1 - k) * k * b + k * k * c;
+function arcTo(sx, sy, ex, ey, k, lift = 30, bend = 0) {
+  const cx = (sx + ex) / 2 + bend, cy = Math.min(sy, ey) - lift;
+  return [quad(sx, cx, ex, k), quad(sy, cy, ey, k)];
+}
+function sprintToGoal(d, te, from, dur) {          // winner swims hard to the gold buoy
+  const k = ease(clamp((te - from) / dur));
+  const [x, y] = arcTo(d.sx, d.sy, GOAL[0], GOAL[1], k, 30);
+  if (k > 0 && k < 1) addTrail(x, y, race.now);
+  return [x, y, d.end + k * .2];
+}
+const dizzy = (d, te) => { d.rot = Math.sin(te * 9) * .3; };
+
+const TWISTS = {
+  // decoy dives after a shiny button, a whirlpool flings the real winner to the buoy
+  button: {
+    cues(r, te) {
+      if (r.decoy && te > -.6) cue('btn', () => { SFX.sparkle(); Music.play('tension'); outcome('almost_selected', r.decoy); r.banner = '✨ Ooh! Something shiny in the water…'; });
+      if (r.decoy && te > .5) cue('dive', () => { outcome('wrong_turn', r.decoy); SFX.bloop(); SFX.splash(); SFX.bubbles(); SFX.sadTrombone(); addFx('splash_up', r.decoy.x + 50, r.decoy.y, 90, .5); r.banner = '🫧 ' + r.decoy.name + ' dives after the shiny button!'; });
+      if (te > .8) cue('whirl', () => { outcome('selected', r.winner); SFX.swoosh(); SFX.bubbles(); if (!r.decoy) Music.play('tension'); r.banner = '🌀 A sudden whirlpool!!'; });
+      if (te > 1.7) cue('fly', () => { CAM.shake(race, 8); FX.splash(r.winner.x, r.winner.y, 22); FX.bubbles(r.winner.x, r.winner.y, 10); SFX.splash(); SFX.boing(); SFX.wheee(.1); SFX.quack(.3, 1.3); });
+    },
+    duck(d, te, r) {
+      if (d === r.decoy) { const p = d.end + .035 * clamp(te / .5); if (te > .5) d.pose = 'dive'; return [START_X + p * RACE_LEN, d.laneY, p]; }
+      if (d !== r.winner) return null;
+      const p = d.end + .03 * clamp(te / .8); let x = START_X + p * RACE_LEN, y = d.laneY;
+      if (te > .8 && te <= 1.7) {
+        const k = (te - .8) / .9; d.rot = k * k * Math.PI * 4;
+        x += Math.cos(k * 12) * 14 * k; y += Math.sin(k * 12) * 10 * k;
+      } else if (te > 1.7) {
+        const k = ease(clamp((te - 1.7) / 1.5));
+        [x, y] = arcTo(x, y, GOAL[0], GOAL[1], k, 120, 40);
+        d.rot = (1 - k) * Math.PI * 4 % (Math.PI * 2) * (1 - k);
+        addTrail(x, y, r.now);
+      }
+      return [x, y, p];
+    },
+    render(r, te, t) {
+      if (r.decoy && te > -.6 && te < .9) drawShinyButton(START_X + (r.decoy.end + .05) * RACE_LEN + 20, r.decoy.laneY + 10, t, clamp((te + .6) / .3));
+      if (te > .8) {
+        const k = clamp((te - .8) / .4), fade = 1 - clamp((te - 2.4) / .8), w = r.winner;
+        ctx.save(); ctx.globalAlpha = fade;
+        ctx.translate(te > 1.7 ? START_X + (w.end + .03) * RACE_LEN : w.x, te > 1.7 ? w.laneY : w.y); ctx.scale(1, .45); ctx.rotate(-te * 7);
+        if (IMG.whirl) ctx.drawImage(IMG.whirl, -120 * k, -120 * k, 240 * k, 240 * k);
+        ctx.restore();
+      }
+    },
+    turtle: te => te > .5 ? 'turtle_shock' : null
+  },
+
+  // a big wave rolls in from behind; the winner surfs it to the buoy and knocks the leader into a spin
+  wave: {
+    waveAt(r, te) {
+      const w = r.winner;
+      if (te < 1) { const k = ease(clamp((te + .4) / 1.4)); return [lerp(START_X - 120, w.sx - 30, k), w.sy]; }
+      return [w.x - 30, w.y];
+    },
+    cues(r, te) {
+      if (te > -.4) cue('wave', () => { Music.play('tension'); outcome('almost_selected', r.decoy); SFX.swoosh(); r.banner = '🌊 Look out! A huge wave is coming!'; });
+      if (te > 1) cue('surf', () => { outcome('selected', r.winner); FX.splash(r.winner.x, r.winner.y, 20); SFX.splash(); SFX.wheee(); SFX.quack(.2, 1.3); r.banner = '🏄 Someone is surfing the wave!!'; });
+      if (r.decoy && te > 2) cue('knock', () => { CAM.shake(race, 9); outcome('wrong_turn', r.decoy); SFX.splash(); SFX.boing(); addFx('splash_crown', r.decoy.x, r.decoy.y + 10, 140, .5); });
+    },
+    duck(d, te, r) {
+      if (d === r.winner) {
+        if (te < 1) { const p = d.end + .01 * te; return [START_X + p * RACE_LEN, d.sy, p]; }
+        const k = ease(clamp((te - 1) / 2.2)); d.rot = -.12 * Math.sin(k * Math.PI);
+        const [x, y] = arcTo(d.sx, d.sy, GOAL[0], GOAL[1], k, 40);
+        addTrail(x, y, r.now); return [x, y, d.end + k * .2];
+      }
+      if (d === r.decoy) {
+        const k = ease(clamp((te - 2) / .8)), p = d.end + .03 * clamp(te / 1.2) - .06 * k;
+        if (te > 2) d.rot = k * Math.PI * 4 + (k >= 1 ? Math.sin(te * 9) * .3 : 0);
+        return [START_X + p * RACE_LEN, d.sy, p];
+      }
+      return null;
+    },
+    render(r, te, t) {
+      if (te < -.4) return;
+      const [x, y] = this.waveAt(r, te), a = clamp((te + .4) / .3) * (1 - clamp((te - 2.9) / .3));
+      drawImg('splash_wave', x - 40, y + 34 + Math.sin(t * 8) * 3, 230, { anchor: 'bottom', alpha: a });
+    },
+    turtle: te => te > .2 ? 'turtle_shock' : null
+  },
+
+  // a water tornado lifts the leader into the sky and drops it behind; the winner sprints through
+  tornado: {
+    cues(r, te) {
+      if (te > -.3) cue('torn', () => { Music.play('tension'); outcome('almost_selected', r.decoy); SFX.swoosh(); r.banner = '🌪️ A waterspout appears!'; });
+      if (te > .5) cue('lift', () => { outcome('wrong_turn', r.decoy); FX.splash(r.decoy.x, r.decoy.y, 18); SFX.wheee(); SFX.boing(); SFX.quack(.2, 1.4); r.banner = '😵 ' + r.decoy.name + ' gets swept into the sky!'; });
+      if (te > 1.8) cue('drop', () => { CAM.shake(race, 12); FX.splash(r.decoy.sx - 140, r.decoy.sy, 24); SFX.splash(); SFX.sadTrombone(); addFx('splash_crown', r.decoy.sx - 140, r.decoy.sy + 10, 150, .6); });
+      if (te > 1) cue('dash', () => { outcome('selected', r.winner); r.banner = '💨 Someone speeds to the finish!'; SFX.quack(0, 1.2); });
+    },
+    duck(d, te, r) {
+      if (d === r.winner) { if (te < .9) { const p = d.end + .012 * te; return [START_X + p * RACE_LEN, d.sy, p]; } return sprintToGoal(d, te, .9, 2.3); }
+      if (d !== r.decoy) return null;
+      if (te < .5) { const p = d.end + .02 * te; return [START_X + p * RACE_LEN, d.sy, p]; }
+      if (te < 1.8) { const k = (te - .5) / 1.3; d.rot = k * Math.PI * 6; return [d.sx + 10 + Math.sin(k * 10) * 22, d.sy - 230 * ease(k), d.end]; }
+      if (te < 2.2) { const k = (te - 1.8) / .4; d.rot = te * 12; return [lerp(d.sx + 10, d.sx - 140, k), d.sy - 230 + 230 * k * k, d.end - .1]; }
+      dizzy(d, te); return [d.sx - 140, d.sy, d.end - .14];
+    },
+    render(r, te, t) {
+      if (te < -.3 || te > 2.3) return;
+      const k = clamp((te + .3) / .4), fade = 1 - clamp((te - 1.8) / .5), d = r.decoy;
+      drawImg('tornado', d.sx + 10 + Math.sin(t * 5) * 10, d.sy + 40, 210 * (.4 + .6 * k), { anchor: 'bottom', alpha: fade });
+    },
+    turtle: te => te > .5 ? 'turtle_shock' : null
+  },
+
+  // the leader proudly touches a RED buoy, the referee points to the GOLD one, the winner gets there
+  wrongBuoy: {
+    redAt(r) {   // keep the red buoy well away from the gold one so the mix-up reads clearly
+      let y = r.decoy.laneY + 10;
+      if (Math.abs(y - BUOY.y) < 130) y = BUOY.y + (y < BUOY.y ? -140 : 140);
+      return [FINISH_X - 10, clamp(y, RIVER_TOP + 60, RIVER_BOT - 30)];
+    },
+    cues(r, te) {
+      if (te > -.5) cue('red', () => { Music.play('tension'); SFX.pop(); SFX.sparkle(); r.banner = '🔴 A buoy just popped up…'; });
+      if (te > 1) cue('touch', () => { outcome('almost_selected', r.decoy); SFX.ding(); SFX.quack(0, 1.3); r.banner = '🎉 ' + r.decoy.name + ' touches the buoy…?'; });
+      if (te > 1.5) cue('wrong', () => { outcome('wrong_turn', r.decoy); outcome('selected', r.winner); SFX.whistle(); SFX.sadTrombone(); r.banner = '❌ Oops! That was the RED buoy, not the GOLD one!'; });
+    },
+    duck(d, te, r) {
+      if (d === r.winner) { if (te < 1) { const p = d.end + .012 * te; return [START_X + p * RACE_LEN, d.sy, p]; } return sprintToGoal(d, te, 1, 2.2); }
+      if (d !== r.decoy) return null;
+      const [rx, ry] = this.redAt(r), k = ease(clamp(te / 1));
+      if (te > 1.5) dizzy(d, te); else if (te > 1) d.rot = Math.sin(te * 20) * .08;
+      return [lerp(d.sx, rx - 66, k), lerp(d.sy, ry + 2, k), d.end + .05 * k];
+    },
+    render(r, te, t) {
+      if (te < -.5) return;
+      const [x, y] = this.redAt(r), k = clamp((te + .5) / .3), pop = k < 1 ? 1.25 - .25 * k : 1;
+      drawImg('buoy_red', x, y + 18 + Math.sin(t * 2.4) * 3, 62 * k * pop, { anchor: 'bottom' });
+    },
+    turtle: te => te > 1.5 ? 'turtle_point' : te > 1 ? 'turtle_shock' : null
+  },
+
+  // no trick: a neck-and-neck sprint, the winner edges ahead at the very end
+  none: {
+    setup(r, decoys) { r.winner.end = .84; if (decoys[0]) decoys[0].end = .87; if (decoys[1]) decoys[1].end = .855; },
+    cues(r, te) {
+      if (te > -.4) cue('sprint', () => { Music.play('tension'); outcome('almost_selected', r.decoy); SFX.cheer(); r.banner = '🔥 Final sprint — it is neck and neck!!'; });
+      if (te > 2) cue('who', () => { outcome('selected', r.winner); r.banner = '😱 Who will touch the buoy first?'; });
+    },
+    duck(d, te, r) {
+      if (d === r.winner) {
+        const k = Math.pow(clamp(te / 3.2), 1.7), [x, y] = arcTo(d.sx, d.sy, GOAL[0], GOAL[1], k, 20);
+        if (te > 1.5) addTrail(x, y, r.now); return [x, y, d.end + k * .2];
+      }
+      const i = r.rivals.indexOf(d); if (i < 0) return null;
+      const k = 1 - Math.pow(1 - clamp(te / 2.9), 2), slot = r.rivalSlots[i];
+      const [x, y] = arcTo(d.sx, d.sy, slot[0], slot[1], k, 20);
+      return [x, y, d.end + k * .18];
+    },
+    render() {},
+    turtle: te => te > 2 ? 'turtle_shock' : null
+  }
+};
+function pickTwist(hasDecoy) {
+  if (!hasDecoy) return Math.random() < .5 ? 'none' : 'wave';
+  const roll = Math.random();
+  if (roll < .25) return 'none';
+  return ['button', 'wave', 'tornado', 'wrongBuoy'][Math.floor((roll - .25) / .1875) % 4];
+}
+
+function startRace() {
+  if (race && race.phase !== 'done') return;
+  const cls = activeClass(), pool = eligible(cls);
+  if (!pool.length) return;
+  hideResult();
+  const T = store.settings.duration, S = 2.6, TW = T - 3.2;
+  const winnerStu = pool[randInt(pool.length)];                    // decided now, everything after is show
+  const others = shuffle(pool.filter(s => s !== winnerStu)).slice(0, 9);
+  const racers = shuffle([winnerStu, ...others]);
+  if (curImpl()) return startGeneric(cls, T, winnerStu, racers);
+  const sprites = shuffle([...Array(10).keys()]);
+  const n = racers.length;
+  const span = Math.min(62, (RIVER_BOT - RIVER_TOP - 120) / Math.max(n - 1, 1));
+  const midY = (RIVER_TOP + RIVER_BOT) / 2 + 10;
+  const ducks = racers.map((s, i) => ({
+    name: s.name, gender: cls.mode === 'numbers' ? null : s.gender, sp: sprites[i], seed: Math.random(),
+    laneY: midY + (i - (n - 1) / 2) * span, isWinner: s === winnerStu
+  }));
+  const winner = ducks.find(d => d.isWinner);
+  const decoys = shuffle(ducks.filter(d => !d.isWinner));
+  const decoy = decoys[0] || null;
+  // fake leaders through the race; the last one is the decoy who "almost wins"
+  const fakes = T <= 10 ? 2 : T <= 15 ? 3 : T <= 20 ? 4 : 5;
+  const leaders = [];
+  for (let j = 0; j < fakes - 1 && decoys.length > 1; j++) leaders.push(j === 0 && Math.random() < .35 ? winner : decoys[1 + (j % (decoys.length - 1))]);
+  ducks.forEach(d => { d.end = .42 + Math.random() * .3; d.boosts = []; });
+  winner.end = .76 + Math.random() * .04;
+  if (decoy) decoy.end = .9;
+  const twistName = (decoy && window.FORCE_TWIST) || pickTwist(!!decoy), twist = TWISTS[twistName];
+  if (twist.setup) twist.setup({ winner }, decoys);
+  ducks.forEach(d => { d.sx = START_X + d.end * RACE_LEN; d.sy = d.laneY; });
+  const rivals = decoys.slice(0, 2).sort((a, b) => a.laneY - b.laneY);
+  const rivalSlots = rivals.length === 2 ? [[BUOY.x - 150, BUOY.y - 80], [BUOY.x - 165, BUOY.y + 95]]
+    : [[BUOY.x - 155, rivals[0] && rivals[0].laneY < BUOY.y ? BUOY.y - 80 : BUOY.y + 95]];
+  leaders.forEach((d, j) => { d.boosts.push({ c: (j + .7) / (fakes + .2), w: .07, amp: 2.4 }); });
+  if (decoy) decoy.boosts.push({ c: .9, w: .08, amp: 1.5 });
+  ducks.forEach(d => { d.P = buildCurve(d.end, d.boosts, d.seed); });
+  // slide order
+  shuffle([...ducks]).forEach((d, k) => { d.slideAt = .35 + k * .17; });
+  race = { T, S, TW, ducks, winner, decoy, twist, twistName, rivals, rivalSlots, t0: performance.now(), phase: 'run', leader: null, leaderAt: 0, banner: 'The ducks whoosh down the water slide!', confetti: [], cues: {}, lastTick: -1 };
+  document.body.classList.add('running');
+  SFX.whistle(); SFX.cheer(); Music.play('race');
+  updateUI();
+}
+
+function racePos(d, t) {
+  const { S, TW } = race;
+  const u = clamp((t - S) / (TW - S));
+  const p = sampleCurve(d.P, u);
+  return [START_X + p * RACE_LEN, d.laneY, p];
+}
+
+function cue(key, fn) { if (!race.cues[key]) { race.cues[key] = true; fn(); } }
+
+function updateDuck(d, t) {
+  const r = race, te = t - r.TW;
+  d.pose = 'swim'; d.rot = 0; d.alpha = 1;
+  // slide down chute
+  if (t < d.slideAt) { d.hidden = true; return; }
+  d.hidden = false;
+  cue('pop' + d.sp, () => { SFX.pop(); SFX.wheee(.04); });
+  const ride = .75, sT = (t - d.slideAt) / ride;
+  if (sT < 1) {
+    const [x, y] = bezier(CHUTE, sT * sT), [x2, y2] = bezier(CHUTE, Math.min(1, sT * sT + .02));
+    d.x = x; d.y = y + 6; d.rot = Math.atan2(y2 - y, x2 - x) * .7; d.pose = 'slide'; d.scale = .8 + .2 * Math.min(1, sT * 5);
+    return;
+  }
+  cue('splash' + d.sp, () => { FX.splash(CHUTE[3][0] + 20, CHUTE[3][1] + 10, 14); addFx('splash_crown', CHUTE[3][0] + 10, CHUTE[3][1] + 8, 130, .5); SFX.splash(); if (Math.random() < .6) SFX.quack(.1, .8 + Math.random() * .5); });
+  d.scale = 1;
+  const exitT = d.slideAt + ride, blend = ease(clamp((t - exitT) / .9));
+  let [x, y, p] = racePos(d, t);
+  if (te > 0) {
+    const o = r.twist.duck(d, te, r);
+    if (o) [x, y, p] = o; else { p = d.end + .012 * te; x = START_X + p * RACE_LEN; }
+  }
+  const ex = CHUTE[3][0] + 30, ey = CHUTE[3][1] + 10;
+  d.x = lerp(ex, x, blend); d.y = lerp(ey, y, blend); d.p = p;
+}
+
+function outcome(kind, duck, size = 230) {
+  if (!duck) return;
+  SFX.sting(kind);
+  race.fx = race.fx || []; race.fx.push({ atlas: 'vfx_' + kind, duck, w: size, t0: race.now, dur: 1 });
+  const x = duck.x, y = duck.y - 34;
+  CAM.react(race, kind, duck);
+  if (kind === 'almost_selected') { FX.ring(x, y, '#ffd84a', 120); FX.glitter(x, y, 10); }
+  else if (kind === 'wrong_turn') { FX.ring(x, y, '#9aa5b1', 110); FX.smoke(x, y, 9, '#c9d1da'); }
+  else if (kind === 'selected') { FX.ring(x, y, '#7cf7ff', 160); FX.sparkle(x, y, 26); }
+}
+function addFx(img, x, y, w, dur, opt = {}) { race.fx = race.fx || []; race.fx.push({ img, x, y, w, t0: race.now, dur, ...opt }); }
+
+function tickRace(now) {
+  const r = race; const t = (now - r.t0) / 1000; r.now = t;
+  const te = t - r.TW;
+  if (r.game) { r.game.tick(r, t, te); countdown(r, t); return; }
+  r.ducks.forEach(d => updateDuck(d, t));
+  // leader tracking / banners
+  if (t > r.S + .3 && te < -.25) {
+    const lead = r.ducks.reduce((a, b) => (b.p || 0) > (a.p || 0) ? b : a);
+    if (lead !== r.leader && t - r.leaderAt > .45) { r.leader = lead; r.leaderAt = t; r.banner = '🏁 In the lead: ' + lead.name; SFX.leader(); }
+  }
+  if (t > r.S && te < 0) {   // ambient paddling and the odd quack while racing
+    if (Math.random() < .05) SFX.paddle();
+    if (Math.random() < .008) SFX.quack(0, .75 + Math.random() * .6);
+  }
+  r.twist.cues(r, te);
+  countdown(r, t);
+}
+function countdown(r, t) {   // heartbeat in the last 3 seconds, then finish
+  const left = Math.ceil(r.T - t);
+  if (left <= 3 && left > 0 && left !== r.lastTick) { r.lastTick = left; SFX.heartbeat(); }
+  if (t >= r.T && r.phase === 'run') finishRace();
+}
+
+function finishRace() {
+  const r = race; r.phase = 'done'; r.doneAt = r.now;
+  r.banner = r.game ? r.game.winBanner(r) : '🎉 ' + r.winner.name + ' touches the golden buoy!';
+  Music.stop(); SFX.whistle(); SFX.victory(); SFX.confettiPops(); SFX.applause(); if (!r.game) SFX.quack(.6, 1.2);
+  setTimeout(() => { if (race === r) Music.play('idle'); }, 3500);
+  burstConfetti();
+  const wp = r.winRays = r.game ? r.game.winPos(r) : { x: BUOY.x - 20, y: BUOY.y - 30 };
+  r.fx = r.fx || []; r.fx.push({ atlas: 'vfx_win', duck: wp, w: 380, t0: r.now, dur: 1.4 }); SFX.sting('win');
+  FX.ring(wp.x, wp.y + 40, '#ffd84a', 280); FX.ring(wp.x, wp.y + 40, '#ffffff', 180); FX.sparkle(wp.x, wp.y, 60);
+  CAM.follow(r, wp, 1.3); CAM.shake(r, 9);
+  if (r.game && r.game.onFinish) r.game.onFinish(r);
+  const cls = activeClass(), list = calledOf(cls);
+  list.push(r.winner.name); save();
+  document.body.classList.remove('running');
+  setTimeout(() => { if (race === r) showResult(r.winner); }, 900);
+  setTimeout(() => { if (race === r) speak(r.winner.name); }, 450);
+  updateUI();
+}
+
+function burstConfetti() {
+  const cols = ['#ef5b5b', '#ffc93c', '#3fbf6a', '#2a9fd6', '#ff7aa8', '#9b6bff'];
+  for (let i = 0; i < 180; i++) {
+    const fromLeft = i % 2 === 0;
+    race.confetti.push({ x: fromLeft ? 0 : W, y: H * .75, vx: (fromLeft ? 1 : -1) * (300 + Math.random() * 700), vy: -(500 + Math.random() * 700), r: Math.random() * 6.28, vr: (Math.random() - .5) * 12, c: cols[i % cols.length], w: 10 + Math.random() * 8, h: 6 + Math.random() * 6 });
+  }
+}
+
+/* ================= Render loop ================= */
+let lastNow = performance.now();
+function frame(now) {
+  const dt = Math.min(.05, (now - lastNow) / 1000); lastNow = now;
+  const t = now / 1000;
+  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+  CAM.begin(race, dt);
+  const impl = curImpl();
+  if (impl) { renderGeneric(impl, now, t, dt); requestAnimationFrame(frame); return; }
+  if (bgCanvas) ctx.drawImage(bgCanvas, 0, 0); else { ctx.fillStyle = '#3db5e6'; ctx.fillRect(0, 0, W, H); }
+  drawWater(t);
+  if (race) {
+    if (race.phase === 'run') tickRace(now); else race.now = (now - race.t0) / 1000;
+    renderRace(t, dt);
+  } else renderIdle(t);
+  requestAnimationFrame(frame);
+}
+
+function renderIdle(t) {
+  drawBuoy(t, false);
+  drawTurtle('turtle_idle', t);
+  idleDucks.forEach((d, i) => drawSwimDuck(d, d.x + Math.sin(t * .6 + i) * 20, d.y + Math.cos(t * .5 + i) * 6, t, { wake: false }));
+  idleOverlay('Duck Slide Race', t);
+}
+function idleOverlay(title, t, y = 420) {
+  const pool = eligible(activeClass()).length;
+  banner(pool ? 'Press ▶ Pick a name! or Space' : 'Everyone has been picked! Press ↺ Start over', t);
+  ctx.save(); ctx.font = '800 64px "Baloo 2","Segoe UI",sans-serif'; ctx.textAlign = 'center';
+  ctx.lineWidth = 10; ctx.strokeStyle = '#1b3a5c'; ctx.fillStyle = '#fff';
+  ctx.strokeText(title, 800, y); ctx.fillText(title, 800, y); ctx.restore();
+}
+
+function renderRace(t, dt) {
+  const r = race, rt = r.now, te = rt - r.TW, done = r.phase === 'done';
+  // turtle referee
+  const pose = done ? 'turtle_cheer' : (te > 0 && r.twist.turtle(te)) || (rt < 1.2 ? 'turtle_whistle' : (Math.floor(rt / 2) % 2 ? 'turtle_point' : 'turtle_point2'));
+  drawTurtle(pose, t);
+  if (!done) drawBuoy(t, te > 1.7);
+  else { FX.rays(BUOY.x - 20, BUOY.y - 30, 330, t); drawImg('ripple_spark', BUOY.x, BUOY.y + 18, 230); }
+  if (!done) r.twist.render(r, te, t);
+  // fx
+  drawFx(r);
+  // ducks sorted by depth
+  const order = [...r.ducks].filter(d => !d.hidden).sort((a, b) => a.y - b.y);
+  for (const d of order) {
+    if (done && d === r.winner) continue;
+    if (d.pose === 'dive') {
+      const k = clamp((te - .5) / .4);
+      drawImg('duck' + d.sp + '_dive', d.x + 40, d.y + 26, 150 * (.7 + .3 * k), { anchor: 'bottom', alpha: .4 + .6 * k });
+      for (let i = 0; i < 4; i++) { const bt = (t * .9 + i * .25) % 1; drawImg('bubble', d.x + 30 + Math.sin(i * 3 + t * 3) * 14, d.y - 10 - bt * 70, 16 + i * 3, { alpha: 1 - bt }); }
+    } else {
+      drawSwimDuck(d, d.x, d.y, t, { rot: d.rot, w: DUCK_W * (d.scale || 1), wake: d.pose !== 'slide' });
+    }
+  }
+  // name tags on top so they never get covered
+  for (const d of order) {
+    if (d.pose === 'slide' || (done && d === r.winner)) continue;
+    const w = DUCK_W * (d.scale || 1);
+    drawTag(d.name, d.x - w * .45, d.y - duckH(d.sp) * .45, !done && d === r.leader && te < 0);
+  }
+  if (done) {
+    const k = clamp((rt - r.doneAt) / .4);
+    drawImg('duck' + r.winner.sp + '_win', BUOY.x - 20, BUOY.y + 40, 230 * (.6 + .4 * ease(k)), { anchor: 'bottom' });
+    drawTag(r.winner.name, BUOY.x - 120, BUOY.y - 100, true);
+  }
+  hud(r, t, dt);
+}
+function drawFx(r) {
+  const rt = r.now;
+  (r.fx || []).forEach(f => { const k = (rt - f.t0) / f.dur; if (k >= 0 && k < 1 && f.atlas) drawBurst(f, k); else if (k >= 0 && k < 1) drawImg(f.img, f.x, f.y, f.w * (.6 + .4 * k), { alpha: 1 - k, anchor: 'bottom', rot: f.rot || 0 }); });
+  if (r.fx) r.fx = r.fx.filter(f => rt - f.t0 < f.dur);
+}
+function hud(r, t, dt) {
+  FX.draw(r, dt);
+  CAM.end();
+  banner(r.banner, t);
+  if (r.phase !== 'done') timerChip(Math.max(0, Math.ceil(r.T - r.now)));
+  r.confetti.forEach(c => { c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.vx *= .99; c.r += c.vr * dt;
+    ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.r); ctx.fillStyle = c.c; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });
+  r.confetti = r.confetti.filter(c => c.y < H + 40);
+}
+
+/* ================= Games 2–6 (shared lifecycle; each game lives in games/*.js) ================= */
+const AV_GIRLS = [0, 2, 4, 6, 8], AV_BOYS = [1, 3, 5, 7, 9];   // Linh An Mai Vy Lan / Minh Nam Khoa Huy Bao
+function startGeneric(cls, T, winnerStu, racers) {
+  const g = curImpl();
+  if (!g.ready) return;
+  const girls = shuffle([...AV_GIRLS]), boys = shuffle([...AV_BOYS]), any = shuffle([...Array(10).keys()]);
+  const used = new Set();
+  const pickAv = gender => {
+    const pool = g.animals ? any : gender === 'f' ? girls : gender === 'm' ? boys : any;
+    let a = pool.find(x => !used.has(x)); if (a === undefined) a = any.find(x => !used.has(x)); used.add(a); return a;
+  };
+  const players = racers.map(s => ({ name: s.name, gender: cls.mode === 'numbers' ? null : s.gender, isWinner: s === winnerStu, seed: Math.random(), x: 0, y: 0 }));
+  players.forEach(p => { p.av = pickAv(p.gender); });
+  const winner = players.find(p => p.isWinner), decoys = shuffle(players.filter(p => !p.isWinner));
+  // a quarter of rounds have no twist: the winner is simply revealed after a near-miss
+  const r = race = { game: g, T, TW: T - 3.2, players, winner, decoys, decoy: decoys[0] || null, plain: !decoys.length || (window.FORCE_PLAIN ?? Math.random() < .25),
+    t0: performance.now(), now: 0, phase: 'run', banner: g.startBanner, confetti: [], cues: {}, lastTick: -1, fx: [] };
+  g.setup(r);
+  document.body.classList.add('running');
+  SFX.whistle(); SFX.cheer(); Music.play('race');
+  updateUI();
+}
+function renderGeneric(g, now, t, dt) {
+  if (!g.ready) {
+    ctx.fillStyle = '#1d3557'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fff'; ctx.font = '700 44px "Baloo 2","Segoe UI",sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText('Loading ' + g.title + '…', 800, 460); ctx.textAlign = 'left'; return;
+  }
+  // code-drawn base by default; the painted picture is optional and only downloaded when chosen
+  const painted = store.settings.paintedBg && g.paintedOk !== false;   // only where the picture matches the play layout
+  if (painted && !IMG.bg && !g.bgLoading) g.bgLoading = loadImages(g.id, g.base, ['bg']);
+  const base = painted && IMG.bg ? IMG.bg : BASES.get(g.id);
+  if (base) ctx.drawImage(base, 0, 0, W, H);
+  FX.motes(t, g.mote);
+  const sc = SCENES[g.id];
+  if (sc) sc.back(t);
+  if (race && race.phase === 'done' && race.winRays) FX.rays(race.winRays.x, race.winRays.y + 30, 340, t, g.rayColor);
+  if (race) {
+    if (race.phase === 'run') tickRace(now); else race.now = (now - race.t0) / 1000;
+    g.render(race, t, dt); drawFx(race); if (sc) sc.front(t); hud(race, t, dt);
+  } else { g.idle(t); if (sc) sc.front(t); idleOverlay(g.title, t, g.titleY || 860); }
+}
+// a name tag centred on cx
+function tagC(text, cx, y, lead) {
+  ctx.save(); ctx.font = '700 25px "Baloo 2","Segoe UI",sans-serif'; const w = ctx.measureText(text).width + 22; ctx.restore();
+  drawTag(text, cx + w / 2, y, lead);
+}
+// draw a character pose of the current game, anchored at its feet; returns the drawn width
+function charImg(av, pose, x, y, h, opt = {}) {
+  const im = IMG['c' + av + '_' + pose] || IMG['c' + av + '_' + (opt.fallback || 'idle')]; if (!im) return 0;
+  const w = im.width * h / im.height;
+  ctx.save(); ctx.globalAlpha *= opt.alpha ?? 1; ctx.translate(x, y); if (opt.rot) ctx.rotate(opt.rot); if (opt.flip) ctx.scale(-1, 1);
+  ctx.drawImage(im, -w / 2, -h, w, h); ctx.restore(); return w;
+}
+const curGame = () => store.settings.game5 || 'g25';
+const curImpl = () => GAME_IMPL[curGame()] || null;
+// after the visible game is ready, fetch the others one by one so switching is instant
+let preloading = false;
+function preloadGames() {
+  if (preloading) return; preloading = true;
+  const queue = Object.values(GAME_IMPL);
+  (function next() {
+    const g = queue.shift(); if (!g) return;
+    if (!g.loading) g.loading = loadImages(g.id, g.base, g.assets).then(() => { g.ready = true; updateUI(); });
+    g.loading.then(() => setTimeout(next, 300));
+  })();
+}
+function activateGame(id) {
+  if (race && race.phase === 'run') return;
+  store.settings.game5 = id; save();
+  race = null; hideResult();
+  const g = GAME_IMPL[id];
+  IMG = IMGSETS[id] = IMGSETS[id] || {};
+  STINGS = loadStings(id, g.base);
+  if (g && !g.loading) g.loading = loadImages(id, g.base, g.assets).then(() => { g.ready = true; updateUI(); });
+  (g ? g.loading : assetsReady).then(preloadGames);
+  updateUI();
+}
+
+function addTrail(x, y, rt) {
+  const r = race; if (r.lastTrail && rt - r.lastTrail < .12) return; r.lastTrail = rt;
+  FX.splash(x - 30, y + 6, 3);
+  r.fx = r.fx || []; r.fx.push({ img: ['wave1', 'wave2', 'wave3'][Math.floor(rt * 10) % 3], x: x - 40, y: y + 20, w: 140, t0: rt, dur: .6 });
+}
+function drawShinyButton(x, y, t, a) {
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y);
+  const g = ctx.createRadialGradient(-5, -5, 2, 0, 0, 18); g.addColorStop(0, '#fff7c2'); g.addColorStop(.5, '#ffd23f'); g.addColorStop(1, '#d99a00');
+  ctx.fillStyle = g; ctx.strokeStyle = '#9c6b00'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(0, 0, 18, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#9c6b00'; [[-5, -5], [5, -5], [-5, 5], [5, 5]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.arc(dx, dy, 2.6, 0, 7); ctx.fill(); });
+  for (let i = 0; i < 4; i++) {
+    const ang = t * 2 + i * 1.57, rr = 30 + Math.sin(t * 6 + i) * 6;
+    star(Math.cos(ang) * rr, Math.sin(ang) * rr * .7, 6 + Math.sin(t * 8 + i) * 3);
+  }
+  ctx.restore();
+}
+function star(x, y, s) {
+  ctx.fillStyle = '#fff3a0'; ctx.beginPath();
+  for (let i = 0; i < 8; i++) { const r = i % 2 ? s * .35 : s, a = i * Math.PI / 4; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); }
+  ctx.fill();
+}
+function drawBurst(f, k) {
+  const im = IMG[f.atlas]; if (!im) return;
+  const fr = Math.min(7, Math.floor(k * 8)), cw = im.width / 8, x = f.duck.x, y = f.duck.y - 34;
+  ctx.save(); ctx.globalAlpha = k > .75 ? (1 - k) * 4 : 1; ctx.globalCompositeOperation = 'lighter';
+  ctx.drawImage(im, fr * cw, 0, cw, im.height, x - f.w / 2, y - f.w / 2, f.w, f.w); ctx.restore();
+}
+// 3-slice the name plate so it stretches without squashing its rounded ends
+function plate(x, y, w, h) {
+  const im = IMG.name_plate; if (!im) return 0;
+  const s = h / im.height, L = 200, R = 110;
+  ctx.drawImage(im, 0, 0, L, im.height, x, y, L * s, h);
+  ctx.drawImage(im, L, 0, im.width - L - R, im.height, x + L * s, y, w - (L + R) * s, h);
+  ctx.drawImage(im, im.width - R, 0, R, im.height, x + w - R * s, y, R * s, h);
+  return L * s;
+}
+function banner(text, t) {
+  if (!text) return;
+  ctx.save(); ctx.font = '800 38px "Baloo 2","Segoe UI",sans-serif';
+  const h = 84, icon = h * 200 / 192, w = Math.min(940, ctx.measureText(text).width + icon + 50), x = 790 - w / 2, y = 12;
+  if (IMG.name_plate) plate(x, y, w, h);
+  else { ctx.fillStyle = 'rgba(255,255,255,.95)'; roundRect(ctx, x, y, w, h, h / 2); ctx.fill(); }
+  ctx.fillStyle = '#1d3557'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, x + icon / 2 + w / 2 - 12, y + h / 2 + 3, w - icon - 40); ctx.restore();
+}
+function timerChip(n) {
+  const r = race, frac = r ? clamp(1 - r.now / r.T) : 0, x = 1505, y = 72, R = 46, hot = n <= 3;
+  const pulse = hot ? 1 + .08 * Math.max(0, Math.sin((r ? r.now : 0) * Math.PI * 2)) : 1;
+  ctx.save(); ctx.translate(x, y); ctx.scale(pulse, pulse);
+  ctx.fillStyle = 'rgba(12,20,60,.28)'; ctx.beginPath(); ctx.arc(0, 6, R + 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(0, 0, R + 8, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#e3e6f5'; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(0, 0, R - 2, 0, Math.PI * 2); ctx.stroke();
+  ctx.strokeStyle = hot ? '#f04e5e' : '#7c5cff'; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(0, 0, R - 2, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * frac); ctx.stroke();
+  ctx.fillStyle = hot ? '#f04e5e' : '#1c2550'; ctx.font = '800 44px "Fredoka","Baloo 2",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(n, 0, 3); ctx.restore();
+}
+
+/* ================= Result overlay ================= */
+const resultEl = document.getElementById('result');
+function showResult(d) {
+  document.getElementById('resName').textContent = d.name;
+  document.getElementById('resImg').src = race && race.game ? race.game.base + 'c' + d.av + '_' + (race.game.resultPose || 'win') + '.webp' : 'assets/duck-race/duck' + d.sp + '_win.webp';
+  resultEl.classList.remove('hidden');
+}
+function hideResult() { resultEl.classList.add('hidden'); }
+function continueGame() { hideResult(); race = null; makeIdle(); Music.play('idle'); updateUI(); }
+document.getElementById('contBtn').onclick = continueGame;
+document.getElementById('sayBtn').onclick = () => race && speak(race.winner.name);
+
+/* ================= Main UI ================= */
+const GAMES = [
+  { id: 'g25', n: '25', name: 'Weather Machine Cold', icon: '🌦️' },
+  { id: 'g26', n: '26', name: 'Time Machine Mix-Up', icon: '⏳' },
+  { id: 'g27', n: '27', name: 'Puppy Pool Float Race', icon: '🐶' },
+  { id: 'g28', n: '28', name: 'Broken Invisibility Cloak', icon: '🫥' },
+  { id: 'g29', n: '29', name: 'Stubborn Vending Machine', icon: '🥤' },
+  { id: 'g30', n: '30', name: 'Golden Carrot Bunny Dash', icon: '🥕' }
+];
+document.getElementById('gameTabs').innerHTML = GAMES.map(g =>
+  `<button class="tab" data-game="${g.id}"><span class="ico">${g.icon}</span><span><b>GAME ${g.n}</b><span class="nm">${g.name}</span></span></button>`).join('');
+document.querySelectorAll('#gameTabs .tab').forEach(b => b.onclick = () => { if (b.dataset.game !== curGame()) activateGame(b.dataset.game); });
+
+const durChips = document.getElementById('durChips');
+[10, 15, 20, 30].forEach(s => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = s + 's'; b.dataset.s = s; b.onclick = () => { store.settings.duration = s; save(); updateUI(); }; durChips.appendChild(b); });
+const paintedChk = document.getElementById('paintedChk');
+paintedChk.onchange = () => { store.settings.paintedBg = paintedChk.checked; save(); };
+const calmChk = document.getElementById('calmChk');
+calmChk.onchange = () => { store.settings.calm = calmChk.checked; save(); };
+const restChk = document.getElementById('restChk');
+restChk.onchange = () => { store.settings.rest = restChk.checked; save(); updateUI(); };
+const voiceSel = document.getElementById('voiceSel');
+voiceSel.onchange = () => { store.settings.voice = voiceSel.value; save(); };
+document.getElementById('testBtn').onclick = () => {
+  SFX.ding(); SFX.quack(.4); if (AUD.get() && !Music.mode) Music.play('idle');
+  const v = store.settings.voice;
+  if (v === 'off') toast('Name reading is off — playing sound effects only');
+  else speak(v === 'vi' ? 'Xin chào cả lớp' : 'Hello everyone!');
+};
+const soundBtn = document.getElementById('soundBtn');
+soundBtn.onclick = () => { store.settings.sound = !store.settings.sound; save(); updateUI(); };
+const musicBtn = document.getElementById('musicBtn');
+musicBtn.onclick = () => { store.settings.music = !store.settings.music; save(); if (store.settings.music && AUD.get() && !Music.mode) Music.play('idle'); updateUI(); };
+document.addEventListener('click', e => { const b = e.target.closest('button'); if (b && b !== startBtn) SFX.click(); });
+document.getElementById('fsBtn').onclick = () => {
+  const el = document.getElementById('stageWrap');
+  if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen && el.requestFullscreen();
+};
+const startBtn = document.getElementById('startBtn');
+startBtn.onclick = () => startRace();
+
+const resetBtn = document.getElementById('resetBtn');
+let resetTimer = null;
+resetBtn.onclick = () => {
+  if (!resetBtn.classList.contains('confirm')) {
+    resetBtn.classList.add('confirm'); resetBtn.textContent = 'Press again to confirm';
+    clearTimeout(resetTimer); resetTimer = setTimeout(() => { resetBtn.classList.remove('confirm'); resetBtn.textContent = '↺ Start over'; }, 3000);
+    return;
+  }
+  clearTimeout(resetTimer); resetBtn.classList.remove('confirm'); resetBtn.textContent = '↺ Start over';
+  store.called[activeClass().id] = []; save(); if (race && race.phase === 'done') continueGame(); updateUI(); toast('Started over — everyone is back in');
+};
+
+function updateUI() {
+  const cls = activeClass(), all = roster(cls), called = calledOf(cls), pool = eligible(cls);
+  document.getElementById('classLabel').innerHTML = esc(cls.name) + ' <span class="pill">' + all.length + '</span>';
+  [...durChips.children].forEach(b => b.classList.toggle('on', +b.dataset.s === store.settings.duration));
+  document.querySelectorAll('#gameTabs .tab').forEach(b => b.classList.toggle('active', b.dataset.game === curGame()));
+  restChk.checked = store.settings.rest; calmChk.checked = !!store.settings.calm; paintedChk.checked = !!store.settings.paintedBg; voiceSel.value = store.settings.voice;
+  soundBtn.textContent = store.settings.sound ? '🔊 Sound' : '🔇 Sound'; soundBtn.classList.toggle('off', !store.settings.sound);
+  musicBtn.textContent = store.settings.music ? '🎵 Music' : '🔕 Music'; musicBtn.classList.toggle('off', !store.settings.music);
+  const running = race && race.phase === 'run';
+  startBtn.disabled = running || !pool.length || !!(curImpl() && !curImpl().ready);
+  startBtn.textContent = running ? '⏳ Picking…' : '▶ Pick a name!';
+  const st = document.getElementById('status');
+  if (!all.length) { st.textContent = 'No students yet — press the yellow class button to add names.'; st.className = 'status done'; }
+  else if (!pool.length) { st.textContent = 'Everyone has been picked! Press ↺ Start over.'; st.className = 'status done'; }
+  else { st.textContent = store.settings.rest ? `${pool.length} of ${all.length} still waiting` : 'Anyone can be picked again'; st.className = 'status'; }
+  document.getElementById('calledCount').textContent = called.length || '';
+  document.getElementById('meterBar').style.width = (all.length ? Math.min(100, (all.length - pool.length) / all.length * 100) : 0) + '%';
+  const ol = document.getElementById('calledList');
+  ol.innerHTML = called.length ? called.map((n, i) => `<li><i>${i + 1}.</i>${esc(n)}</li>`).join('') : '<li class="empty">Nobody picked yet.</li>';
+  ol.scrollTop = ol.scrollHeight;
+}
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 1800); }
+
+/* ================= Class page ================= */
+const page = document.getElementById('classPage');
+let draft = null, editId = null;
+function openClasses() { if (race && race.phase === 'run') return; draft = JSON.parse(JSON.stringify(store.classes)); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); }
+function closeClasses() {
+  if (!draft) return;
+  store.classes = draft; store.activeId = editId;
+  for (const k of Object.keys(store.called)) if (!draft.find(c => c.id === k)) delete store.called[k];
+  draft = null; save(); page.classList.add('hidden');
+  if (race && race.phase === 'done') continueGame();
+  updateUI();
+}
+document.getElementById('classBtn').onclick = openClasses;
+document.getElementById('doneBtn').onclick = closeClasses;
+
+// ---- backup: every class plus who has been called, as one JSON file ----
+const BACKUP_APP = 'goi-ten-vui-nhon';
+function backupNote() {
+  const el = document.getElementById('backupNote');
+  el.textContent = store.lastBackup ? 'Last backup: ' + new Date(store.lastBackup).toLocaleString('en-GB') : 'No backup made on this computer yet.';
+}
+document.getElementById('exportBtn').onclick = () => {
+  const data = { app: BACKUP_APP, version: 1, savedAt: new Date().toISOString(), classes: draft, called: store.called, activeId: editId };
+  const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'name-picker-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  store.lastBackup = Date.now(); save(); backupNote(); toast('Backup file saved');
+};
+document.getElementById('importBackupBtn').onclick = () => document.getElementById('backupIn').click();
+document.getElementById('backupIn').onchange = e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    let data; try { data = JSON.parse(rd.result); } catch (err) { data = null; }
+    if (!data || data.app !== BACKUP_APP || !Array.isArray(data.classes)) { toast('That file is not a Name Picker Party backup'); return; }
+    // keep only the fields we know, with safe types
+    const clean = data.classes.filter(c => c && typeof c === 'object').map(c => ({
+      id: typeof c.id === 'string' && c.id ? c.id.slice(0, 20) : uid(),
+      name: String(c.name || 'Class').slice(0, 40), mode: c.mode === 'numbers' ? 'numbers' : 'names',
+      count: clamp(parseInt(c.count) || 30, 2, 50), text: String(c.text || '').slice(0, 20000),
+      gender: Object.fromEntries(Object.entries(c.gender && typeof c.gender === 'object' ? c.gender : {}).filter(([, v]) => v === 'm' || v === 'f'))
+    }));
+    if (!clean.length) { toast('The backup file has no classes in it'); return; }
+    // classes with the same id are replaced, the rest are added
+    for (const c of clean) {
+      const i = draft.findIndex(x => x.id === c.id);
+      if (i >= 0) draft[i] = c; else draft.push(c);
+      const called = data.called && Array.isArray(data.called[c.id]) ? data.called[c.id].map(String) : [];
+      store.called[c.id] = called;
+    }
+    editId = clean[0].id; save(); renderClassPage();
+    toast('Imported ' + clean.length + ' class(es) from the backup');
+  };
+  rd.readAsText(f, 'utf-8');
+};
+const ed = () => draft.find(c => c.id === editId);
+function renderClassPage(keepText) {
+  const c = ed();
+  const tabs = document.getElementById('classTabs');
+  tabs.innerHTML = draft.map(x => `<button class="smallBtn ${x.id === editId ? 'on' : ''}" data-id="${x.id}">${esc(x.name || 'Untitled class')}</button>`).join('') + '<button class="smallBtn add" id="newClass">+ New class</button>';
+  tabs.querySelectorAll('[data-id]').forEach(b => b.onclick = () => { editId = b.dataset.id; renderClassPage(); });
+  document.getElementById('newClass').onclick = () => { const id = uid(); draft.push({ id, name: 'Class ' + (draft.length + 1), mode: 'names', count: 30, text: '', gender: {} }); editId = id; renderClassPage(); };
+  document.getElementById('className').value = c.name;
+  document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === c.mode));
+  document.getElementById('numPane').classList.toggle('hidden', c.mode !== 'numbers');
+  document.getElementById('namePane').classList.toggle('hidden', c.mode !== 'names');
+  document.getElementById('genderPane').classList.toggle('hidden', c.mode !== 'names');
+  document.getElementById('numRange').value = c.count; document.getElementById('numVal').textContent = c.count;
+  if (!keepText) document.getElementById('namesBox').value = c.text;
+  const del = document.getElementById('delClassBtn'); del.disabled = draft.length < 2; del.classList.remove('confirm'); del.textContent = 'Delete class';
+  const clr = document.getElementById('clearBtn'); clr.classList.remove('confirm'); clr.textContent = 'Clear all';
+  renderGender();
+}
+function renderGender() {
+  const c = ed(); const list = roster(c);
+  const box = document.getElementById('gchips');
+  box.innerHTML = list.length ? list.map((s, i) => `<button class="gchip ${s.gender === 'f' ? 'f' : ''}" data-i="${i}">${s.gender === 'f' ? '🎀' : '🧢'} ${esc(s.name)}${s.manual ? ' ✓' : ''}</button>`).join('') : '<span class="note">No names yet.</span>';
+  box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const s = list[+b.dataset.i]; c.gender[s.name] = s.gender === 'f' ? 'm' : 'f'; renderGender(); });
+}
+document.getElementById('className').oninput = e => { ed().name = e.target.value; const b = document.querySelector(`#classTabs [data-id="${editId}"]`); if (b) b.textContent = e.target.value || 'Untitled class'; };
+document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { ed().mode = b.dataset.mode; renderClassPage(true); });
+const setCount = v => { ed().count = clamp(v, 2, 50); document.getElementById('numRange').value = ed().count; document.getElementById('numVal').textContent = ed().count; };
+document.getElementById('numRange').oninput = e => setCount(+e.target.value);
+document.getElementById('numMinus').onclick = () => setCount(ed().count - 1);
+document.getElementById('numPlus').onclick = () => setCount(ed().count + 1);
+const namesBox = document.getElementById('namesBox');
+namesBox.oninput = () => { ed().text = namesBox.value; renderGender(); };
+document.getElementById('importBtn').onclick = () => document.getElementById('fileIn').click();
+document.getElementById('fileIn').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    let rows = String(rd.result).replace(/^﻿/, '').split(/\r?\n/).map(l => l.split(/[,;\t]/)[0].replace(/^"|"$/g, '').trim()).filter(Boolean);
+    if (rows.length && /^(stt|tên|ten|họ\s*(và)?\s*tên|ho\s*ten|name|full\s*name)$/i.test(rows[0])) rows.shift();
+    ed().text = rows.join('\n'); namesBox.value = ed().text; renderGender(); toast('Imported ' + rows.length + ' names');
+  };
+  rd.readAsText(f, 'utf-8'); e.target.value = '';
+};
+document.getElementById('sortBtn').onclick = () => {
+  const lines = namesBox.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  const last = l => { const w = parseLine(l).name.split(/\s+/); return w[w.length - 1] || ''; };
+  lines.sort((a, b) => last(a).localeCompare(last(b), 'vi') || a.localeCompare(b, 'vi'));
+  ed().text = namesBox.value = lines.join('\n'); renderGender();
+};
+document.getElementById('copyBtn').onclick = async () => {
+  try { await navigator.clipboard.writeText(namesBox.value); toast('List copied'); }
+  catch (e) { namesBox.select(); document.execCommand('copy'); toast('List copied'); }
+};
+function twoStep(btn, label, confirmLabel, act) {
+  btn.onclick = () => {
+    if (!btn.classList.contains('confirm')) { btn.classList.add('confirm'); btn.textContent = confirmLabel; setTimeout(() => { btn.classList.remove('confirm'); btn.textContent = label; }, 3000); return; }
+    btn.classList.remove('confirm'); btn.textContent = label; act();
+  };
+}
+twoStep(document.getElementById('clearBtn'), 'Clear all', 'Press again to clear', () => { ed().text = ''; ed().gender = {}; namesBox.value = ''; renderGender(); });
+twoStep(document.getElementById('delClassBtn'), 'Delete class', 'Press again to delete', () => {
+  if (draft.length < 2) return;
+  draft = draft.filter(c => c.id !== editId); editId = draft[0].id; renderClassPage();
+});
+
+/* ================= Keyboard ================= */
+document.addEventListener('keydown', e => {
+  if (!page.classList.contains('hidden')) { if (e.key === 'Escape') closeClasses(); return; }
+  if (e.code !== 'Space') return;
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (['input', 'textarea', 'select'].includes(tag)) return;
+  e.preventDefault();
+  if (!resultEl.classList.contains('hidden')) continueGame();
+  else if (!race || race.phase === 'done') startRace();
+});
+
+/* ================= Boot ================= */
+updateUI();
+const fontReady = document.fonts ? document.fonts.load('700 30px "Baloo 2"').catch(() => {}) : Promise.resolve();
+Promise.all([assetsReady, fontReady]).then(() => { buildBackground(); });
+activateGame(GAME_IMPL[curGame()] ? curGame() : 'g25');
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

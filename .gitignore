@@ -1,0 +1,8 @@
+.claude/
+Thumbs.db
+desktop.ini
+~$*
+
+# Other game asset folders and archives kept locally only
+/[0-9]*. */
+/*.zip
