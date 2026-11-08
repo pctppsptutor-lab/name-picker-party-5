@@ -156,7 +156,6 @@ const CAM = (() => {
     begin(r, dt) {
       if (!r) return;
       const c = cam(r);
-      if (r.slowUntil && performance.now() < r.slowUntil) r.t0 += dt * 1000 * (1 - r.slowF);   // stretch round time
       if (c.follow) { c.tx = c.follow.x; c.ty = c.follow.y - 40; }
       else if (r.phase === 'run' && r.now > r.TW - 2.5) {        // gentle push-in during the final countdown
         const k = clamp((r.now - r.TW + 2.5) / 2.5); c.tx = SW / 2; c.ty = SH / 2 + 20; c.tz = 1 + .05 * k;

@@ -50,7 +50,7 @@ const BANNER_EXACT_VI = {
   '😱 Who will touch the buoy first?': '😱 Ai sẽ chạm phao vàng đầu tiên đây?',
   // Game 02: Mischievous Dino Eggs
   '🥚 The eggs start to wobble!': '🥚 Những quả trứng bắt đầu lắc lư!',
-  '🐓 Huh?! It is just a rubber chicken!': '🐓 Ủa?! Bên trong chỉ là chú gà cao su!',
+  '🐔 Huh?! It is just a rubber chicken!': '🐔 Ủa?! Bên trong chỉ là chú gà cao su!',
   '🦖 Mama dino rolls another egg with her tail…': '🦖 Khủng long mẹ dùng đuôi lăn một quả trứng khác…',
   '🦖 Mama dino picks this egg!': '🦖 Khủng long mẹ chọn quả trứng này!',
   // Game 03: Rebellious Cauldron
@@ -157,7 +157,7 @@ const BANNER_EXACT_VI = {
   '🌀 One sock each goes into the washer!': '🌀 Mỗi người cho một chiếc tất vào máy giặt!',
   '🫧 Spin, spin, spin…': '🫧 Quay, quay, quay đều nào…',
   '❌ Same colour… wrong pattern!': '❌ Cùng màu đấy… nhưng khác họa tiết rồi!',
-  '🫧 The washer hiccups…': '🫧 Máy giặt nấc cụt một cái…',
+  '🫨 The washer hiccups…': '🫨 Máy giặt nấc cụt một cái…',
   '🧦 The lost sock shoots out of the sleeve!': '🧦 Chiếc tất thất lạc bắn vọt ra từ ống tay áo!',
   '🧦 …no, it bounces on to its real owner!': '🧦 …không phải, chiếc tất nảy tiếp tới chủ nhân thật sự!',
   '✨ A perfect match!': '✨ Ghép đôi chuẩn xác tuyệt đối!',
@@ -296,11 +296,11 @@ const BANNER_PATTERNS_VI = [
   [/^🔦 The spotlight lands on (.+)…$/, '🔦 Ánh đèn chiếu xuống $1…'],
   [/^🍿 (.+) kept the beat!$/, '🍿 $1 giữ nhịp chuẩn xuất sắc!'],
   // Game 13
-  [/^🚩 Closest to the flag: (.+)$/, '🚩 Gần cờ đích nhất: $1'],
+  [/^🏁 Closest to the flag: (.+)$/, '🏁 Gần cờ đích nhất: $1'],
   [/^🐧 (.+) is still sliding…$/, '🐧 $1 vẫn đang trượt băng băng…'],
   [/^🦭 …and nudges (.+) onto the flag!$/, '🦭 …và đẩy nhẹ $1 dừng ngay vạch cờ!'],
   [/^🐧 (.+) brakes hard…$/, '🐧 $1 phanh gấp trên băng…'],
-  [/^🚩 (.+) stops right on the flag!$/, '🚩 $1 dừng chuẩn xác ngay tại cờ đích!'],
+  [/^🏁 (.+) stops right on the flag!$/, '🏁 $1 dừng chuẩn xác ngay tại cờ đích!'],
   // Game 14
   [/^🐚 In front: (.+)$/, '🐚 Đang dẫn trước: $1'],
   [/^🐚 (.+)'s shell reaches the castle!$/, '🐚 Vỏ ốc của $1 đã tới lâu đài cát!'],
@@ -383,7 +383,7 @@ const BANNER_PATTERNS_VI = [
   // Game 27
   [/^🐶 In the lead: (.+)$/, '🐶 Đang dẫn đầu: $1'],
   [/^🐶 (.+) is nearly at the bone…$/, '🐶 $1 sắp chạm tới khúc xương vàng rồi…'],
-  [/^🛟 …and (.+) zooms through!$/, '🛟 …và $1 lướt vút qua!'],
+  [/^🐕 …and (.+) zooms through!$/, '🐕 …và $1 lướt vút qua!'],
   [/^🐶 (.+) paddles hard…$/, '🐶 $1 đang bơi hết tốc lực…'],
   [/^💨 …but (.+) surfs past!$/, '💨 …nhưng $1 lướt sóng vượt qua!'],
   [/^🦴 (.+) reaches the golden bone!$/, '🦴 $1 đã giành được khúc xương vàng!'],
@@ -582,12 +582,15 @@ function trTitle(title) {
   if (!title || curLang() !== 'vi') return title;
   return GAME_TITLES_VI[title] || title;
 }
+let _bIn = '', _bOut = '';
 function trBanner(text) {
   if (!text || curLang() !== 'vi') return text;
-  if (BANNER_EXACT_VI[text]) return BANNER_EXACT_VI[text];
+  if (text === _bIn) return _bOut;
+  _bIn = text;
+  if (BANNER_EXACT_VI[text]) return _bOut = BANNER_EXACT_VI[text];
   for (let i = 0; i < BANNER_PATTERNS_VI.length; i++) {
     const [re, rep] = BANNER_PATTERNS_VI[i];
-    if (re.test(text)) return text.replace(re, rep);
+    if (re.test(text)) return _bOut = text.replace(re, rep);
   }
-  return text;
+  return _bOut = text;
 }

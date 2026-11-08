@@ -80,39 +80,20 @@ const DECOR = (() => {
     g.globalCompositeOperation = 'source-over'; g.fillStyle = lin(0, floorY - 70, 0, floorY + 30, [[0, '#ffffff00'], [.6, '#ffffff22'], [1, '#ffffff00']]); g.fillRect(0, floorY - 70, W, 100);
     g.restore();
   }
+  let grainCv;
   function grain() {
-    const n = document.createElement('canvas'); n.width = n.height = 128; const c = n.getContext('2d'), d = c.createImageData(128, 128);
-    for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (Math.random() - .5) * 60; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 16; }
-    c.putImageData(d, 0, 0); g.save(); g.globalCompositeOperation = 'overlay'; g.fillStyle = g.createPattern(n, 'repeat'); g.fillRect(0, 0, W, H); g.restore();
+    if (!grainCv) {
+      grainCv = document.createElement('canvas'); grainCv.width = grainCv.height = 128;
+      const c = grainCv.getContext('2d'), d = c.createImageData(128, 128);
+      for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (Math.random() - .5) * 60; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 16; }
+      c.putImageData(d, 0, 0);
+    }
+    g.save(); g.globalCompositeOperation = 'overlay'; g.fillStyle = g.createPattern(grainCv, 'repeat'); g.fillRect(0, 0, W, H); g.restore();
   }
 
   // ---------- per-game decoration lists ----------
   const PARTY = ['#ff6f8f', '#ffd84a', '#7cd0ff', '#7cff9b', '#b48cff'];
   const GAME = {
-    g1: { floor: 250, fn() { bunting(240, 40, 1580, 60, 40, PARTY); flowerBed(30, 880, 1540, PARTY); [[580, 230], [1100, 232]].forEach(([x, y]) => pot(x, y, .7)); sign(1560, 250, '#ff6f8f', 'FINISH'); } },
-    g2: { floor: 300, fn() { pebbles(560, 560, 8); pebbles(1050, 600, 8); [[120, 600], [1480, 680], [700, 860], [940, 860]].forEach(([x, y]) => tuft(x, y, 1.6, '#3f8f3a')); flowerBed(460, 880, 240, ['#ff6fae', '#ffd34d']); flowerBed(980, 880, 240, ['#b48cff', '#ff9f43']); [[1150, 250, 40], [460, 250, 34]].forEach(([x, y, r]) => { ell(x, y, r, r * .5, '#5a3a2e'); ell(x, y - 4, r * .7, r * .3, '#ffd2a8'); }); } },
-    g3: { floor: 430, fn() { stringLights(0, 20, 1600, 30, 60, ['#ffd36b', '#c27cff', '#7cf7ff']); shelf(1000, 140, 220, [[30, '#ff6fae', 'jar'], [80, '#7cf7ff', 'ball'], [130, '#c27cff', 'jar'], [180, '#ffd84a', 'book']]); [[60, 450], [1540, 450]].forEach(([x, y]) => pot(x, y, .9, '#7d3cc4', '#4fae6a')); sparkles(40, [0, 0, 1600, 420], '#ffe6ff'); } },
-    g4: { floor: 470, fn() { coins(300, 470, 10); coins(1300, 470, 10); coins(800, 880, 14); [[90, 700], [1510, 700]].forEach(([x, y]) => lamp(x, y, '#ffb347', '#4a3a2c', 180)); cobweb(0, 0, 1.4, false); cobweb(1600, 0, 1.4, true); sparkles(30, [100, 380, 1400, 100], '#fff3a0'); } },
-    g5: { floor: 440, fn() { [[1300, 470], [1180, 470]].forEach(([x, y], i) => crate(x - 1000 + i * 80, y + 0, .7)); poster(1000, 130, 90, 120, '#7cd0ff', '#ffd84a'); poster(1110, 150, 90, 110, '#ff9f43', '#ffffff'); g.save(); g.fillStyle = '#f2c230'; for (let x = 0; x < W; x += 40) { g.fillRect(x, 880, 20, 20); } g.restore(); stringLights(0, 270, 1600, 270, 20, ['#ffffff', '#7cf7ff']); } },
-    g6: { floor: 560, fn() { stringLights(250, 40, 1350, 40, 50, ['#ffcf6b', '#b48cff']); cobweb(0, 0, 1.2, false); cobweb(1600, 0, 1.2, true); [[300, 700], [1300, 700]].forEach(([x, y]) => lamp(x, y, '#c9a0ff', '#2a1846', 120)); rug(800, 730, 260, 46, '#5a1f4a', '#c9a24a'); [[60, 900], [1540, 900]].forEach(([x, y]) => pot(x, y, .9, '#3a2a5a', '#5f8a6a')); } },
-    g7: { floor: 290, fn() { bunting(220, 230, 1420, 230, 30, PARTY); [[150, 640], [1490, 640], [700, 600], [940, 600]].forEach(([x, y]) => tuft(x, y, 1.5)); flowerBed(60, 560, 120, ['#ff6fae', '#ffd34d']); flowerBed(1400, 820, 160, ['#b48cff', '#ff9f43']); balloon(1530, 380, '#ff6f8f'); balloon(1570, 400, '#7cd0ff'); } },
-    g8: { floor: 700, fn() { bunting(0, 20, 1320, 30, 40, ['#ff5d8f', '#ffffff', '#ffd84a', '#7cf7ff']); [[60, 700], [1250, 760]].forEach(([x, y], i) => balloon(x + 40, y - 320, PARTY[i])); shelf(860, 640, 300, [[30, '#ff5d8f', 'jar'], [90, '#ffd84a', 'ball'], [150, '#7cf7ff', 'jar'], [210, '#7cff9b', 'ball'], [270, '#b48cff', 'jar']]); sparkles(40, [0, 0, 1600, 700], '#ffffff'); } },
-    g9: { floor: 450, fn() { stringLights(0, 150, 1600, 150, 50, ['#ffd84a', '#7cf7ff', '#ff9f43']); [[200, 640], [1450, 640]].forEach(([x, y]) => pot(x, y, .8)); sign(1520, 560, '#3fbf6a', 'FINISH'); pebbles(400, 640, 6); pebbles(1100, 640, 6); } },
-    g10: { floor: 800, fn() { [[260, 820], [1340, 820]].forEach(([x, y]) => lamp(x, y, '#ffcf6b', '#4a2e1e', 200)); sparkles(60, [300, 200, 1000, 600], '#fff3c0'); g.save(); g.globalAlpha = .15; g.fillStyle = '#c9a77a'; for (let i = 0; i < 12; i++) g.fillRect(380 + i * 70, 280 + (i % 3) * 120, 50, 3); g.restore(); } },
-    g11: { floor: 300, fn() { [[150, 300], [600, 300], [1100, 300]].forEach(([x, y]) => tuft(x, y, 1.6)); [[200, 820], [900, 820], [1300, 820]].forEach(([x, y]) => pebbles(x, y, 6)); sign(1520, 410, '#ff9f43', 'DELIVERY'); balloon(1560, 300, '#ff6f8f'); } },
-    g12: { floor: 480, fn() { stringLights(0, 120, 1600, 120, 30, ['#ffd36b', '#ffffff']); poster(60, 180, 100, 140, '#a3162e', '#ffd84a'); poster(1440, 180, 100, 140, '#3b6aa3', '#ffffff'); [[180, 880], [1420, 880]].forEach(([x, y]) => { ell(x, y, 60, 20, '#00000033'); }); } },
-    g13: { floor: 262, fn() { bunting(150, 255, 1440, 255, 20, ['#7cd0ff', '#ffffff', '#ff6f8f']); [[200, 870], [700, 880], [1200, 870]].forEach(([x, y]) => { ell(x, y, 50, 18, '#ffffff'); ell(x + 30, y - 6, 30, 14, '#eaf6ff'); }); sign(1520, 255, '#ff6f8f', 'FLAG'); sparkles(50, [0, 260, 1600, 600], '#ffffff'); } },
-    g14: { floor: 290, fn() { [[300, 860], [800, 870], [1300, 860]].forEach(([x, y]) => pebbles(x, y, 8, '#f6e2c0')); [[160, 600], [1500, 500]].forEach(([x, y]) => { for (let k = 0; k < 5; k++) { const a = k * TAU / 5; ell(x + Math.cos(a) * 14, y + Math.sin(a) * 14, 10, 6, '#ff9f8f'); } ell(x, y, 8, 8, '#ff6f6f'); }); bunting(1240, 380, 1600, 370, 30, PARTY); balloon(80, 360, '#7cd0ff'); } },
-    g15: { floor: 440, fn() { stringLights(0, 30, 1600, 40, 80, ['#ff6fae', '#7cf7ff', '#ffd84a', '#7cff9b']); stars(80, 400); [[100, 480], [1500, 480]].forEach(([x, y]) => { ell(x, y + 10, 50, 14, '#00000044'); ell(x, y, 40, 24, '#7cff9b', '#ffffff', 3); ell(x, y - 12, 20, 14, '#b4f0ff'); }); } },
-    g16: { floor: 330, fn() { stringLights(0, 30, 1600, 30, 40, ['#fff3a0', '#c9a0ff']); [[90, 320], [1510, 320]].forEach(([x, y]) => lamp(x, y, '#ffe0a0', '#5a3a2e', 120)); shelf(1080, 220, 260, [[30, '#ffb3d6', 'ball'], [90, '#7cd0ff', 'book'], [120, '#ffd84a', 'book'], [180, '#b48cff', 'jar']]); stars(30, 300); } },
-    g17: { floor: 400, fn() { bunting(0, 10, 1600, 10, 40, ['#ffb3d6', '#ffffff', '#ffd84a']); shelf(560, 300, 480, [[40, '#ffffff', 'jar'], [110, '#c96a4a', 'jar'], [180, '#ffffff', 'ball'], [260, '#ffd84a', 'jar'], [340, '#ff9fc4', 'ball'], [420, '#7cd0ff', 'jar']]); [[1300, 880], [300, 880]].forEach(([x, y]) => pot(x, y, .9)); } },
-    g18: { floor: 400, fn() { [[100, 460], [1500, 460]].forEach(([x, y]) => lamp(x, y, '#fff3a0', '#3d566e', 150)); [[700, 880], [1000, 880]].forEach(([x, y]) => tuft(x, y, 1.6)); sign(80, 880, '#3fbf6a', 'RECYCLE'); flowerBed(1200, 880, 300, ['#ffd34d', '#ff6fae']); } },
-    g19: { floor: 400, fn() { [[1450, 880], [150, 880]].forEach(([x, y]) => pot(x, y, .8)); poster(1260, 230, 90, 120, '#7cd0ff', '#ffffff'); sparkles(40, [0, 400, 1600, 500], '#ffffff'); stringLights(0, 20, 1200, 20, 30, ['#ffffff', '#7cd0ff']); } },
-    g20: { floor: 400, fn() { bunting(0, 20, 600, 20, 30, PARTY); bunting(1000, 20, 1600, 20, 30, PARTY); [[300, 880], [1250, 880]].forEach(([x, y]) => { ell(x, y, 26, 26, '#ff6f8f'); ell(x + 50, y + 4, 20, 20, '#7cd0ff'); }); [[60, 400], [1540, 400]].forEach(([x, y]) => pot(x, y, .8)); } },
-    g21: { floor: 380, fn() { stringLights(0, 120, 1600, 120, 30, ['#ffd84a', '#ff9fc4', '#ffffff']); [[100, 880], [1500, 880]].forEach(([x, y]) => lamp(x, y, '#ffd84a', '#3a2a5a', 220)); sparkles(40, [200, 120, 1200, 260], '#ffffff'); } },
-    g22: { floor: 440, fn() { stringLights(0, 200, 1600, 200, 40, ['#ff6fae', '#ffd84a', '#7cf7ff', '#7cff9b']); [[60, 440], [1540, 440]].forEach(([x, y]) => { for (let k = 0; k < 6; k++) ell(x + (k - 3) * 10, y - 10 - k * 4, 6, 3, '#ffd84a'); }); poster(1320, 230, 100, 120, '#ff6fae', '#ffd84a'); } },
-    g23: { floor: 250, fn() { [[300, 880], [900, 880], [1400, 880]].forEach(([x, y]) => pebbles(x, y, 6)); flowerBed(0, 250, 300, ['#ff9fc4', '#ffffff']); flowerBed(1200, 250, 300, ['#ffd34d', '#ffffff']); sparkles(30, [0, 260, 1600, 600], '#ffffff'); } },
-    g24: { floor: 760, fn() { bunting(1120, 100, 1450, 100, 30, ['#ff6f6f', '#ffffff', '#1c2550']); [[200, 760], [600, 760], [1000, 760]].forEach(([x, y]) => crate(x, y, .5)); coins(700, 880, 10); sparkles(40, [0, 300, 1100, 400], '#ffffff'); } },
     g25: { floor: 495, fn() { bunting(0, 10, 1250, 10, 40, ['#ff6f6f', '#ffd84a', '#7cff9b', '#7cd0ff', '#b48cff']); [[1500, 880], [1300, 880]].forEach(([x, y]) => pot(x, y, .8)); [[300, 880], [900, 880]].forEach(([x, y]) => tuft(x, y, 1.6)); } },
     g26: { floor: 700, fn() { stars(100, 700); [[100, 700], [1500, 700]].forEach(([x, y]) => lamp(x, y, '#5df2ff', '#23285e', 200)); sparkles(40, [0, 0, 1600, 700], '#c27cff'); } },
     g27: { floor: 290, fn() { bunting(80, 290, 1400, 290, 30, ['#ff6f6f', '#ffffff', '#7cd0ff', '#ffd84a']); [[1450, 880], [150, 880]].forEach(([x, y]) => { ell(x, y - 30, 40, 40, '#ff6f8f'); ell(x, y - 30, 18, 18, '#f2e6cf'); }); balloon(1500, 420, '#ffd84a'); } },
