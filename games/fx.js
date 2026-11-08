@@ -142,6 +142,56 @@ const FX = (() => {
     },
     halo(x, y, radius, color = '#ffd84a', alpha = .6) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = alpha; ctx.drawImage(glow(color), x - radius, y - radius, radius * 2, radius * 2); ctx.restore();
+    },
+    // deep background parallax layer (depth 0.72): soft diagonal light beams & drifting bokeh orbs
+    ambientBack(t, color = '#fff6c8') {
+      const c = race && race.cam, img = glow(color);
+      ctx.save();
+      if (c) ctx.translate(-(c.x - 800) * -.28 * .6, -(c.y - 450) * -.28 * .6);
+      ctx.globalCompositeOperation = 'lighter';
+      [[180, -30, .82, 680, 95], [1420, -30, 2.32, 620, 85]].forEach(([x, y, ang, len, w], idx) => {
+        ctx.save(); ctx.translate(x, y); ctx.rotate(ang + Math.sin(t * .4 + idx) * .03);
+        ctx.globalAlpha = .09 + .03 * Math.sin(t * .6 + idx);
+        const gr = ctx.createLinearGradient(0, 0, len, 0); gr.addColorStop(0, color); gr.addColorStop(1, color + '00');
+        ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(0, -w * .28); ctx.lineTo(len, -w); ctx.lineTo(len, w); ctx.lineTo(0, w * .28); ctx.closePath(); ctx.fill();
+        ctx.restore();
+      });
+      for (let i = 0; i < 12; i++) {
+        const x = ((i * 173 + t * (10 + (i % 4) * 4)) % 1760) - 80;
+        const y = 60 + ((i * 97) % 340) + Math.sin(t * .9 + i) * 14;
+        const r = 18 + (i % 4) * 8;
+        ctx.globalAlpha = .12 + .08 * Math.sin(t * 1.4 + i * 1.7);
+        ctx.drawImage(img, x - r, y - r, r * 2, r * 2);
+      }
+      ctx.restore();
+    },
+    // near-camera foreground parallax layer (depth 1.36): swaying framing foliage & foreground fireflies
+    ambientFront(t, color = '#ffd84a') {
+      const c = race && race.cam, img = glow(color);
+      ctx.save();
+      if (c) ctx.translate(-(c.x - 800) * .36 * .6, -(c.y - 450) * .36 * .6);
+      // subtle corner framing fronds at the bottom edges
+      [[-24, 912, 1], [1624, 912, -1]].forEach(([bx, by, dir], side) => {
+        for (let i = 0; i < 4; i++) {
+          const ang = (dir > 0 ? -.22 - i * .24 : -2.92 + i * .24) + Math.sin(t * 1.5 + i + side) * .05;
+          const len = 145 + (i % 2) * 28;
+          ctx.save(); ctx.translate(bx, by); ctx.rotate(ang);
+          ctx.fillStyle = i % 2 ? 'rgba(18,38,58,.42)' : 'rgba(28,58,78,.34)';
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(len * .5, -len * .24, len, 0); ctx.quadraticCurveTo(len * .5, len * .24, 0, 0); ctx.fill();
+          ctx.restore();
+        }
+      });
+      // foreground firefly twinkles
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 7; i++) {
+        const x = 90 + ((i * 251 + Math.sin(t * .5 + i) * 60) % 1420);
+        const y = 720 + ((i * 53) % 150) + Math.cos(t * 1.1 + i * 2) * 16;
+        const pulse = .3 + .3 * Math.sin(t * 2.8 + i * 1.9);
+        ctx.globalAlpha = pulse;
+        ctx.drawImage(img, x - 16, y - 16, 32, 32);
+        ctx.fillStyle = '#ffffff'; ctx.save(); ctx.translate(x, y); star(ctx, 4.5); ctx.restore();
+      }
+      ctx.restore();
     }
   };
 })();

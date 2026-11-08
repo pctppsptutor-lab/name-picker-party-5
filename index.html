@@ -781,14 +781,15 @@ function renderGeneric(g, now, t, dt) {
   if (painted && !IMG.bg && !g.bgLoading) g.bgLoading = loadImages(g.id, g.base, ['bg']);
   const base = painted && IMG.bg ? IMG.bg : BASES.get(g.id);
   if (base) ctx.drawImage(base, 0, 0, W, H);
+  FX.ambientBack(t, g.mote);
   FX.motes(t, g.mote);
   const sc = SCENES[g.id];
   if (sc) sc.back(t);
   if (race && race.phase === 'done' && race.winRays) FX.rays(race.winRays.x, race.winRays.y + 30, 340, t, g.rayColor);
   if (race) {
     if (race.phase === 'run') tickRace(dt); else race.now += dt;
-    g.render(race, t, dt); drawFx(race); if (sc) sc.front(t); hud(race, t, dt);
-  } else { g.idle(t); if (sc) sc.front(t); idleOverlay(g.title, t, g.titleY || 860); }
+    g.render(race, t, dt); drawFx(race); if (sc) sc.front(t); FX.ambientFront(t, g.rayColor || g.mote); hud(race, t, dt);
+  } else { g.idle(t); if (sc) sc.front(t); FX.ambientFront(t, g.rayColor || g.mote); idleOverlay(g.title, t, g.titleY || 860); }
 }
 // a name tag centred on cx
 function tagC(text, cx, y, lead) { drawTag(text, cx, y, lead, true); }
@@ -801,7 +802,10 @@ function contactShadow(x, y, w, a = .3) {
 }
 function charImg(av, pose, x, y, h, opt = {}) {
   const im = IMG['c' + av + '_' + pose] || IMG['c' + av + '_' + (opt.fallback || 'idle')]; if (!im) return 0;
-  const w = im.width * h / im.height, a = opt.alpha ?? 1;
+  let w = im.width * h / im.height;
+  const maxW = h * 1.15;
+  if (w > maxW) { h = h * (maxW / w); w = maxW; }
+  const a = opt.alpha ?? 1;
   if (opt.shadow !== false && a > .3) contactShadow(x, y - 2, Math.min(w, h * .7) * 1.05, .32 * a);
   ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); if (opt.rot) ctx.rotate(opt.rot); if (opt.flip) ctx.scale(-1, 1);
   if (a > .5 && !store.settings.calm) { ctx.shadowColor = 'rgba(20,20,60,.35)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4; }   // lifts the figure off the background
