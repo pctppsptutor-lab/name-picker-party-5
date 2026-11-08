@@ -1,4 +1,4 @@
-﻿// Game 28 â€” Broken Invisibility Cloak (following clues)
+// Game 28 — Broken Invisibility Cloak (following clues)
 // Ten students hide under invisibility cloaks. A scanner shows footprints, then a shadow, then something moving;
 // follow the chain of clues to find the one who is picked.
 // Twist: the first footprints lead to a potted plant wearing shoes; a hiccup makes the real cloak shimmer and its shadow points to the winner.
@@ -32,7 +32,7 @@
   GAME_IMPL.g28 = {
     id: 'g28', title: 'Broken Invisibility Cloak', base: 'assets/g28/', titleY: 260, paintedOk: false,
     assets: gAssets(['ready', 'gone', 'foot', 'shadow', 'hiccup', 'win'], ['p0', 'p10', 'p19']),
-    startBanner: 'ðŸ«¥ Everyone vanishes under their cloaksâ€¦', mote: '#e6d6ff', rayColor: '#e6ccff',
+    startBanner: '🫥 Everyone vanishes under their cloaks…', mote: '#e6d6ff', rayColor: '#e6ccff',
 
     setup(r) {
       const slots = spread(r.players.length);
@@ -42,16 +42,16 @@
 
     tick(r, t, te) {
       const f = activeFake(r, t), D = r.decoy, Wn = r.winner;
-      if (t > .9) cue('van', () => { SFX.sparkle(); r.banner = 'âœ¨ Poof! Everyone is invisibleâ€¦'; });
-      if (f && te < 0) cue('fk' + f.at, () => { SFX.tone(1100, .15, { type: 'square', vol: .04, to: 1500 }); r.banner = ['ðŸ‘£ Footprints lead to ', 'ðŸŒ‘ A shadow moves near ', 'ðŸ” Something wiggles by '][Math.floor(f.at) % 3] + f.p.name + 'â€¦'; });
+      if (t > .9) cue('van', () => { SFX.sparkle(); r.banner = '✨ Poof! Everyone is invisible…'; });
+      if (f && te < 0) cue('fk' + f.at, () => { SFX.tone(1100, .15, { type: 'square', vol: .04, to: 1500 }); r.banner = ['👣 Footprints lead to ', '🌑 A shadow moves near ', '🔍 Something wiggles by '][Math.floor(f.at) % 3] + f.p.name + '…'; });
       if (!r.plain) {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); r.banner = 'ðŸ‘£ The footprints stop at ' + D.name + 'â€¦'; });
-        if (te > .6) cue('b', () => { outcome('wrong_turn', D); SFX.sadTrombone(); r.banner = 'ðŸª´ It\'s a potted plant wearing shoes!'; });
-        if (te > 1.1) cue('c', () => { CAM.shake(r, 9); SFX.tone(400, .15, { type: 'square', vol: .1, to: 900 }); r.banner = 'ðŸ˜® *HIC!* A cloak shimmersâ€¦'; });
-        if (te > 1.7) cue('d', () => { outcome('selected', Wn); SFX.sparkle(); r.banner = 'ðŸŒ‘ â€¦its shadow points to ' + Wn.name + '!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); r.banner = '👣 The footprints stop at ' + D.name + '…'; });
+        if (te > .6) cue('b', () => { outcome('wrong_turn', D); SFX.sadTrombone(); r.banner = '🪴 It\'s a potted plant wearing shoes!'; });
+        if (te > 1.1) cue('c', () => { CAM.shake(r, 9); SFX.tone(400, .15, { type: 'square', vol: .1, to: 900 }); r.banner = '😮 *HIC!* A cloak shimmers…'; });
+        if (te > 1.7) cue('d', () => { outcome('selected', Wn); SFX.sparkle(); r.banner = '🌑 …its shadow points to ' + Wn.name + '!'; });
       } else {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = 'ðŸ‘£ Do the footprints end at ' + (D || Wn).name + '?'; });
-        if (te > 1.2) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = 'ðŸ‘£ â€¦no, they keep going to ' + Wn.name + '!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = '👣 Do the footprints end at ' + (D || Wn).name + '?'; });
+        if (te > 1.2) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = '👣 …no, they keep going to ' + Wn.name + '!'; });
       }
       if (te > 2.5) cue('rev', () => { SFX.ding(); FX.sparkle(Wn.sx, Wn.sy - 100, 26, ['#c27cff', '#7cf7ff']); });
     },
@@ -94,7 +94,7 @@
       drawImg('p19', MASCOT[0], MASCOT[1], 200);
     },
     onFinish(r) { FX.sparkle(r.winner.sx, r.winner.sy - 150, 40, ['#c27cff', '#7cf7ff', '#ffd84a']); },
-    winBanner: r => 'ðŸ«¥ Found you, ' + r.winner.name + '!',
+    winBanner: r => '🫥 Found you, ' + r.winner.name + '!',
     winPos: r => ({ x: r.winner.sx, y: r.winner.sy - 130 })
   };
 })();

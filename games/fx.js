@@ -1,4 +1,4 @@
-﻿// Procedural canvas effects shared by all games: particles, light rays, shock rings, lightning, beams and floating motes.
+// Procedural canvas effects shared by all games: particles, light rays, shock rings, lightning, beams and floating motes.
 // Everything is drawn with code, so it costs no download. Particles live on the current round (race.parts).
 const FX = (() => {
   const TAU = Math.PI * 2, rnd = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.floor(Math.random() * a.length)];
@@ -175,7 +175,7 @@ const CAM = (() => {
     follow(r, obj, z = 1.25) { const c = cam(r); c.follow = obj; c.tz = z; },
     release(r) { const c = cam(r); c.follow = null; c.tx = SW / 2; c.ty = SH / 2; c.tz = 1; },
     shake(r, px = 10) { if (store.settings.calm) return; const c = cam(r); c.shake = Math.max(c.shake, px); },
-    slow(r, seconds = .5, factor = .35) { if (store.settings.calm) return; r.slowUntil = performance.now() + seconds * 1000; r.slowF = factor; },
+    slow(r, seconds = .5, factor = .35) { r.slowUntil = performance.now() + seconds * 1000; r.slowF = factor; },
     // standard reactions for the shared outcome moments
     react(r, kind, who) {
       if (kind === 'almost_selected') this.follow(r, who, 1.12);

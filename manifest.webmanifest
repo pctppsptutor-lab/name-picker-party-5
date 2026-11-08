@@ -1,0 +1,18 @@
+{
+  "name": "Name Picker Party 5 — Classroom Student Caller",
+  "short_name": "Picker Vol 5",
+  "description": "Fun classroom mini-games for calling on students randomly, online or offline.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#1b2a6b",
+  "theme_color": "#1b2a6b",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

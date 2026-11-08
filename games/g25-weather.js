@@ -1,4 +1,4 @@
-﻿// Game 25 â€” The Weather Machine Has a Cold
+// Game 25 — The Weather Machine Has a Cold
 // Ten students stand under ten little clouds. The weather machine runs through sun, rain and snow,
 // then makes a rainbow over the one who is picked.
 // Twist: the first rainbow sneezes and turns into a scarf; a sunbeam bounces off a mirror onto the real winner.
@@ -18,28 +18,28 @@
   GAME_IMPL.g25 = {
     id: 'g25', title: 'Weather Machine Cold', base: 'assets/g25/', titleY: 380, paintedOk: false,
     assets: gAssets(['idle', 'ready', 'action', 'almost', 'fake', 'twist', 'win'], ['p0', 'p1', 'p2', 'p6', 'p10', 'p12', 'p13', 'p14', 'p16', 'p22', 'p26', 'p33', 'p39']),
-    startBanner: 'ðŸŒ¦ï¸ The weather machine sputters to lifeâ€¦', mote: '#eaf6ff', rayColor: '#fff2a8',
+    startBanner: '🌦️ The weather machine sputters to life…', mote: '#eaf6ff', rayColor: '#fff2a8',
 
     setup(r) {
       const slots = spread(r.players.length);
       r.players.forEach((p, i) => { [p.sx, p.sy] = SPOTS[slots[i]]; p.x = p.sx; p.y = p.sy - 90; });
-      r.ph = [r.TW * .3, r.TW * .6];                               // sun â†’ rain â†’ snow
+      r.ph = [r.TW * .3, r.TW * .6];                               // sun → rain → snow
       r.fakes = makeFakes(r, 1.2);
     },
     weather: (r, t) => t < r.ph[0] ? 'sun' : t < r.ph[1] ? 'rain' : 'snow',
 
     tick(r, t, te) {
       const f = activeFake(r, t), D = r.decoy, Wn = r.winner, w = this.weather(r, t);
-      if (te < 0) cue('w' + w, () => { SFX.swoosh(); r.banner = { sun: 'â˜€ï¸ Sunshine for everyone!', rain: 'ðŸŒ§ï¸ Uh-oh, here comes the rainâ€¦', snow: 'â„ï¸ Brrr â€” snow!' }[w]; });
-      if (f && te < 0) cue('fk' + f.at, () => { SFX.leader(); r.banner = 'ðŸŒˆ A rainbow peeks over ' + f.p.name + 'â€¦'; });
+      if (te < 0) cue('w' + w, () => { SFX.swoosh(); r.banner = { sun: '☀️ Sunshine for everyone!', rain: '🌧️ Uh-oh, here comes the rain…', snow: '❄️ Brrr — snow!' }[w]; });
+      if (f && te < 0) cue('fk' + f.at, () => { SFX.leader(); r.banner = '🌈 A rainbow peeks over ' + f.p.name + '…'; });
       if (!r.plain) {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); SFX.sparkle(); r.banner = 'ðŸŒˆ A rainbow over ' + D.name + '!'; });
-        if (te > .6) cue('b', () => { outcome('wrong_turn', D); CAM.shake(r, 10); SFX.noise(.25, { vol: .2, f: 500, to: 2000 }); SFX.noise(.5, { vol: .3, f: 2600, to: 400, delay: .25 }); r.banner = 'ðŸ¤§ ACHOO! The rainbow turns into a scarf!'; });
-        if (te > 1.2) cue('c', () => { SFX.tone(1400, .4, { vol: .08, to: 2000 }); r.banner = 'â˜€ï¸ A sunbeam bounces off the mirrorâ€¦'; });
-        if (te > 1.8) cue('d', () => { outcome('selected', Wn); SFX.sparkle(); r.banner = 'ðŸŒˆ â€¦and lands on ' + Wn.name + '!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); SFX.sparkle(); r.banner = '🌈 A rainbow over ' + D.name + '!'; });
+        if (te > .6) cue('b', () => { outcome('wrong_turn', D); CAM.shake(r, 10); SFX.noise(.25, { vol: .2, f: 500, to: 2000 }); SFX.noise(.5, { vol: .3, f: 2600, to: 400, delay: .25 }); r.banner = '🤧 ACHOO! The rainbow turns into a scarf!'; });
+        if (te > 1.2) cue('c', () => { SFX.tone(1400, .4, { vol: .08, to: 2000 }); r.banner = '☀️ A sunbeam bounces off the mirror…'; });
+        if (te > 1.8) cue('d', () => { outcome('selected', Wn); SFX.sparkle(); r.banner = '🌈 …and lands on ' + Wn.name + '!'; });
       } else {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = 'ðŸŒˆ Is the rainbow for ' + (D || Wn).name + '?'; });
-        if (te > 1.2) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = 'ðŸŒˆ â€¦it floats over to ' + Wn.name + '!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = '🌈 Is the rainbow for ' + (D || Wn).name + '?'; });
+        if (te > 1.2) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = '🌈 …it floats over to ' + Wn.name + '!'; });
       }
     },
 
@@ -74,7 +74,7 @@
       if (f && te < 0) { const [cx, cy] = cloudAt(f.p); drawImg('p33', cx, cy + 40, 140, { alpha: Math.sin(clamp((rt - f.at) / f.dur) * Math.PI) }); }
       if (D && te > 0 && te < (r.plain ? 1.4 : .6)) { const [cx, cy] = cloudAt(D); drawImg('p33', cx, cy + 40, 150); }
       if (!r.plain && D && te > .6 && !done) { const [cx, cy] = cloudAt(D); scarf(cx, cy + 60 + clamp(te - .6) * 60, clamp((te - .6) / .3), rt); }
-      if (!r.plain && te > 1.2 && te < 2.4 && !done) {                       // the sunbeam: machine â†’ mirror â†’ winner
+      if (!r.plain && te > 1.2 && te < 2.4 && !done) {                       // the sunbeam: machine → mirror → winner
         const k = clamp((te - 1.2) / .6), [wx, wy] = cloudAt(Wn);
         ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = '#fff3a0'; ctx.lineWidth = 10; ctx.globalAlpha = .7; ctx.lineCap = 'round';
         ctx.beginPath(); ctx.moveTo(MACH[0], MACH[1] - 120); ctx.lineTo(...MIRROR);
@@ -95,7 +95,7 @@
       SPOTS.forEach(([x, y], i) => { drawImg(i % 3 ? 'p26' : 'p22', x, y - 220, 90); charImg(i, 'idle', x, y, 150); });
     },
     onFinish(r) { FX.sparkle(r.winner.sx, r.winner.sy - 180, 40, ['#ff6f6f', '#ffd84a', '#7cff9b', '#7cd0ff', '#b48cff']); },
-    winBanner: r => 'ðŸŒˆ The rainbow belongs to ' + r.winner.name + '!',
+    winBanner: r => '🌈 The rainbow belongs to ' + r.winner.name + '!',
     winPos: r => ({ x: r.winner.sx, y: r.winner.sy - 130 })
   };
 })();

@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Name Picker Party</title>
+<title>Name Picker Party 5</title>
+<meta name="theme-color" content="#1b2a6b">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -46,12 +49,14 @@ button:disabled{cursor:not-allowed;opacity:.5}
 
 /* game picker */
 .tabs{display:flex;gap:12px;padding:6px 22px 16px;overflow-x:auto;scrollbar-width:thin}
-.tab{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-width:205px;border:0;border-radius:18px;padding:9px 14px 9px 9px;text-align:left;background:#ffffffeb;color:var(--ink);box-shadow:var(--lift)}
+.tab{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-width:190px;border:0;border-radius:18px;padding:9px 14px 9px 9px;text-align:left;background:#ffffffeb;color:var(--ink);box-shadow:var(--lift)}
 .tab .ico{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:24px;line-height:1.35;background:var(--soft)}
 .tab b{display:block;font-size:12px;line-height:1.35;letter-spacing:.8px;color:var(--muted)}
 .tab .nm{font-size:16px;font-weight:800;line-height:1.35}
 .tab.active{background:linear-gradient(135deg,#fff,#eef0ff);outline:3px solid var(--sun);box-shadow:0 5px 0 var(--sun-d),0 10px 20px rgba(0,0,0,.28)}
 .tab.active .ico{background:linear-gradient(135deg,#ffd84a,#ff9f43)}
+.tab.randTab.on{background:linear-gradient(135deg,#fff8db,#f3e8ff);outline:3px solid #ff9f43;box-shadow:0 5px 0 #c46a00,0 10px 20px rgba(0,0,0,.28)}
+.tab.randTab.on .ico{background:linear-gradient(135deg,#7c5cff,#d92b76);color:#fff}
 
 /* layout */
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;padding:0 22px 22px;align-items:start}
@@ -146,16 +151,17 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="logo">🎲</span><span>Name Picker Party<small>Random student caller · Games 01–06</small></span></div>
+  <div class="brand"><span class="logo">🥕</span><span>Name Picker Party 5<small id="brandSub">Six more mini-games for calling on students</small></span></div>
   <button id="classBtn" class="candy classBtn lockable">👩‍🏫 <span id="classLabel">Sample class · 10</span></button>
   <nav class="vols lockable" aria-label="Game volumes">
-    <a class="vol on" href="https://infinitegamingtv.github.io/goi-ten-vui-nhon/" aria-current="page">Vol 1</a>
+    <a class="vol" href="https://infinitegamingtv.github.io/goi-ten-vui-nhon/">Vol 1</a>
     <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-2/">Vol 2</a>
     <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-3/">Vol 3</a>
     <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-4/">Vol 4</a>
-    <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-5/">Vol 5</a>
+    <a class="vol on" href="https://infinitegamingtv.github.io/name-picker-party-5/" aria-current="page">Vol 5</a>
   </nav>
   <div class="spacer"></div>
+  <button id="langBtn" class="toolBtn" title="Switch interface and commentary to Vietnamese (L)">🇻🇳 Tiếng Việt</button>
   <button id="musicBtn" class="toolBtn" title="Toggle music (M)">🎵 Music</button>
   <button id="soundBtn" class="toolBtn" title="Toggle sound effects (S)">🔊 Sound</button>
   <button id="fsBtn" class="toolBtn" title="Toggle full screen (F)">⛶ Full screen</button>
@@ -168,7 +174,7 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
     <canvas id="stage" width="1920" height="1080" title="Click or press Space to pick a name"></canvas>
     <div id="result" class="result hidden" role="dialog" aria-modal="true" aria-labelledby="resName">
       <div class="card">
-        <span class="ribbon">🎉 And the pick is…</span>
+        <span class="ribbon" id="ribbonTxt">🎉 And the pick is…</span>
         <img id="resImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Selected student character">
         <div class="name" id="resName"></div>
         <div class="btns">
@@ -182,54 +188,53 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
   <aside class="side">
     <div>
       <button class="candy startBtn" id="startBtn">▶ Pick a name!</button>
-      <div class="hint">or press <kbd>Space</kbd> / click stage</div>
+      <div class="hint" id="hintTxt">or press <kbd>Space</kbd> / click stage</div>
     </div>
 
     <section class="panel lockable" aria-label="Settings">
-      <h3>⚙️ Settings</h3>
-      <div class="lab">Round length</div>
+      <h3 id="settingsHdr">⚙️ Settings</h3>
+      <div class="lab" id="roundLenLab">Round length</div>
       <div id="durChips" role="group" aria-label="Round length"></div>
-      <label class="check"><input type="checkbox" id="restChk"><span>Skip students already picked</span></label>
-      <label class="check"><input type="checkbox" id="calmChk"><span>Reduce motion<small>No screen shake, zoom or slow-mo</small></span></label>
-      <label class="check" id="paintedWrap" style="display:none"><input type="checkbox" id="paintedChk"><span>Painted backgrounds<small id="paintedSub">Code-drawn scene for this game</small></span></label>
-      <label class="lab" for="voiceSel" style="display:block">Read the name aloud</label>
+      <label class="check"><input type="checkbox" id="restChk"><span id="restTxt">Skip students already picked</span></label>
+      <label class="check"><input type="checkbox" id="calmChk"><span><span id="calmTxt">Reduce motion</span><small id="calmSub">No screen shake or zoom</small></span></label>
+      <label class="check" id="paintedWrap" style="display:none"><input type="checkbox" id="paintedChk"><span><span id="paintedTxt">Painted backgrounds</span><small id="paintedSub">Games 2–6, about 150 KB each</small></span></label>
+      <label class="lab" id="readAloudLab" for="voiceSel" style="display:block">Read the name aloud</label>
       <div class="row">
         <select id="voiceSel">
           <option value="en">English</option>
           <option value="vi">Vietnamese</option>
-          <option value="off">Off</option>
+          <option value="off">Sound only</option>
         </select>
-        <button class="smallBtn" id="testBtn">Test sound</button>
+        <button class="smallBtn" id="testBtn">🔔 Test</button>
       </div>
     </section>
 
     <section class="panel" aria-label="Picked students">
-      <h3>📋 Picked so far <span class="badge" id="calledCount"></span></h3>
+      <h3><span id="pickedHdrTxt">📋 Picked so far</span> <span class="badge" id="calledCount"></span></h3>
       <div class="status" id="status" aria-live="polite"></div>
       <div class="meter"><i id="meterBar"></i></div>
       <ol class="called" id="calledList"></ol>
       <button class="resetBtn lockable" id="resetBtn">↺ Start over</button>
     </section>
-    <div class="note">Every pick is truly random. The winner is chosen the moment you press Pick; the near-misses are just for suspense.</div>
   </aside>
 </main>
 
 <!-- Class list page -->
 <div id="classPage" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="classModalTitle">
   <div class="sheet">
-    <h2 id="classModalTitle">👩‍🏫 Class lists</h2>
+    <h2 id="classModalTitle">👩‍🏫 Your classes</h2>
     <div class="row" id="classTabs" role="tablist" aria-label="Classes"></div>
     <div class="grid" style="margin-top:14px">
       <div>
-        <label class="lab" for="className" style="display:block">Class name</label>
+        <label class="lab" id="classNameLab" for="className" style="display:block">Class name</label>
         <input type="text" id="className" maxlength="40">
-        <div class="lab">Call students by</div>
+        <div class="lab" id="pickByLab">Pick by</div>
         <div class="row">
-          <button class="smallBtn" data-mode="names">Name</button>
-          <button class="smallBtn" data-mode="numbers">Number</button>
+          <button class="smallBtn" id="modeNamesBtn" data-mode="names">Student names</button>
+          <button class="smallBtn" id="modeNumsBtn" data-mode="numbers">Numbers 1 … N</button>
         </div>
         <div id="numPane" class="hidden">
-          <label class="lab" for="numRange" style="display:block">Class size (calls “No. 1, No. 2…”)</label>
+          <label class="lab" id="numRangeLab" for="numRange" style="display:block">How many students?</label>
           <div class="numBox">
             <button class="smallBtn" id="numMinus" aria-label="Decrease class size">−</button>
             <input type="range" min="2" max="50" id="numRange">
@@ -238,35 +243,37 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
           </div>
         </div>
         <div id="namePane">
-          <label class="lab" for="namesBox" style="display:block">One name per line — short names read best</label>
-          <textarea id="namesBox" spellcheck="false" placeholder="Emma&#10;Liam&#10;Alex (girl)"></textarea>
+          <label class="lab" id="onePerLineLab" for="namesBox" style="display:block">One student per line</label>
+          <textarea id="namesBox" spellcheck="false" placeholder="Emma&#10;Liam&#10;Alex, F"></textarea>
           <div class="row" style="margin-top:8px">
-            <button class="smallBtn" id="importBtn">📄 Import .txt / .csv</button>
+            <button class="smallBtn" id="importBtn">📁 Import list</button>
             <input type="file" id="fileIn" accept=".txt,.csv,text/plain,text/csv" class="hidden">
-            <button class="smallBtn" id="sortBtn">A→Z Sort</button>
-            <button class="smallBtn" id="copyBtn">Copy</button>
+            <button class="smallBtn" id="sortBtn">↕ Sort A–Z</button>
+            <button class="smallBtn" id="copyBtn">📋 Copy</button>
             <button class="smallBtn danger" id="clearBtn">Clear all</button>
           </div>
+          <div class="note" id="namesHintTxt" style="margin-top:6px">Optional: write <code>, F</code> or <code>, M</code> after a name to set girl or boy.</div>
         </div>
       </div>
       <div id="genderPane">
-        <div class="lab">Characters — tap a name to switch boy/girl (✓ = set by hand)</div>
+        <div class="lab" id="genderLab">Girl 🎀 or Boy 🧢 — click a name to switch</div>
         <div class="gchips" id="gchips"></div>
-        <div class="note" style="margin-top:8px">Tip: add <b>(boy)</b> or <b>(girl)</b> after a name, e.g. <code>Alex (girl)</code>.</div>
+        <div class="note" id="genderNote" style="margin-top:8px">Common Vietnamese names are guessed for you. ✓ means you set it yourself.</div>
       </div>
     </div>
     <div class="backup">
-      <div><b>💾 Backup</b> — save every class and its picked list to a file, to move to another computer or in case the browser data gets cleared.</div>
+      <div id="backupTitle"><b>💾 Backup to your computer</b></div>
       <div class="row">
-        <button class="smallBtn add" id="exportBtn">⬇ Export backup</button>
-        <button class="smallBtn" id="importBackupBtn">⬆ Import backup</button>
+        <button class="smallBtn add" id="exportBtn">⬇ Save backup file</button>
+        <button class="smallBtn" id="importBackupBtn">⬆ Load backup file</button>
         <input type="file" id="backupIn" accept=".json,application/json" class="hidden">
       </div>
       <div class="note" id="backupNote"></div>
+      <div class="note" id="backupHint">Save a file to keep your classes safe if the browser is cleared, or to move them to another computer.</div>
     </div>
     <div class="sheetFoot">
       <button class="smallBtn danger" id="delClassBtn">Delete class</button>
-      <button class="candy done" id="doneBtn">Done</button>
+      <button class="candy done" id="doneBtn">✓ Save &amp; Play</button>
     </div>
   </div>
 </div>
@@ -284,15 +291,17 @@ function makeFakes(r, from) {
 }
 const activeFake = (r, t) => (r.fakes || []).find(f => t >= f.at && t < f.at + f.dur) || null;
 </script>
+<script src="games/i18n.js"></script>
 <script src="games/fx.js"></script>
 <script src="games/decor.js"></script>
 <script src="games/bases.js"></script>
 <script src="games/scenes.js"></script>
-<script src="games/g2-eggs.js"></script>
-<script src="games/g3-cauldron.js"></script>
-<script src="games/g4-dragon.js"></script>
-<script src="games/g5-robots.js"></script>
-<script src="games/g6-hotel.js"></script>
+<script src="games/g25-weather.js"></script>
+<script src="games/g26-time.js"></script>
+<script src="games/g27-puppies.js"></script>
+<script src="games/g28-cloak.js"></script>
+<script src="games/g29-vending.js"></script>
+<script src="games/g30-bunny.js"></script>
 <script>
 'use strict';
 /* ================= Storage ================= */
@@ -598,10 +607,22 @@ function drawTag(text, xRight, y, lead, centered = false) {
 let race = null;
 function makeIdle() {}
 
-function startRace() {
+function pickRandomGame() {
+  const ready = GAMES.filter(g => GAME_IMPL[g.id] && GAME_IMPL[g.id].ready);
+  const pool = ready.length > 1 ? ready.filter(g => g.id !== curGame()) : (ready.length ? ready : GAMES);
+  return pool[randInt(pool.length)].id;
+}
+
+function startRace(fromRandom) {
   if (race && race.phase !== 'done') return;
   const cls = activeClass(), all = roster(cls), pool = eligible(cls);
   if (!pool.length) return;
+  if (store.settings.randomGame && !fromRandom) {
+    const pick = pickRandomGame();
+    if (pick !== curGame()) activateGame(pick, true);
+    const impl = curImpl();
+    if (impl && !impl.ready) { impl.loading.then(() => startRace(true)); return; }
+  }
   hideResult();
   const T = store.settings.duration;
   const winnerStu = pool[randInt(pool.length)];
@@ -682,9 +703,10 @@ function frame(now) {
 function idleOverlay(title, t, y = 420) {
   const pool = eligible(activeClass()).length;
   banner(pool ? 'Press ▶ Pick a name! or Space' : 'Everyone has been picked! Press ↺ Start over', t);
+  const locTitle = trTitle(title);
   ctx.save(); ctx.font = '800 64px "Baloo 2","Segoe UI",sans-serif'; ctx.textAlign = 'center';
   ctx.lineWidth = 10; ctx.strokeStyle = '#1b3a5c'; ctx.fillStyle = '#fff';
-  ctx.strokeText(title, 800, y); ctx.fillText(title, 800, y); ctx.restore();
+  ctx.strokeText(locTitle, 800, y); ctx.fillText(locTitle, 800, y); ctx.restore();
 }
 
 function drawFx(r) {
@@ -727,7 +749,7 @@ function startGeneric(cls, T, winnerStu, racers) {
 function renderGeneric(g, now, t, dt) {
   if (!g.ready) {
     ctx.fillStyle = '#1d3557'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fff'; ctx.font = '700 44px "Baloo 2","Segoe UI",sans-serif';
-    ctx.textAlign = 'center'; ctx.fillText('Loading ' + g.title + '…', 800, 460); ctx.textAlign = 'left'; return;
+    ctx.textAlign = 'center'; ctx.fillText(L().loadingFmt(trTitle(g.title)), 800, 460); ctx.textAlign = 'left'; return;
   }
   // code-drawn base by default; the painted picture is optional and only downloaded when chosen
   const painted = store.settings.paintedBg;
@@ -773,13 +795,14 @@ function preloadGames() {
     g.loading.then(() => setTimeout(next, 300));
   })();
 }
-function activateGame(id) {
+function activateGame(id, keepRandom = false) {
   if (race && race.phase === 'run') return;
+  if (!keepRandom) store.settings.randomGame = false;
   store.settings.game5 = id; save();
   race = null; hideResult();
   const g = GAME_IMPL[id];
   IMG = IMGSETS[id] = IMGSETS[id] || {};
-  STINGS = loadStings('g25', 'assets/g25/');
+  STINGS = loadStings('g1', 'assets/duck-race/');
   if (g && !g.loading) g.loading = loadImages(id, g.base, g.assets).then(() => { g.ready = true; updateUI(); });
   (g ? g.loading : assetsReady).then(preloadGames);
   updateUI();
@@ -807,6 +830,7 @@ function plate(x, y, w, h) {
 }
 function banner(text, t) {
   if (!text) return;
+  text = trBanner(text);
   ctx.save(); ctx.font = '800 38px "Baloo 2","Segoe UI",sans-serif';
   const h = 84, icon = h * 200 / 192, w = Math.min(940, ctx.measureText(text).width + icon + 50), x = 790 - w / 2, y = 12;
   if (IMG.name_plate) plate(x, y, w, h);
@@ -854,8 +878,14 @@ const GAMES = [
   { id: 'g30', n: '30', name: 'Golden Carrot Bunny Dash', icon: '🥕' }
 ];
 document.getElementById('gameTabs').innerHTML = GAMES.map(g =>
-  `<button class="tab" data-game="${g.id}"><span class="ico">${g.icon}</span><span><b>GAME ${g.n}</b><span class="nm">${g.name}</span></span></button>`).join('');
-document.querySelectorAll('#gameTabs .tab').forEach(b => b.onclick = () => { if (b.dataset.game !== curGame()) activateGame(b.dataset.game); });
+  `<button class="tab" data-game="${g.id}"><span class="ico">${g.icon}</span><span><b>GAME ${g.n}</b><span class="nm">${g.name}</span></span></button>`).join('') +
+  `<button class="tab randTab" id="randTab"><span class="ico">🎲</span><span><b id="randTabHdr">RANDOM</b><span class="nm" id="randTabNm">Surprise Game</span></span></button>`;
+document.querySelectorAll('#gameTabs .tab[data-game]').forEach(b => b.onclick = () => activateGame(b.dataset.game, false));
+document.getElementById('randTab').onclick = () => {
+  if (race && race.phase === 'run') return;
+  store.settings.randomGame = !store.settings.randomGame;
+  save(); preloadGames(); updateUI();
+};
 
 const durChips = document.getElementById('durChips');
 [10, 15, 20, 30].forEach(s => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = s + 's'; b.dataset.s = s; b.onclick = () => { store.settings.duration = s; save(); updateUI(); }; durChips.appendChild(b); });
@@ -870,8 +900,16 @@ voiceSel.onchange = () => { store.settings.voice = voiceSel.value; save(); };
 document.getElementById('testBtn').onclick = () => {
   SFX.ding(); SFX.quack(.4); if (AUD.get() && !Music.mode) Music.play('idle');
   const v = store.settings.voice;
-  if (v === 'off') toast('Name reading is off — playing sound effects only');
+  if (v === 'off') toast(L().toastVoiceOff);
   else speak(v === 'vi' ? 'Xin chào cả lớp' : 'Hello everyone!');
+};
+const langBtn = document.getElementById('langBtn');
+langBtn.onclick = () => {
+  store.settings.lang = curLang() === 'vi' ? 'en' : 'vi';
+  if (store.settings.voice !== 'off') store.settings.voice = store.settings.lang;
+  save();
+  if (!page.classList.contains('hidden')) { renderClassPage(true); backupNote(); }
+  updateUI();
 };
 const soundBtn = document.getElementById('soundBtn');
 soundBtn.onclick = () => { store.settings.sound = !store.settings.sound; save(); updateUI(); };
@@ -889,39 +927,70 @@ const resetBtn = document.getElementById('resetBtn');
 let resetTimer = null;
 resetBtn.onclick = () => {
   if (!resetBtn.classList.contains('confirm')) {
-    resetBtn.classList.add('confirm'); resetBtn.textContent = 'Press again to confirm';
-    clearTimeout(resetTimer); resetTimer = setTimeout(() => { resetBtn.classList.remove('confirm'); resetBtn.textContent = '↺ Start over'; }, 3000);
+    resetBtn.classList.add('confirm'); resetBtn.textContent = L().confirmReset;
+    clearTimeout(resetTimer); resetTimer = setTimeout(() => { resetBtn.classList.remove('confirm'); resetBtn.textContent = L().startOver; }, 3000);
     return;
   }
-  clearTimeout(resetTimer); resetBtn.classList.remove('confirm'); resetBtn.textContent = '↺ Start over';
-  store.called[activeClass().id] = []; save(); if (race && race.phase === 'done') continueGame(); updateUI(); toast('Started over — everyone is back in');
+  clearTimeout(resetTimer); resetBtn.classList.remove('confirm'); resetBtn.textContent = L().startOver;
+  store.called[activeClass().id] = []; save(); if (race && race.phase === 'done') continueGame(); updateUI(); toast(L().toastReset);
 };
 
 function updateUI() {
+  const t = L();
+  document.documentElement.lang = curLang();
+  document.getElementById('brandSub').textContent = t.subMore;
+  langBtn.textContent = t.langToggle; langBtn.title = t.langTitle;
+  document.getElementById('fsBtn').textContent = t.fullscreen;
+  document.getElementById('ribbonTxt').textContent = t.ribbon;
+  document.getElementById('contBtn').textContent = t.nextRound;
+  document.getElementById('sayBtn').textContent = t.sayAgain;
+  document.getElementById('hintTxt').innerHTML = t.hintHtml;
+  document.getElementById('settingsHdr').textContent = t.settingsHdr;
+  document.getElementById('roundLenLab').textContent = t.roundLen;
+  document.getElementById('restTxt').textContent = t.skipPicked;
+  document.getElementById('calmTxt').textContent = t.reduceMotion;
+  document.getElementById('calmSub').textContent = t.reduceMotionSub;
+  document.getElementById('paintedTxt').textContent = t.paintedBg;
+  document.getElementById('readAloudLab').textContent = t.readAloud;
+  voiceSel.options[0].textContent = t.voiceEn;
+  voiceSel.options[1].textContent = t.voiceVi;
+  voiceSel.options[2].textContent = t.voiceOff;
+  document.getElementById('testBtn').textContent = t.testBtn;
+  document.getElementById('pickedHdrTxt').textContent = t.pickedHdr;
+  if (!resetBtn.classList.contains('confirm')) resetBtn.textContent = t.startOver;
+
   const cls = activeClass(), all = roster(cls), called = calledOf(cls), pool = eligible(cls);
   document.getElementById('classLabel').innerHTML = esc(cls.name) + ' <span class="pill">' + all.length + '</span>';
   [...durChips.children].forEach(b => b.classList.toggle('on', +b.dataset.s === store.settings.duration));
-  document.querySelectorAll('#gameTabs .tab').forEach(b => b.classList.toggle('active', b.dataset.game === curGame()));
+  document.querySelectorAll('#gameTabs .tab[data-game]').forEach((b, i) => {
+    b.classList.toggle('active', b.dataset.game === curGame());
+    b.querySelector('.nm').textContent = trTitle(GAMES[i].name);
+  });
+  const rt = document.getElementById('randTab');
+  rt.classList.toggle('on', !!store.settings.randomGame);
+  document.getElementById('randTabHdr').textContent = t.randomTabTitle;
+  document.getElementById('randTabNm').textContent = t.randomTabName;
+
   const impl = curImpl();
   const canPaint = !!(impl && impl.paintedOk !== false);
   paintedChk.checked = !!store.settings.paintedBg;
   paintedChk.disabled = !canPaint;
   document.getElementById('paintedWrap').style.opacity = canPaint ? '1' : '.55';
-  document.getElementById('paintedSub').textContent = canPaint ? 'Code-drawn scene for this game' : 'Code-drawn scene for this game';
+  document.getElementById('paintedSub').textContent = canPaint ? t.paintedSubCode : t.paintedSubCode;
   restChk.checked = store.settings.rest; calmChk.checked = !!store.settings.calm; voiceSel.value = store.settings.voice;
-  soundBtn.textContent = store.settings.sound ? '🔊 Sound' : '🔇 Sound'; soundBtn.classList.toggle('off', !store.settings.sound);
-  musicBtn.textContent = store.settings.music ? '🎵 Music' : '🔕 Music'; musicBtn.classList.toggle('off', !store.settings.music);
+  soundBtn.textContent = store.settings.sound ? t.soundOn : t.soundOff; soundBtn.classList.toggle('off', !store.settings.sound);
+  musicBtn.textContent = store.settings.music ? t.musicOn : t.musicOff; musicBtn.classList.toggle('off', !store.settings.music);
   const running = race && race.phase === 'run';
   startBtn.disabled = running || !pool.length || !!(impl && !impl.ready);
-  startBtn.textContent = running ? '⏳ Picking…' : '▶ Pick a name!';
+  startBtn.textContent = running ? t.pickingBtn : t.pickBtn;
   const st = document.getElementById('status');
-  if (!all.length) { st.textContent = 'No students yet — press the yellow class button to add names.'; st.className = 'status done'; }
-  else if (!pool.length) { st.textContent = 'Everyone has been picked! Press ↺ Start over.'; st.className = 'status done'; }
-  else { st.textContent = store.settings.rest ? `${pool.length} of ${all.length} still waiting` : 'Anyone can be picked again'; st.className = 'status'; }
+  if (!all.length) { st.textContent = t.noStudents; st.className = 'status done'; }
+  else if (!pool.length) { st.textContent = t.allPicked; st.className = 'status done'; }
+  else { st.textContent = store.settings.rest ? t.waitingFmt(pool.length, all.length) : t.anyoneAgain; st.className = 'status'; }
   document.getElementById('calledCount').textContent = called.length || '';
   document.getElementById('meterBar').style.transform = 'scaleX(' + (all.length ? Math.min(1, (all.length - pool.length) / all.length) : 0) + ')';
   const ol = document.getElementById('calledList');
-  ol.innerHTML = called.length ? called.map((n, i) => `<li><i>${i + 1}.</i>${esc(n)}</li>`).join('') : '<li class="empty">Nobody picked yet.</li>';
+  ol.innerHTML = called.length ? called.map((n, i) => `<li><i>${i + 1}.</i>${esc(n)}</li>`).join('') : `<li class="empty">${t.nobodyYet}</li>`;
   ol.scrollTop = ol.scrollHeight;
 }
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -947,7 +1016,7 @@ document.getElementById('doneBtn').onclick = closeClasses;
 const BACKUP_APP = 'goi-ten-vui-nhon';
 function backupNote() {
   const el = document.getElementById('backupNote');
-  el.textContent = store.lastBackup ? 'Last backup: ' + new Date(store.lastBackup).toLocaleString('en-GB') : 'No backup made on this computer yet.';
+  el.textContent = store.lastBackup ? L().lastBackupFmt(new Date(store.lastBackup).toLocaleString(curLang() === 'vi' ? 'vi-VN' : 'en-GB')) : L().noBackupYet;
 }
 document.getElementById('exportBtn').onclick = () => {
   const data = { app: BACKUP_APP, version: 1, savedAt: new Date().toISOString(), classes: draft, called: store.called, activeId: editId };
@@ -955,7 +1024,7 @@ document.getElementById('exportBtn').onclick = () => {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'name-picker-backup-' + new Date().toISOString().slice(0, 10) + '.json';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  store.lastBackup = Date.now(); save(); backupNote(); toast('Backup file saved');
+  store.lastBackup = Date.now(); save(); backupNote(); toast(L().toastBackupSaved);
 };
 document.getElementById('importBackupBtn').onclick = () => document.getElementById('backupIn').click();
 document.getElementById('backupIn').onchange = e => {
@@ -963,7 +1032,7 @@ document.getElementById('backupIn').onchange = e => {
   const rd = new FileReader();
   rd.onload = () => {
     let data; try { data = JSON.parse(rd.result); } catch (err) { data = null; }
-    if (!data || data.app !== BACKUP_APP || !Array.isArray(data.classes)) { toast('That file is not a Name Picker Party backup'); return; }
+    if (!data || data.app !== BACKUP_APP || !Array.isArray(data.classes)) { toast(L().toastBadBackup); return; }
     // keep only the fields we know, with safe types
     const clean = data.classes.filter(c => c && typeof c === 'object').map(c => ({
       id: typeof c.id === 'string' && c.id ? c.id.slice(0, 20) : uid(),
@@ -971,7 +1040,7 @@ document.getElementById('backupIn').onchange = e => {
       count: clamp(parseInt(c.count) || 30, 2, 50), text: String(c.text || '').slice(0, 20000),
       gender: Object.fromEntries(Object.entries(c.gender && typeof c.gender === 'object' ? c.gender : {}).filter(([, v]) => v === 'm' || v === 'f'))
     }));
-    if (!clean.length) { toast('The backup file has no classes in it'); return; }
+    if (!clean.length) { toast(L().toastEmptyBackup); return; }
     // classes with the same id are replaced, the rest are added
     for (const c of clean) {
       const i = draft.findIndex(x => x.id === c.id);
@@ -983,17 +1052,36 @@ document.getElementById('backupIn').onchange = e => {
     store.classes = JSON.parse(JSON.stringify(draft));
     store.activeId = editId;
     save(); renderClassPage(); updateUI();
-    toast('Imported ' + clean.length + ' class(es) from the backup');
+    toast(L().toastImportedBackup(clean.length));
   };
   rd.readAsText(f, 'utf-8');
 };
 const ed = () => draft.find(c => c.id === editId);
 function renderClassPage(keepText) {
-  const c = ed();
+  const c = ed(), t = L();
+  document.getElementById('classModalTitle').textContent = t.classesHdr;
+  document.getElementById('classNameLab').textContent = t.classNameLab;
+  document.getElementById('pickByLab').textContent = t.pickByLab;
+  document.getElementById('modeNamesBtn').textContent = t.modeNames;
+  document.getElementById('modeNumsBtn').textContent = t.modeNumbers;
+  document.getElementById('numRangeLab').textContent = t.howManyLab;
+  document.getElementById('onePerLineLab').textContent = t.onePerLineLab;
+  document.getElementById('importBtn').textContent = t.importList;
+  document.getElementById('sortBtn').textContent = t.sortAz;
+  document.getElementById('copyBtn').textContent = t.copyBtn;
+  document.getElementById('namesHintTxt').innerHTML = t.namesHintHtml;
+  document.getElementById('genderLab').textContent = t.genderLab;
+  document.getElementById('genderNote').textContent = t.genderNote;
+  document.getElementById('backupTitle').innerHTML = '<b>' + t.backupTitle + '</b>';
+  document.getElementById('exportBtn').textContent = t.saveBackup;
+  document.getElementById('importBackupBtn').textContent = t.loadBackup;
+  document.getElementById('backupHint').textContent = t.backupHint;
+  document.getElementById('doneBtn').textContent = t.doneSave;
+
   const tabs = document.getElementById('classTabs');
-  tabs.innerHTML = draft.map(x => `<button class="smallBtn ${x.id === editId ? 'on' : ''}" data-id="${x.id}">${esc(x.name || 'Untitled class')}</button>`).join('') + '<button class="smallBtn add" id="newClass">+ New class</button>';
+  tabs.innerHTML = draft.map(x => `<button class="smallBtn ${x.id === editId ? 'on' : ''}" data-id="${x.id}">${esc(x.name || t.untitledClass)}</button>`).join('') + `<button class="smallBtn add" id="newClass">${t.newClass}</button>`;
   tabs.querySelectorAll('[data-id]').forEach(b => b.onclick = () => { editId = b.dataset.id; renderClassPage(); });
-  document.getElementById('newClass').onclick = () => { const id = uid(); draft.push({ id, name: 'Class ' + (draft.length + 1), mode: 'names', count: 30, text: '', gender: {} }); editId = id; renderClassPage(); };
+  document.getElementById('newClass').onclick = () => { const id = uid(); draft.push({ id, name: (curLang() === 'vi' ? 'Lớp ' : 'Class ') + (draft.length + 1), mode: 'names', count: 30, text: '', gender: {} }); editId = id; renderClassPage(); };
   document.getElementById('className').value = c.name;
   document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === c.mode));
   document.getElementById('numPane').classList.toggle('hidden', c.mode !== 'numbers');
@@ -1001,17 +1089,17 @@ function renderClassPage(keepText) {
   document.getElementById('genderPane').classList.toggle('hidden', c.mode !== 'names');
   document.getElementById('numRange').value = c.count; document.getElementById('numVal').textContent = c.count;
   if (!keepText) document.getElementById('namesBox').value = c.text;
-  const del = document.getElementById('delClassBtn'); del.disabled = draft.length < 2; del.classList.remove('confirm'); del.textContent = 'Delete class';
-  const clr = document.getElementById('clearBtn'); clr.classList.remove('confirm'); clr.textContent = 'Clear all';
+  const del = document.getElementById('delClassBtn'); del.disabled = draft.length < 2; del.classList.remove('confirm'); del.textContent = t.deleteClass;
+  const clr = document.getElementById('clearBtn'); clr.classList.remove('confirm'); clr.textContent = t.clearAll;
   renderGender();
 }
 function renderGender() {
   const c = ed(); const list = roster(c);
   const box = document.getElementById('gchips');
-  box.innerHTML = list.length ? list.map((s, i) => `<button class="gchip ${s.gender === 'f' ? 'f' : ''}" data-i="${i}">${s.gender === 'f' ? '🎀' : '🧢'} ${esc(s.name)}${s.manual ? ' ✓' : ''}</button>`).join('') : '<span class="note">No names yet.</span>';
+  box.innerHTML = list.length ? list.map((s, i) => `<button class="gchip ${s.gender === 'f' ? 'f' : ''}" data-i="${i}">${s.gender === 'f' ? '🎀' : '🧢'} ${esc(s.name)}${s.manual ? ' ✓' : ''}</button>`).join('') : `<span class="note">${L().noNamesYet}</span>`;
   box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const s = list[+b.dataset.i]; c.gender[s.name] = s.gender === 'f' ? 'm' : 'f'; renderGender(); });
 }
-document.getElementById('className').oninput = e => { ed().name = e.target.value; const b = document.querySelector(`#classTabs [data-id="${editId}"]`); if (b) b.textContent = e.target.value || 'Untitled class'; };
+document.getElementById('className').oninput = e => { ed().name = e.target.value; const b = document.querySelector(`#classTabs [data-id="${editId}"]`); if (b) b.textContent = e.target.value || L().untitledClass; };
 document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { ed().mode = b.dataset.mode; renderClassPage(true); });
 const setCount = v => { ed().count = clamp(v, 2, 50); document.getElementById('numRange').value = ed().count; document.getElementById('numVal').textContent = ed().count; };
 document.getElementById('numRange').oninput = e => setCount(+e.target.value);
@@ -1026,7 +1114,7 @@ document.getElementById('fileIn').onchange = e => {
   rd.onload = () => {
     let rows = String(rd.result).replace(/^﻿/, '').split(/\r?\n/).map(l => l.split(/[,;\t]/)[0].replace(/^"|"$/g, '').trim()).filter(Boolean);
     if (rows.length && /^(stt|tên|ten|họ\s*(và)?\s*tên|ho\s*ten|name|full\s*name)$/i.test(rows[0])) rows.shift();
-    ed().text = rows.join('\n'); namesBox.value = ed().text; renderGender(); toast('Imported ' + rows.length + ' names');
+    ed().text = rows.join('\n'); namesBox.value = ed().text; renderGender(); toast(L().toastImportedNames(rows.length));
   };
   rd.readAsText(f, 'utf-8'); e.target.value = '';
 };
@@ -1037,17 +1125,17 @@ document.getElementById('sortBtn').onclick = () => {
   ed().text = namesBox.value = lines.join('\n'); renderGender();
 };
 document.getElementById('copyBtn').onclick = async () => {
-  try { await navigator.clipboard.writeText(namesBox.value); toast('List copied'); }
-  catch (e) { namesBox.select(); document.execCommand('copy'); toast('List copied'); }
+  try { await navigator.clipboard.writeText(namesBox.value); toast(L().toastCopied); }
+  catch (e) { namesBox.select(); document.execCommand('copy'); toast(L().toastCopied); }
 };
-function twoStep(btn, label, confirmLabel, act) {
+function twoStep(btn, getLabel, getConfirm, act) {
   btn.onclick = () => {
-    if (!btn.classList.contains('confirm')) { btn.classList.add('confirm'); btn.textContent = confirmLabel; setTimeout(() => { btn.classList.remove('confirm'); btn.textContent = label; }, 3000); return; }
-    btn.classList.remove('confirm'); btn.textContent = label; act();
+    if (!btn.classList.contains('confirm')) { btn.classList.add('confirm'); btn.textContent = getConfirm(); setTimeout(() => { btn.classList.remove('confirm'); btn.textContent = getLabel(); }, 3000); return; }
+    btn.classList.remove('confirm'); btn.textContent = getLabel(); act();
   };
 }
-twoStep(document.getElementById('clearBtn'), 'Clear all', 'Press again to clear', () => { ed().text = ''; ed().gender = {}; namesBox.value = ''; renderGender(); });
-twoStep(document.getElementById('delClassBtn'), 'Delete class', 'Press again to delete', () => {
+twoStep(document.getElementById('clearBtn'), () => L().clearAll, () => L().confirmClear, () => { ed().text = ''; ed().gender = {}; namesBox.value = ''; renderGender(); });
+twoStep(document.getElementById('delClassBtn'), () => L().deleteClass, () => L().confirmDelete, () => {
   if (draft.length < 2) return;
   draft = draft.filter(c => c.id !== editId); editId = draft[0].id; renderClassPage();
 });
@@ -1072,6 +1160,9 @@ document.addEventListener('keydown', e => {
   if (e.code === 'KeyF' && !e.ctrlKey && !e.metaKey && !e.altKey) {
     e.preventDefault(); document.getElementById('fsBtn').click(); return;
   }
+  if (e.code === 'KeyL' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault(); langBtn.click(); return;
+  }
   if (e.code === 'KeyM' && !e.ctrlKey && !e.metaKey && !e.altKey) {
     e.preventDefault(); musicBtn.click(); return;
   }
@@ -1088,8 +1179,12 @@ document.addEventListener('keydown', e => {
 /* ================= Boot ================= */
 updateUI();
 if (document.fonts) document.fonts.load('700 30px "Baloo 2"').catch(() => {});
-activateGame(GAME_IMPL[curGame()] ? curGame() : 'g25');
+activateGame(GAME_IMPL[curGame()] ? curGame() : 'g25', true);
+if (store.settings.randomGame) preloadGames();
 requestAnimationFrame(frame);
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
