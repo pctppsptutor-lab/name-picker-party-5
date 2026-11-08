@@ -72,15 +72,13 @@
         if (p === D && te > 0) pose = !r.plain && te > .5 ? 'tail' : 'swim';
         if (p === Wn && te > 2.9) pose = 'idle';
         if (pose === 'swim') FX.every(r, 'w' + p.ly, .25, () => FX.splash(x - 40, y + 4, 1));
-        if (p === D && !r.plain && te > .5) drawImg(FLOATS[2], x, y + 4, 110, { rot });
-        charImg(p.av, pose, x, y + 6, 88);
+        charImg(p.av, pose, x, y + 6, 88, { rot: p === D && !r.plain && te > .5 ? Math.sin(rt * 10) * .12 : 0 });
         tagC(p.name, x - 100, y - 14, (r.leader === p && te < 0) || (p === Wn && te > 1.6));
       }
-      // otter lifeguard
-      drawImg(te > .5 && te < 1.6 && !r.plain ? 'p27' : 'p13', 1500, 300, 150, { anchor: 'bottom', flip: te > 1.6 });
+      // otter lifeguard patrols along the poolside
+      drawImg(te > .5 && te < 1.6 && !r.plain ? 'p27' : 'p13', 1475 + Math.sin(rt * 1.6) * 35, 310 + Math.cos(rt * 1.3) * 70 - Math.abs(Math.sin(rt * 6)) * 14, 150, { anchor: 'bottom', flip: te > 1.6 || Math.cos(rt * 1.6) > 0 });
       if (done) {
         const k = clamp((rt - r.doneAt) / .4);
-        drawImg('p22', GOAL[0] + 100, GOAL[1] - 150, 70);
         charImg(Wn.av, 'win', GOAL[0], GOAL[1] + 20, 190 * (.6 + .4 * ease(k)));
         tagC(Wn.name, GOAL[0], GOAL[1] + 44, true);
       }
@@ -91,7 +89,7 @@
       ctx.save(); ctx.fillStyle = '#ffd84a'; roundRect(ctx, GOAL[0] - 80, GOAL[1] - 10, 160, 50, 14); ctx.fill(); ctx.restore();
       drawImg('p22', GOAL[0], GOAL[1] - 10, 90, { anchor: 'bottom' });
       for (let i = 0; i < 10; i++) charImg(i, 'swim', X0 + ((t * 40 + i * 97) % (X1 - X0)), laneY(i, 10) + 6, 88);
-      drawImg('p13', 1500, 300, 150, { anchor: 'bottom' });
+      drawImg('p13', 1475 + Math.sin(t * 1.5) * 35, 310 + Math.cos(t * 1.2) * 65 - Math.abs(Math.sin(t * 5.5)) * 12, 150, { anchor: 'bottom', flip: Math.cos(t * 1.5) > 0 });
     },
     onFinish() { FX.splash(GOAL[0], GOAL[1], 30); FX.sparkle(GOAL[0], GOAL[1] - 100, 30); },
     winBanner: r => '🦴 ' + r.winner.name + ' reaches the golden bone!',

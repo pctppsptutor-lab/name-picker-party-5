@@ -64,14 +64,13 @@
       const rt = r.now, te = rt - r.TW, done = r.phase === 'done', D = r.decoy, Wn = r.winner;
       drawImg(done || te > 2.9 ? 'p17' : 'p16', BASKET[0], BASKET[1] + 40, 140, { anchor: 'bottom' });
       // balloon carrot drifting up and the mole
-      if (!r.plain && D && te > .1 && !done) {
+      if (!r.plain && D && te > .6 && !done) {
         const [dx] = this.pos(r, D, rt), k = clamp((te - .6) / 2);
-        if (te < .6) drawImg('p25', dx + 40, D.ly - 60, 60); else balloon(dx + 40 + k * 120, D.ly - 60 - k * 700, rt);
+        balloon(dx + 40 + k * 120, D.ly - 60 - k * 700, rt);
       }
       if (te > (r.plain ? .8 : 1.1) && !done) {
         const [wx] = this.pos(r, Wn, r.TW + (r.plain ? 1.1 : 1.8)), k = clamp((te - 1.1) / .3);
         drawImg(['p11', 'p8', 'p9', 'p10'][Math.min(3, Math.floor(k * 4))], wx + 50, Wn.ly + 10, 90, { anchor: 'bottom' });
-        if (te > 1.5 && te < (r.plain ? 1.1 : 1.8) + .1) drawImg('p25', wx + 40, Wn.ly - 60 - (te - 1.5) * 20, 70);
       }
       const order = [...r.players].sort((a, b) => a.ly - b.ly);
       for (const p of order) {
@@ -82,13 +81,12 @@
         if (p === D && te > 0) pose = !r.plain && te > .6 ? 'balloon' : 'patch';
         if (p === Wn && te > (r.plain ? 1.1 : 1.8)) pose = 'mole';
         charImg(p.av, pose, x, y + 8, 92);
-        if (p === Wn && te > (r.plain ? 1.1 : 1.8)) drawImg('p25', x + 34, y - 50, 54);
         tagC(p.name, x - 100, y - 14, (r.leader === p && te < 0) || (p === Wn && te > 1.6));
       }
-      // king bunny referee
-      let kp = 'p0';
+      // king bunny referee hops along the garden sideline
+      let kp = Math.floor(rt * 3) % 2 ? 'p0' : 'p3';
       if (rt < 1) kp = 'p3'; else if (!r.plain && te > .6 && te < 1.6) kp = 'p6'; else if (done) kp = 'p5';
-      drawImg(kp, 1500, 300, 130, { anchor: 'bottom' });
+      drawImg(kp, 1470 + Math.sin(rt * 1.7) * 45, 310 + Math.cos(rt * 1.4) * 60 - Math.abs(Math.sin(rt * 6.5)) * 20, 130, { anchor: 'bottom', flip: Math.cos(rt * 1.7) > 0 });
       if (done) {
         const k = clamp((rt - r.doneAt) / .4);
         drawImg('p48', BASKET[0] - 60, BASKET[1] - 80, 260, { alpha: .7 });
@@ -100,7 +98,7 @@
     idle(t) {
       drawImg('p16', BASKET[0], BASKET[1] + 40, 140, { anchor: 'bottom' });
       for (let i = 0; i < 10; i++) charImg(i, 'bound', X0 + ((t * 45 + i * 101) % (X1 - X0)), laneY(i, 10) - Math.abs(Math.sin(t * 8 + i)) * 18 + 8, 92);
-      drawImg('p0', 1500, 300, 130, { anchor: 'bottom' });
+      drawImg(Math.floor(t * 2.5) % 2 ? 'p0' : 'p3', 1470 + Math.sin(t * 1.6) * 45, 310 + Math.cos(t * 1.3) * 55 - Math.abs(Math.sin(t * 6)) * 18, 130, { anchor: 'bottom', flip: Math.cos(t * 1.6) > 0 });
     },
     onFinish() { FX.sparkle(BASKET[0] - 60, BASKET[1] - 100, 36, ['#ffd84a', '#ff9f43', '#ffffff']); },
     winBanner: r => '🥕 ' + r.winner.name + ' brings home the golden carrot!',

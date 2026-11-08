@@ -60,7 +60,7 @@
     render(r, t) {
       const rt = r.now, te = rt - r.TW, done = r.phase === 'done', f = activeFake(r, rt), D = r.decoy, Wn = r.winner;
       const lay = te < 0 ? layout(r, rt) : r.final, memOpen = clamp((rt - .6) / .3) * (1 - clamp((rt - .6 - r.M) / .3));
-      drawImg('q0', MACH[0], MACH[1], 200);
+      drawImg('q0', MACH[0] + Math.sin(rt * 2.4) * 16, MACH[1] - Math.abs(Math.sin(rt * 6)) * 10, 200, { rot: Math.sin(rt * 8) * .02 });
       for (const p of r.players) {
         const { x, y } = lay.get(p); p.x = x; p.y = y;
         let open = memOpen, glow = false;

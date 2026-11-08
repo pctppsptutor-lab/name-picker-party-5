@@ -77,9 +77,10 @@
         const k = ease(clamp((te - 1.7) / .5)); ctx.beginPath(); ctx.moveTo(Wn.sx - 30, Wn.sy); ctx.lineTo(Wn.sx + 30, Wn.sy); ctx.lineTo(lerp(Wn.sx, START[0], k * .5) + 20, lerp(Wn.sy, START[1], k * .5)); ctx.lineTo(lerp(Wn.sx, START[0], k * .5) - 20, lerp(Wn.sy, START[1], k * .5)); ctx.closePath(); ctx.fill(); ctx.restore();
       }
       if (r.plain && te > 1.2 && !done) prints([Wn.sx, Wn.sy], clamp((te - 1.2) / .6));
-      // chameleon wizard with a scanner orb
-      drawImg('p19', MASCOT[0], MASCOT[1], 200);
-      drawImg('p10', MASCOT[0] - 70, MASCOT[1] - 160, 80, { alpha: .7 + .3 * Math.sin(rt * 5) });
+      // chameleon wizard patrols with his scanner orb
+      const mx = MASCOT[0] - 35 + Math.sin(rt * 1.4) * 55, my = MASCOT[1] + Math.cos(rt * 1.8) * 75 - Math.abs(Math.sin(rt * 5.5)) * 12;
+      drawImg('p19', mx, my, 200, { flip: Math.cos(rt * 1.4) > 0 });
+      drawImg('p10', mx - 70, my - 160 + Math.sin(rt * 4) * 10, 80, { alpha: .7 + .3 * Math.sin(rt * 5) });
       Wn.x = Wn.sx; Wn.y = Wn.sy - 90;
       if (done) {
         const k = clamp((rt - r.doneAt) / .4);
@@ -91,7 +92,9 @@
 
     idle(t) {
       SPOTS.forEach(([x, y], i) => charImg(i, Math.sin(t + i) > 0 ? 'ready' : 'gone', x, y, 150, { alpha: .4 + .6 * Math.abs(Math.sin(t * .6 + i)) }));
-      drawImg('p19', MASCOT[0], MASCOT[1], 200);
+      const mx = MASCOT[0] - 35 + Math.sin(t * 1.3) * 55, my = MASCOT[1] + Math.cos(t * 1.7) * 70 - Math.abs(Math.sin(t * 5)) * 10;
+      drawImg('p19', mx, my, 200, { flip: Math.cos(t * 1.3) > 0 });
+      drawImg('p10', mx - 70, my - 160 + Math.sin(t * 4) * 10, 80, { alpha: .8 });
     },
     onFinish(r) { FX.sparkle(r.winner.sx, r.winner.sy - 150, 40, ['#c27cff', '#7cf7ff', '#ffd84a']); },
     winBanner: r => '🫥 Found you, ' + r.winner.name + '!',

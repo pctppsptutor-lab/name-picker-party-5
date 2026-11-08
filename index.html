@@ -718,8 +718,18 @@ function frame(now) {
 
 function idleOverlay(title, t, y = 420) {
   banner(hasPool ? 'Press ▶ Pick a name! or Space' : 'Everyone has been picked! Press ↺ Start over', t);
-  const locTitle = trTitle(title);
-  ctx.save(); ctx.font = '800 64px "Baloo 2","Segoe UI",sans-serif'; ctx.textAlign = 'center';
+  const locTitle = trTitle(title), rule = typeof trRule === 'function' ? trRule(title) : '';
+  ctx.save();
+  if (rule) {
+    const rTxt = (L().rulePrefix || '🎯 ') + rule;
+    ctx.font = '700 22px "Baloo 2","Segoe UI",sans-serif';
+    const rw = Math.min(1180, ctx.measureText(rTxt).width + 44), rh = 40;
+    ctx.fillStyle = 'rgba(15,23,42,.86)'; ctx.strokeStyle = 'rgba(56,189,248,.85)'; ctx.lineWidth = 2.5;
+    roundRect(ctx, 790 - rw / 2, 102, rw, rh, 20); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f8fafc'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(rTxt, 790, 123, rw - 28);
+  }
+  ctx.font = '800 64px "Baloo 2","Segoe UI",sans-serif'; ctx.textAlign = 'center';
   ctx.lineWidth = 10; ctx.strokeStyle = '#0f172a'; ctx.fillStyle = '#fff';
   ctx.strokeText(locTitle, 800, y); ctx.fillText(locTitle, 800, y);
   if (hasPool) {
@@ -739,10 +749,30 @@ function drawFx(r) {
   (r.fx || []).forEach(f => { const k = (rt - f.t0) / f.dur; if (k >= 0 && k < 1 && f.atlas) drawBurst(f, k); else if (k >= 0 && k < 1) drawImg(f.img, f.x, f.y, f.w * (.6 + .4 * k), { alpha: 1 - k, anchor: 'bottom', rot: f.rot || 0 }); });
   if (r.fx) r.fx = r.fx.filter(f => rt - f.t0 < f.dur);
 }
+function phaseHud(r) {
+  const phs = L().phases; if (!phs) return;
+  const te = r.now - r.TW, step = r.phase === 'done' || te >= 1.35 ? 2 : te >= 0 ? 1 : 0;
+  const cols = ['#38bdf8', '#fbbf24', '#34d399'];
+  ctx.save(); ctx.font = '700 18px "Baloo 2","Segoe UI",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const ws = phs.map(s => ctx.measureText(s).width + 28), gap = 10, total = ws.reduce((a, b) => a + b, 0) + gap * 2;
+  let x = 790 - total / 2; const y = 102, h = 32;
+  for (let i = 0; i < 3; i++) {
+    const on = i === step, done = i < step, w = ws[i];
+    ctx.fillStyle = on ? cols[i] : done ? 'rgba(15,23,42,.82)' : 'rgba(15,23,42,.62)';
+    ctx.strokeStyle = on ? '#ffffff' : done ? cols[i] : 'rgba(255,255,255,.25)';
+    ctx.lineWidth = on ? 2.5 : 1.5;
+    roundRect(ctx, x, y, w, h, 16); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = on ? '#0f172a' : done ? cols[i] : 'rgba(248,250,252,.72)';
+    ctx.fillText(phs[i], x + w / 2, y + h / 2 + 1);
+    x += w + gap;
+  }
+  ctx.restore();
+}
 function hud(r, t, dt) {
   FX.draw(r, dt);
   CAM.end();
   banner(r.banner, t);
+  phaseHud(r);
   if (r.phase !== 'done') timerChip(Math.max(0, Math.ceil(r.T - r.now)));
   r.confetti.forEach(c => { c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.vx *= .99; c.r += c.vr * dt;
     ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.r); ctx.fillStyle = c.c; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });

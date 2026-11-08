@@ -79,7 +79,8 @@
     render(r, t) {
       const rt = r.now, te = rt - r.TW, done = r.phase === 'done', D = r.decoy, Wn = r.winner;
       const stuck = !r.plain && te > .4 && te < 1.4;
-      drawImg(done ? 'p0' : te > .4 && te < 1.4 && !r.plain ? 'p1' : 'p0', MACH[0], MACH[1] + 120, 260);
+      const mHop = Math.abs(Math.sin(rt * 9)) * 10;
+      drawImg(done ? 'p0' : te > .4 && te < 1.4 && !r.plain ? 'p1' : 'p0', MACH[0] + Math.sin(rt * 3) * 12, MACH[1] + 120 - mHop, 260, { rot: Math.sin(rt * 14) * .025 });
       contraption(rt, stuck ? Math.sin(rt * 20) * .05 : Math.sin(rt * 2) * .15, !r.plain && te > 1 ? Math.min(1, (te - 1) * 3) : 0);
       for (const p of r.players) {
         const [x, y] = TRAYS[p.tray], lit = (p === Wn && te > 2.9) || done;
@@ -91,7 +92,8 @@
       for (const run of r.runs) { const k = (rt - run.at) / run.dur; if (k >= 0 && k <= 1) drawImg(run.cap, ...along(toTray(run.to), k), 36); }
       const b = !done && this.ball(r, rt);
       if (b) { FX.halo(b[0], b[1], 30, '#ffd84a', .6); drawImg('p10', b[0], b[1], 44); }
-      if (!r.plain && te > .7 && te < 1.6 && !done) { const k = ease(clamp((te - .7) / .3)); can(lerp(1050, LEVER[0] + 50, k), LEVER[1] + 10, rt, true); }
+      if (!r.plain && te > .7 && te < 1.6 && !done) { const k = ease(clamp((te - .7) / .3)); can(lerp(1020, LEVER[0] + 50, k), LEVER[1] + 10, rt, true); }
+      else if (!done) can(980 + Math.sin(rt * 2) * 55, LEVER[1] + 10, rt, true);
       for (const p of r.players) {
         if (done && p === Wn) continue;
         let pose = 'coin';
@@ -111,8 +113,9 @@
     },
 
     idle(t) {
-      drawImg('p0', MACH[0], MACH[1] + 120, 260);
+      drawImg('p0', MACH[0] + Math.sin(t * 2.5) * 10, MACH[1] + 120 - Math.abs(Math.sin(t * 8)) * 8, 260, { rot: Math.sin(t * 12) * .02 });
       contraption(t, Math.sin(t * 2) * .15, 0);
+      can(980 + Math.sin(t * 2) * 55, LEVER[1] + 10, t, true);
       TRAYS.forEach(([x, y]) => { ctx.save(); ctx.fillStyle = '#3d566e'; roundRect(ctx, x - 60, y + 10, 120, 24, 8); ctx.fill(); ctx.restore(); });
       const k = (t * .4) % 1; drawImg(CAPS[Math.floor(t * .4) % 4], ...along(toTray(Math.floor(t * .4) % 10), k), 36);
       KIDS.forEach(([x, y], i) => charImg(i, 'coin', x, y, 120));

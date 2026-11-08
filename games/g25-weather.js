@@ -45,15 +45,16 @@
 
     render(r, t) {
       const rt = r.now, te = rt - r.TW, done = r.phase === 'done', f = activeFake(r, rt), D = r.decoy, Wn = r.winner, w = this.weather(r, rt);
-      // the machine and its sneezy cloud mascot
+      // the machine chugs and its sneezy cloud mascot floats across the sky
       let mp = 'p12';
       if (te < 0) mp = w === 'sun' ? 'p12' : w === 'rain' ? 'p13' : 'p14';
       if (done) mp = 'p16';
-      drawImg(mp, MACH[0], MACH[1], 220);
+      const mx = MACH[0] + Math.sin(rt * 3) * 18, my = MACH[1] - Math.abs(Math.sin(rt * 8)) * 10;
+      drawImg(mp, mx, my, 220, { rot: Math.sin(rt * 10) * .025 });
       let cp = 'p1';
       if (!r.plain && te > .3 && te < 1.2) cp = te < .6 ? 'p6' : 'p2';
       if (done) cp = 'p10'; else if (te < 0 && w === 'snow') cp = 'p0';
-      drawImg(cp, MACH[0], MACH[1] - 190, 150);
+      drawImg(cp, MACH[0] - 80 + Math.sin(rt * 1.5) * 140, MACH[1] - 190 + Math.sin(rt * 3.5) * 18, 150, { flip: Math.cos(rt * 1.5) > 0 });
       drawImg('p39', ...MIRROR, 70, { alpha: !r.plain && te > 1.2 && te < 2.4 ? 1 : .5 });
       for (const p of r.players) {
         const [cx, cy] = cloudAt(p);
@@ -91,7 +92,8 @@
     },
 
     idle(t) {
-      drawImg('p12', MACH[0], MACH[1], 220); drawImg('p1', MACH[0], MACH[1] - 190, 150);
+      drawImg('p12', MACH[0] + Math.sin(t * 2.5) * 16, MACH[1] - Math.abs(Math.sin(t * 7)) * 8, 220, { rot: Math.sin(t * 8) * .02 });
+      drawImg('p1', MACH[0] - 80 + Math.sin(t * 1.4) * 140, MACH[1] - 190 + Math.sin(t * 3.2) * 16, 150, { flip: Math.cos(t * 1.4) > 0 });
       SPOTS.forEach(([x, y], i) => { drawImg(i % 3 ? 'p26' : 'p22', x, y - 220, 90); charImg(i, 'idle', x, y, 150); });
     },
     onFinish(r) { FX.sparkle(r.winner.sx, r.winner.sy - 180, 40, ['#ff6f6f', '#ffd84a', '#7cff9b', '#7cd0ff', '#b48cff']); },

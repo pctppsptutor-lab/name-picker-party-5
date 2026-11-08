@@ -32,6 +32,73 @@ const GAME_TITLES_VI = {
   'Golden Carrot Bunny Dash': 'Thỏ Đua Cà Rốt Vàng'
 };
 
+const GAME_RULES = {
+  en: {
+    'Duck Slide Race': 'Ducks race to the GOLD buoy — watch out for whirlpools, waves & fake red buoys!',
+    'Mischievous Dino Eggs': '10 dino eggs wobble & swap — the first hatch is a rubber chicken, then Mama Dino picks the real egg!',
+    'Rebellious Cauldron': '10 magic orbs swirl around the cauldron — the frog zaps the real orb onto the winner\'s podium!',
+    'Dragon Treasure Guard': 'Chests shuffle while the dragon patrols — the first chest has a rubber duck, then the dragon sneezes out the real treasure!',
+    'Faulty Robot Factory': 'Robots roll down the conveyor — after a wrong stamp, the belt reverses to charge the real winner!',
+    'Haunted Hotel Lift': 'Remember each room\'s symbol! Follow the footprints past the ghost\'s trick to the real door!',
+    'Sneezing Flower Bee': 'The bee visits flowers in the garden — a sneeze blows it right onto the winning gardener\'s flower!',
+    'Candy Tornado': 'Golden candy rolls down the chutes — the cat pulls the switch so it lands in the winner\'s jar!',
+    'Hamster Turbo Wheels': 'Hamsters spin to power up 3 lights — a sunflower seed flips the switch to boost the real winner!',
+    'The Shape-Shifting Book': 'Memorize each student\'s symbol before the pages shuffle — the glowing bookmark reveals the winner!',
+    'Capybara Melon Delivery': 'Capybaras swim their melons to the gold ring — the current shifts to carry the real winner in!',
+    'Popcorn Cinema': 'Shake popcorn on the beat & FREEZE when music stops — the bonus beat spotlights the true winner!',
+    'Penguin Overslide': 'Penguins belly-slide toward the icy target — the one who stops closest without sliding off wins!',
+    'Secret Shell Swap': 'Spot the pearl before the 10 shells shuffle — the hermit crab points out the real pearl\'s owner!',
+    'Alien Costume Party': 'The UFO beam scans the dancers — after a shrink-ray mix-up, the disco ball picks the real winner!',
+    'Oversleeping Monsters': '3 alarm clocks ring! Sleepy pillows fool the first check, then the real wide-awake student wins!',
+    'Cat Cafe Mix-Up': 'Match each cake under its dome — the cat manager catches the runaway tray to reveal the winner!',
+    'Recycling Truck Mix-Up': 'Match paper, plastic & metal to the right bin — the truck scanner locks onto the real recycler!',
+    'Sock-Eating Washer': 'Socks spin inside the washer — the first match is a puppet, then the washer coughs up the winning pair!',
+    'Mystery Box Cats': 'Cats zoom around and dive into boxes when the bell rings — follow the laser dot to the winning box!',
+    'Toilet Paper Mummy': '3 fan levels unwrap the paper mummies — the rolling mascot pulls the last strip to reveal the winner!',
+    'Off-Beat Disco Chickens': 'Copy the DJ chicken\'s moves and FREEZE — the replay spotlight lands on the student with the perfect pose!',
+    'Frog Lily Pad Jump': 'Frogs hop across lily pads toward the golden pad — the dragonfly shows the real pad after the turtle swims off!',
+    'Pirate Parcel Mix-Up': 'The foam cannon fires through barrels, bridge & wheel — the parrot swings the bridge to open the winning parcel!',
+    'Weather Machine Cold': 'Clouds cycle through sun, rain & snow — a sunbeam bounces off the mirror to crown the winner with a rainbow!',
+    'Time Machine Mix-Up': 'Memorize the era symbols before portals swap — the dino robot opens the portal that brings the winner back!',
+    'Puppy Pool Float Race': 'Puppies paddle past hurdles toward the golden bone — the float gate swings open for the winning puppy!',
+    'Broken Invisibility Cloak': 'Students vanish under cloaks — follow the footprints, hiccup & shadow to spot the real winner!',
+    'Stubborn Vending Machine': 'A golden capsule rolls down the coil & seesaw — the walking can kicks the lever into the winner\'s tray!',
+    'Golden Carrot Bunny Dash': 'Bunnies race through the garden — the first carrot is a balloon, then the mole pops up the real golden carrot!'
+  },
+  vi: {
+    'Duck Slide Race': 'Vịt đua tới PHAO VÀNG — coi chừng xoáy nước, sóng lớn và phao đỏ giả đánh lừa!',
+    'Mischievous Dino Eggs': '10 quả trứng lắc lư đổi chỗ — quả nở đầu là gà cao su, khủng long mẹ sẽ lăn quả trứng thật ra!',
+    'Rebellious Cauldron': '10 quả cầu phép xoay quanh vạc — chú ếch vung đũa phép chỉ đúng quả cầu thật bay lên bục!',
+    'Dragon Treasure Guard': 'Rương kho báu nhảy đổi chỗ khi rồng tuần tra — rương đầu là vịt cao su, rồng hắt xì lộ ra rương thật!',
+    'Faulty Robot Factory': 'Robot chạy trên băng chuyền — sau pha đóng dấu nhầm, băng chuyền đảo chiều sạc điện cho người thắng!',
+    'Haunted Hotel Lift': 'Nhớ kỹ biểu tượng từng phòng! Theo dấu chân vượt qua cú lừa của bóng ma để mở đúng cửa thật!',
+    'Sneezing Flower Bee': 'Ong bay tìm hoa trong vườn — bông hoa đầu hắt xì thổi chú ong đậu trúng hoa của người chiến thắng!',
+    'Candy Tornado': 'Kẹo vàng lăn qua máng trượt — mèo thần tài gạt cần đổi ray đưa kẹo vào đúng lọ của người thắng!',
+    'Hamster Turbo Wheels': 'Hamster chạy thắp sáng 3 đèn — hạt hướng dương bật công tắc giúp chú hamster chiến thắng bứt tốc!',
+    'The Shape-Shifting Book': 'Ghi nhớ biểu tượng trước khi trang sách tráo đổi — dây đánh dấu phát sáng chỉ đúng người thắng!',
+    'Capybara Melon Delivery': 'Capybara đẩy dưa hấu về vòng đích vàng — dòng nước đổi chiều đưa quả dưa thật sự vào đích!',
+    'Popcorn Cinema': 'Lắc bắp rang đúng nhịp và ĐỨNG YÊN khi nhạc tắt — nhịp nhạc phụ sẽ chiếu đèn vào người thắng!',
+    'Penguin Overslide': 'Chim cánh cụt trượt bụng vào tâm bảng điểm — ai phanh chuẩn nhất không bị trượt lố sẽ thắng!',
+    'Secret Shell Swap': 'Nhớ vị trí ngọc trai trước khi 10 vỏ ốc tráo chỗ — cua ẩn sĩ sẽ gõ càng chỉ ra vỏ ốc thật!',
+    'Alien Costume Party': 'Tia UFO quét qua sàn nhảy — sau pha bắn nhầm tia thu nhỏ, quả cầu disco sẽ chọn người thắng thật!',
+    'Oversleeping Monsters': '3 hồi chuông báo thức vang lên! Bỏ qua chiếc gối giả, ai tỉnh giấc thật sự sẽ được gọi tên!',
+    'Cat Cafe Mix-Up': 'Nhớ loại bánh dưới nắp đậy trước khi đổi khay — mèo quản lý sẽ giữ lại đúng chiếc bánh chiến thắng!',
+    'Recycling Truck Mix-Up': 'Phân loại đúng rác tái chế vào thùng — máy quét của xe tải sẽ phát hiện đúng bạn phân loại chuẩn!',
+    'Sock-Eating Washer': '10 chiếc tất quay trong máy giặt — bỏ qua rối tất giả, máy giặt sẽ nhả ra đôi tất của người thắng!',
+    'Mystery Box Cats': 'Mèo chạy quanh rồi chui vào hộp khi chuông reo — chấm laser đỏ dẫn tới hộp nào thì người đó thắng!',
+    'Toilet Paper Mummy': 'Quạt thổi 3 cấp độ mở dần giấy cuốn — cuộn giấy mascot kéo dải cuối lộ diện học sinh chiến thắng!',
+    'Off-Beat Disco Chickens': 'Nhảy theo gà DJ rồi ĐỨNG YÊN — đèn sân khấu phát lại nhịp cuối để tìm người giữ tư thế chuẩn nhất!',
+    'Frog Lily Pad Jump': 'Ếch nhảy qua các lá sen tới lá sen vàng — chuồn chuồn đậu xuống chỉ ra lá sen vàng thật sự!',
+    'Pirate Parcel Mix-Up': 'Đại bác bắn bóng qua thùng gỗ, cầu treo & bánh lái — vẹt xoay bánh lái mở đúng kiện hàng kho báu!',
+    'Weather Machine Cold': 'Mây đổi qua nắng, mưa, tuyết — tia nắng phản chiếu gương tạo cầu vồng rực rỡ trên đầu người thắng!',
+    'Time Machine Mix-Up': 'Nhớ biểu tượng trước khi cổng thời gian đổi chỗ — robot khủng long mở đúng cổng đưa người thắng về!',
+    'Puppy Pool Float Race': 'Cún bơi vượt chướng ngại vật tới xương vàng — cổng phao mở lối cho chú cún chiến thắng băng qua!',
+    'Broken Invisibility Cloak': 'Cả lớp trùm áo tàng hình — lần theo dấu chân, tiếng nấc và cái bóng để tìm ra người chiến thắng!',
+    'Stubborn Vending Machine': 'Viên nang vàng lăn qua lò xo và bập bênh — lon nước có chân đá cần gạt thả quà vào khay người thắng!',
+    'Golden Carrot Bunny Dash': 'Thỏ đua tìm cà rốt vàng — củ đầu tiên là bóng bay, chuột chũi sẽ đẩy củ cà rốt vàng thật lên!'
+  }
+};
+
 const BANNER_EXACT_VI = {
   // Shared idle banners
   'Press ▶ Pick a name! or Space': 'Bấm ▶ Gọi tên ngay! hoặc phím Space',
@@ -494,7 +561,9 @@ const UI_STRINGS = {
     toastImportedBackup: n => `Imported ${n} class(es) from the backup`,
     toastImportedNames: n => `Imported ${n} names`,
     toastCopied: 'List copied',
-    toastAbsentFmt: n => `Skipped ${n} — picking again!`
+    toastAbsentFmt: n => `Skipped ${n} — picking again!`,
+    rulePrefix: '🎯 Rule: ',
+    phases: ['① Race & Shuffle', '② Twist Check!', '③ Final Pick!']
   },
   vi: {
     subVol1: 'Trò chơi gọi tên học sinh vui nhộn trên lớp',
@@ -578,7 +647,9 @@ const UI_STRINGS = {
     toastImportedBackup: n => `Đã nhập ${n} lớp học từ file sao lưu`,
     toastImportedNames: n => `Đã nhập ${n} tên học sinh`,
     toastCopied: 'Đã sao chép danh sách tên',
-    toastAbsentFmt: n => `Đã bỏ qua ${n} (vắng) — đang quay lại!`
+    toastAbsentFmt: n => `Đã bỏ qua ${n} (vắng) — đang quay lại!`,
+    rulePrefix: '🎯 Luật chơi: ',
+    phases: ['① Đua & Tráo đổi', '② Kiểm tra cú lừa!', '③ Chốt người thắng!']
   }
 };
 
@@ -591,6 +662,10 @@ function L() {
 function trTitle(title) {
   if (!title || curLang() !== 'vi') return title;
   return GAME_TITLES_VI[title] || title;
+}
+function trRule(title) {
+  const dict = GAME_RULES[curLang()] || GAME_RULES.en;
+  return dict[title] || '';
 }
 let _bIn = '', _bOut = '';
 function trBanner(text) {
