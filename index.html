@@ -493,8 +493,9 @@ const AUD = {
       try {
         const c = new (window.AudioContext || window.webkitAudioContext)();
         const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(c.destination);
-        this.sfx = c.createGain(); this.sfx.gain.value = ((store.settings.sfxVol ?? 90) / 100) * .9; this.sfx.connect(comp);
-        this.music = c.createGain(); this.music.gain.value = ((store.settings.musicVol ?? 70) / 100) * .34; this.music.connect(comp);
+        const warm = c.createBiquadFilter(); warm.type = 'lowpass'; warm.frequency.value = 5200; warm.Q.value = .7; warm.connect(comp);
+        this.sfx = c.createGain(); this.sfx.gain.value = ((store.settings.sfxVol ?? 90) / 100) * .9; this.sfx.connect(warm);
+        this.music = c.createGain(); this.music.gain.value = ((store.settings.musicVol ?? 70) / 100) * .34; this.music.connect(warm);
         const b = c.createBuffer(1, c.sampleRate, c.sampleRate), d = b.getChannelData(0);
         for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
         this.noiseBuf = b; this.ctx = c;
@@ -583,42 +584,97 @@ const SFX = {
   boing() { this.tone(180, .5, { type: 'triangle', vol: .2, to: 520, vib: 30, vibRate: 18 }); },
   heartbeat() { this.run((c, b, now) => { DRUM.kick(c, b, now, .7); DRUM.kick(c, b, now + .16, .45); }); this.tone(1000, .06, { type: 'square', vol: .04 }); },
   ding() { this.tone(1320, .5, { vol: .12 }); this.tone(1980, .4, { vol: .06 }); },
-  victory() {  // brass-ish fanfare with drums, then a held major chord
+  tickTock(high = false) { this.tone(high ? 1320 : 880, .035, { type: 'sine', vol: .09, attack: .002 }); },
+  drawerPop() { this.tone(660, .05, { type: 'triangle', vol: .08, to: 990 }); },
+  whoosh() { this.noise(.18, { vol: .08, f: 800, to: 2400, q: 1.2 }); },
+  steam() { this.noise(.28, { vol: .16, f: 2200, to: 600, q: .9 }); },
+  magicChime() { [0, .06, .12, .18, .24].forEach((d, i) => this.tone(mtof(72 + [0, 4, 7, 11, 12][i]), .35, { type: 'sine', vol: .07, attack: .01, delay: d })); },
+  spring() { this.tone(160, .45, { type: 'triangle', vol: .18, to: 620, vib: 35, vibRate: 20 }); },
+  victory() {  // rich fanfare with drums, celebratory claps and chime arpeggio
     this.run((c, b, now) => {
-      const n = [[72, 0, .14], [72, .15, .14], [72, .3, .14], [76, .45, .5], [74, .98, .14], [76, 1.13, .14], [79, 1.28, 1.1]];
-      n.forEach(([m, d, dur]) => { voice(c, b, { f: mtof(m), t: now + d, dur, type: 'sawtooth', vol: .1, lp: 2600, attack: .02 }); voice(c, b, { f: mtof(m + 12), t: now + d, dur, type: 'square', vol: .035, lp: 3000, attack: .02 }); });
-      [60, 64, 67, 72].forEach(m => voice(c, b, { f: mtof(m), t: now + 1.28, dur: 1.4, type: 'triangle', vol: .08, attack: .03 }));
+      const n = [[72, 0, .14], [72, .15, .14], [72, .3, .14], [76, .45, .5], [74, .98, .14], [76, 1.13, .14], [79, 1.28, 1.2]];
+      n.forEach(([m, d, dur]) => { voice(c, b, { f: mtof(m), t: now + d, dur, type: 'sawtooth', vol: .1, lp: 2800, attack: .02 }); voice(c, b, { f: mtof(m + 12), t: now + d, dur, type: 'square', vol: .035, lp: 3200, attack: .02 }); });
+      [60, 64, 67, 72, 76, 79].forEach((m, i) => voice(c, b, { f: mtof(m), t: now + 1.28 + i * .02, dur: 1.5, type: 'sine', vol: .07, attack: .03 }));
       [0, .45, .98, 1.28].forEach(d => { DRUM.kick(c, b, now + d, .8); DRUM.hat(c, b, now + d, .1, true); });
-      for (let i = 0; i < 6; i++) DRUM.snare(c, b, now + .98 + i * .05, .12 + i * .04);
-      noiseVoice(c, b, { t: now + 1.28, dur: 1.5, vol: .1, f: 8000, type: 'highpass', q: .5 }); // cymbal
+      for (let i = 0; i < 8; i++) DRUM.snare(c, b, now + .98 + i * .04, .12 + i * .03);
+      for (let i = 0; i < 16; i++) DRUM.clap(c, b, now + 1.3 + Math.random() * 1.5, .08 + Math.random() * .06);
+      noiseVoice(c, b, { t: now + 1.28, dur: 1.6, vol: .12, f: 7500, type: 'highpass', q: .6 });
     });
   },
   confettiPops() { for (let i = 0; i < 6; i++) this.noise(.08, { vol: .18, f: 2200, q: .8, delay: i * .07 + Math.random() * .04 }); }
 };
 
 /* ================= Background music ================= */
-// A tiny step sequencer (16 steps per bar, I–vi–IV–V in C). Modes: idle (chill), race (upbeat), tension (last seconds).
-const CHORDS = [{ root: 36, tri: [60, 64, 67] }, { root: 33, tri: [57, 60, 64] }, { root: 29, tri: [53, 57, 60] }, { root: 31, tri: [55, 59, 62] }];
+// Step sequencer with 3 distinct harmonic moods, dynamic tempo ramping, and smooth fading
 const _ = null;
-const MELODY = [
-  76, _, 79, _, 84, _, 79, _, 81, 79, 76, _, 74, _, 76, _,
-  72, _, 76, _, 81, _, 76, _, 79, 76, 72, _, 74, _, 76, _,
-  77, _, 81, _, 84, _, 81, _, 79, _, 77, _, 76, _, 74, _,
-  74, _, 79, _, 83, _, 86, _, 84, _, 83, _, 79, _, _, _];
+const STYLES = {
+  pop: {
+    chords: [{ root: 36, tri: [60, 64, 67] }, { root: 33, tri: [57, 60, 64] }, { root: 29, tri: [53, 57, 60] }, { root: 31, tri: [55, 59, 62] }],
+    melody: [
+      76, _, 79, _, 84, _, 79, _, 81, 79, 76, _, 74, _, 76, _,
+      72, _, 76, _, 81, _, 76, _, 79, 76, 72, _, 74, _, 76, _,
+      77, _, 81, _, 84, _, 81, _, 79, _, 77, _, 76, _, 74, _,
+      74, _, 79, _, 83, _, 86, _, 84, _, 83, _, 79, _, _, _],
+    bassType: 'square'
+  },
+  arcade: {
+    chords: [{ root: 36, tri: [60, 63, 67] }, { root: 38, tri: [62, 65, 69] }, { root: 41, tri: [65, 68, 72] }, { root: 43, tri: [67, 70, 74] }],
+    melody: [
+      72, 75, 79, 82, 84, 82, 79, 75, 74, 77, 81, 84, 82, 81, 77, 74,
+      77, 80, 84, 87, 86, 84, 80, 77, 79, 82, 86, 89, 88, 86, 82, 79,
+      72, 75, 79, 82, 84, 82, 79, 75, 74, 77, 81, 84, 82, 81, 77, 74,
+      79, _, 82, _, 86, _, 89, _, 86, _, 82, _, 79, _, _, _],
+    bassType: 'sawtooth'
+  },
+  mystery: {
+    chords: [{ root: 33, tri: [57, 60, 64] }, { root: 29, tri: [53, 57, 60] }, { root: 26, tri: [50, 53, 57] }, { root: 28, tri: [52, 56, 59] }],
+    melody: [
+      69, _, 72, _, 76, _, 72, _, 74, 72, 69, _, 67, _, 69, _,
+      65, _, 69, _, 72, _, 69, _, 71, 69, 65, _, 67, _, 69, _,
+      72, _, 76, _, 79, _, 76, _, 74, _, 72, _, 71, _, 69, _,
+      67, _, 71, _, 74, _, 77, _, 76, _, 74, _, 71, _, _, _],
+    bassType: 'triangle'
+  }
+};
+const GAME_STYLES = {
+  g3: 'mystery', g4: 'mystery', g6: 'mystery', g10: 'mystery', g14: 'mystery', g16: 'mystery', g20: 'mystery', g28: 'mystery',
+  g5: 'arcade', g8: 'arcade', g9: 'arcade', g12: 'arcade', g18: 'arcade', g19: 'arcade', g22: 'arcade', g26: 'arcade', g29: 'arcade'
+};
+const curStyle = () => (typeof curGame === 'function' && GAME_STYLES[curGame()]) || 'pop';
 const BASS_IDLE = [0, _, _, _, _, _, 7, _, 12, _, _, _, 7, _, _, _];
 const Music = {
   mode: null, step: 0, next: 0, timer: null, bpm: { idle: 100, race: 150, tension: 150 },
   play(mode) {
     if (this.mode === mode) return;
     this.mode = mode; this.step = 0;
-    const c = AUD.ctx; if (c) this.next = c.currentTime + .06;
+    const c = AUD.ctx; if (c) {
+      this.next = c.currentTime + .06;
+      if (AUD.music && store.settings.music) {
+        const targetVol = ((store.settings.musicVol ?? 70) / 100) * .34;
+        AUD.music.gain.cancelScheduledValues(c.currentTime);
+        AUD.music.gain.setValueAtTime(0.0001, c.currentTime);
+        AUD.music.gain.linearRampToValueAtTime(targetVol, c.currentTime + .15);
+      }
+    }
     if (!this.timer) this.timer = setInterval(() => this.pump(), 25);
-    if (mode === 'tension' && c && store.settings.music) noiseVoice(c, AUD.music, { t: c.currentTime, dur: 3.2, vol: .25, f: 300, to: 5000, q: 1.5, attack: 2.8 });
+    if (mode === 'tension' && c && store.settings.music) noiseVoice(c, AUD.music, { t: c.currentTime, dur: 3.2, vol: .22, f: 300, to: 4800, q: 1.5, attack: 2.8 });
   },
-  stop() { this.mode = null; },
+  stop(fade = .2) {
+    if (!this.mode) return;
+    const c = AUD.ctx;
+    if (c && AUD.music && fade > 0) {
+      AUD.music.gain.cancelScheduledValues(c.currentTime);
+      AUD.music.gain.linearRampToValueAtTime(0.0001, c.currentTime + fade);
+      setTimeout(() => { this.mode = null; }, fade * 1000);
+    } else {
+      this.mode = null;
+    }
+  },
   pump() {
     const c = AUD.ctx; if (!c || !this.mode || c.state !== 'running') return;
-    const spb = 60 / this.bpm[this.mode] / 4;
+    const baseBpm = this.bpm[this.mode] || 150;
+    const curBpm = this.mode === 'tension' ? Math.min(176, baseBpm + Math.floor(this.step / 8) * 4) : baseBpm;
+    const spb = 60 / curBpm / 4;
     if (this.next < c.currentTime - .05) this.next = c.currentTime + .02;   // tab was throttled: skip, don't burst
     while (this.next < c.currentTime + .12) {
       if (store.settings.music) this.note(this.step, this.next, spb);
@@ -626,23 +682,25 @@ const Music = {
     }
   },
   note(s, t, spb) {
-    const c = AUD.ctx, b = AUD.music, i = s % 16, bar = Math.floor(s / 16) % 4, ch = CHORDS[bar];
+    const c = AUD.ctx, b = AUD.music, i = s % 16, bar = Math.floor(s / 16) % 4;
+    const style = STYLES[curStyle()] || STYLES.pop;
+    const ch = style.chords[bar];
     if (this.mode === 'idle') {
       if (i === 0 || i === 10) DRUM.kick(c, b, t, .5);
       if (i % 4 === 2) DRUM.hat(c, b, t, .06);
       if (i === 8) DRUM.snare(c, b, t, .12);
       if (BASS_IDLE[i] !== null) voice(c, b, { f: mtof(ch.root + 12 + BASS_IDLE[i]), t, dur: spb * 3, type: 'triangle', vol: .32 });
       if ([0, 3, 6, 10, 12].includes(i)) ch.tri.forEach((m, k) => voice(c, b, { f: mtof(m), t: t + k * .012, dur: .35, type: 'triangle', vol: .07 }));
-      const m = MELODY[s % 64]; if (m && i % 4 === 0 && Math.floor(s / 64) % 2) voice(c, b, { f: mtof(m + 12), t, dur: .5, vol: .06 });
+      const m = style.melody[s % 64]; if (m && i % 4 === 0 && Math.floor(s / 64) % 2) voice(c, b, { f: mtof(m + 12), t, dur: .5, vol: .06 });
       return;
     }
     if (this.mode === 'race') {
       if (i % 4 === 0) DRUM.kick(c, b, t, .85);
       if (i === 4 || i === 12) { DRUM.snare(c, b, t, .32); DRUM.clap(c, b, t, .12); }
       DRUM.hat(c, b, t, i % 4 === 2 ? .13 : .05, i % 4 === 2);
-      if (i % 2 === 0) voice(c, b, { f: mtof(ch.root + (i % 4 === 2 ? 24 : 12)), t, dur: spb * 1.8, type: 'square', vol: .16, lp: 900 });
+      if (i % 2 === 0) voice(c, b, { f: mtof(ch.root + (i % 4 === 2 ? 24 : 12)), t, dur: spb * 1.8, type: style.bassType || 'square', vol: .16, lp: 900 });
       voice(c, b, { f: mtof(ch.tri[i % 3] + (i % 6 < 3 ? 0 : 12)), t, dur: spb * .9, type: 'triangle', vol: .045 });
-      const m = MELODY[s % 64];
+      const m = style.melody[s % 64];
       if (m && s >= 32) { voice(c, b, { f: mtof(m), t, dur: spb * 1.7, type: 'square', vol: .07, lp: 3200 }); voice(c, b, { f: mtof(m + 12), t, dur: spb * 1.2, vol: .03 }); }
       if (i === 15 && bar === 3) DRUM.snare(c, b, t, .2);
       return;
@@ -1046,6 +1104,7 @@ document.getElementById('timerBtn').onclick = () => {
     if (ansLeft > 0) {
       b.textContent = '⏱ ' + ansLeft + 's';
       if (ansLeft <= 3) SFX.heartbeat();
+      else SFX.tickTock(ansLeft % 2 === 0);
     } else {
       stopAnsTimer();
       SFX.whistle(); SFX.ding();
@@ -1215,9 +1274,10 @@ function toast(msg) { const t = document.createElement('div'); t.className = 'to
 /* ================= Class page ================= */
 const page = document.getElementById('classPage');
 let draft = null, editId = null;
-function openClasses() { if (race && race.phase === 'run') return; draft = JSON.parse(JSON.stringify(store.classes)); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); setTimeout(() => document.getElementById('className').focus(), 40); }
+function openClasses() { if (race && race.phase === 'run') return; SFX.whoosh(); draft = JSON.parse(JSON.stringify(store.classes)); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); setTimeout(() => document.getElementById('className').focus(), 40); }
 function closeClasses() {
   if (!draft) return;
+  SFX.pop();
   store.classes = draft; store.activeId = editId;
   for (const k of Object.keys(store.called)) if (!draft.find(c => c.id === k)) delete store.called[k];
   draft = null; save(); page.classList.add('hidden');
@@ -1386,12 +1446,13 @@ function getGameUrl(g) {
 
 function openDrawer() {
   if (race && race.phase === 'run') return;
+  SFX.whoosh();
   drawerModal.classList.remove('hidden');
   renderDrawerTabs();
   renderDrawer();
   setTimeout(() => drawerSearch.focus(), 40);
 }
-function closeDrawer() { drawerModal.classList.add('hidden'); }
+function closeDrawer() { SFX.pop(); drawerModal.classList.add('hidden'); }
 
 function renderDrawerTabs() {
   const t = L();
@@ -1431,6 +1492,7 @@ function renderDrawer() {
 
   drawerGrid.querySelectorAll('.drawerCard').forEach(card => {
     card.onclick = () => {
+      SFX.drawerPop();
       const gid = card.dataset.id, gvol = +card.dataset.vol;
       const g = catalog.find(x => x.id === gid);
       if (!g) return;
