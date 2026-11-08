@@ -5,7 +5,7 @@
       <stop offset="100%" stop-color="#ff9f43"/>
     </linearGradient>
   </defs>
-  <rect width="128" height="128" rx="32" fill="#1b2a6b"/>
+  <rect width="128" height="128" rx="32" fill="#0d172a"/>
   <rect x="10" y="10" width="108" height="108" rx="26" fill="url(#g)"/>
   <text x="64" y="84" font-size="68" text-anchor="middle">🥕</text>
 </svg>

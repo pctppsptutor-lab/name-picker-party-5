@@ -427,6 +427,10 @@ const UI_STRINGS = {
     ribbon: '🎉 And the pick is…',
     nextRound: 'Next round ▶',
     sayAgain: '🔈 Say it again',
+    absentRespin: '↩ Absent · Re-spin',
+    answerTimer: '⏱ 30s Timer',
+    answerTimeUp: '⏰ Time is up!',
+    canvasTapPlay: '▶ Tap stage or press Space',
     pickBtn: '▶ Pick a name!',
     pickingBtn: '⏳ Picking…',
     hintHtml: 'or press <kbd>Space</kbd> / click stage',
@@ -489,7 +493,8 @@ const UI_STRINGS = {
     toastEmptyBackup: 'The backup file has no classes in it',
     toastImportedBackup: n => `Imported ${n} class(es) from the backup`,
     toastImportedNames: n => `Imported ${n} names`,
-    toastCopied: 'List copied'
+    toastCopied: 'List copied',
+    toastAbsentFmt: n => `Skipped ${n} — picking again!`
   },
   vi: {
     subVol1: 'Trò chơi gọi tên học sinh vui nhộn trên lớp',
@@ -506,6 +511,10 @@ const UI_STRINGS = {
     ribbon: '🎉 Học sinh được chọn là…',
     nextRound: 'Lượt tiếp theo ▶',
     sayAgain: '🔈 Đọc lại tên',
+    absentRespin: '↩ Vắng · Quay lại',
+    answerTimer: '⏱ Đếm giờ 30s',
+    answerTimeUp: '⏰ Hết giờ trả lời!',
+    canvasTapPlay: '▶ Chạm màn hình hoặc bấm Space',
     pickBtn: '▶ Gọi tên ngay!',
     pickingBtn: '⏳ Đang chọn…',
     hintHtml: 'hoặc bấm <kbd>Space</kbd> / chạm màn hình',
@@ -568,7 +577,8 @@ const UI_STRINGS = {
     toastEmptyBackup: 'File sao lưu không có lớp học nào',
     toastImportedBackup: n => `Đã nhập ${n} lớp học từ file sao lưu`,
     toastImportedNames: n => `Đã nhập ${n} tên học sinh`,
-    toastCopied: 'Đã sao chép danh sách tên'
+    toastCopied: 'Đã sao chép danh sách tên',
+    toastAbsentFmt: n => `Đã bỏ qua ${n} (vắng) — đang quay lại!`
   }
 };
 

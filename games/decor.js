@@ -94,12 +94,6 @@ const DECOR = (() => {
   // ---------- per-game decoration lists ----------
   const PARTY = ['#ff6f8f', '#ffd84a', '#7cd0ff', '#7cff9b', '#b48cff'];
   const GAME = {
-    g25: { floor: 495, fn() { bunting(0, 10, 1250, 10, 40, ['#ff6f6f', '#ffd84a', '#7cff9b', '#7cd0ff', '#b48cff']); [[1500, 880], [1300, 880]].forEach(([x, y]) => pot(x, y, .8)); [[300, 880], [900, 880]].forEach(([x, y]) => tuft(x, y, 1.6)); } },
-    g26: { floor: 700, fn() { stars(100, 700); [[100, 700], [1500, 700]].forEach(([x, y]) => lamp(x, y, '#5df2ff', '#23285e', 200)); sparkles(40, [0, 0, 1600, 700], '#c27cff'); } },
-    g27: { floor: 290, fn() { bunting(80, 290, 1400, 290, 30, ['#ff6f6f', '#ffffff', '#7cd0ff', '#ffd84a']); [[1450, 880], [150, 880]].forEach(([x, y]) => { ell(x, y - 30, 40, 40, '#ff6f8f'); ell(x, y - 30, 18, 18, '#f2e6cf'); }); balloon(1500, 420, '#ffd84a'); } },
-    g28: { floor: 340, fn() { stringLights(0, 20, 1600, 20, 40, ['#c27cff', '#7cf7ff', '#ffd84a']); [[1300, 880], [100, 880]].forEach(([x, y]) => lamp(x, y, '#c27cff', '#2a1846', 160)); cobweb(0, 0, 1, false); cobweb(1600, 0, 1, true); sparkles(50, [0, 0, 1600, 340], '#ffffff'); } },
-    g29: { floor: 760, fn() { stringLights(0, 130, 1050, 130, 30, ['#ff6fae', '#7cf7ff', '#ffd84a']); poster(30, 200, 90, 120, '#ff6fae', '#ffd84a'); [[1480, 880], [100, 760]].forEach(([x, y]) => { ell(x, y, 24, 24, '#ff6f8f'); }); sparkles(40, [0, 0, 1600, 760], '#ffffff'); } },
-    g30: { floor: 270, fn() { bunting(1240, 300, 1600, 300, 20, PARTY); [[1300, 880], [1500, 880]].forEach(([x, y]) => pot(x, y, .8, '#c96a4a', '#3f9a4a')); [[120, 880], [700, 880]].forEach(([x, y]) => tuft(x, y, 1.6)); sign(1380, 470, '#ff9f43', 'BASKET'); } },
   };
 
   return {
