@@ -563,7 +563,17 @@ const UI_STRINGS = {
     toastCopied: 'List copied',
     toastAbsentFmt: n => `Skipped ${n} — picking again!`,
     rulePrefix: '🎯 Rule: ',
-    phases: ['① Race & Shuffle', '② Twist Check!', '③ Final Pick!']
+    phases: ['① Race & Shuffle', '② Twist Check!', '③ Final Pick!'],
+    drawerTitle: '🎮 All 30 Mini-Games',
+    drawerSub: 'Pick any mini-game across Volumes 1–5',
+    drawerBtn: '🎮 30 Games',
+    tabAll: 'All 30',
+    tabVol: n => `Vol ${n}`,
+    searchPlaceholder: 'Search games…',
+    activeBadge: 'Playing',
+    musicVolLab: '🎵 Music volume',
+    sfxVolLab: '🔊 Sound volume',
+    jumpToast: (n, v) => `Opening ${n} (Vol ${v})…`
   },
   vi: {
     subVol1: 'Trò chơi gọi tên học sinh vui nhộn trên lớp',
@@ -649,9 +659,56 @@ const UI_STRINGS = {
     toastCopied: 'Đã sao chép danh sách tên',
     toastAbsentFmt: n => `Đã bỏ qua ${n} (vắng) — đang quay lại!`,
     rulePrefix: '🎯 Luật chơi: ',
-    phases: ['① Đua & Tráo đổi', '② Kiểm tra cú lừa!', '③ Chốt người thắng!']
+    phases: ['① Đua & Tráo đổi', '② Kiểm tra cú lừa!', '③ Chốt người thắng!'],
+    drawerTitle: '🎮 Thư Viện 30 Mini-Game',
+    drawerSub: 'Chọn bất kỳ trò chơi nào từ Tập 1 đến 5',
+    drawerBtn: '🎮 30 Game',
+    tabAll: 'Tất cả 30',
+    tabVol: n => `Tập ${n}`,
+    searchPlaceholder: 'Tìm kiếm trò chơi…',
+    activeBadge: 'Đang chơi',
+    musicVolLab: '🎵 Âm lượng nhạc nền',
+    sfxVolLab: '🔊 Âm lượng hiệu ứng',
+    jumpToast: (n, v) => `Đang chuyển sang ${n} (Tập ${v})…`
   }
 };
+
+const ALL_GAMES_30 = [
+  { id: 'g1', vol: 1, n: '01', name: 'Duck Slide Race', vi: 'Đua Vịt Cầu Trượt', icon: '🦆', path: 'goi-ten-vui-nhon' },
+  { id: 'g2', vol: 1, n: '02', name: 'Mischievous Dino Eggs', vi: 'Trứng Khủng Long Tinh Nghịch', icon: '🥚', path: 'goi-ten-vui-nhon' },
+  { id: 'g3', vol: 1, n: '03', name: 'Rebellious Cauldron', vi: 'Vạc Phép Nổi Loạn', icon: '🔮', path: 'goi-ten-vui-nhon' },
+  { id: 'g4', vol: 1, n: '04', name: 'Dragon Treasure Guard', vi: 'Rồng Giữ Kho Báu', icon: '🐉', path: 'goi-ten-vui-nhon' },
+  { id: 'g5', vol: 1, n: '05', name: 'Faulty Robot Factory', vi: 'Nhà Máy Robot Lỗi Nhịp', icon: '🤖', path: 'goi-ten-vui-nhon' },
+  { id: 'g6', vol: 1, n: '06', name: 'Haunted Hotel Lift', vi: 'Khách Sạn Bí Ẩn', icon: '👻', path: 'goi-ten-vui-nhon' },
+
+  { id: 'g7', vol: 2, n: '07', name: 'Sneezing Flower Bee', vi: 'Ong Mật & Hoa Hắt Xì', icon: '🐝', path: 'name-picker-party-2' },
+  { id: 'g8', vol: 2, n: '08', name: 'Candy Tornado', vi: 'Cơn Lốc Kẹo Ngọt', icon: '🍬', path: 'name-picker-party-2' },
+  { id: 'g9', vol: 2, n: '09', name: 'Hamster Turbo Wheels', vi: 'Bánh Xe Hamster Siêu Tốc', icon: '🐹', path: 'name-picker-party-2' },
+  { id: 'g10', vol: 2, n: '10', name: 'The Shape-Shifting Book', vi: 'Cuốn Sách Biến Hình', icon: '📖', path: 'name-picker-party-2' },
+  { id: 'g11', vol: 2, n: '11', name: 'Capybara Melon Delivery', vi: 'Capybara Giao Dưa Hấu', icon: '🍉', path: 'name-picker-party-2' },
+  { id: 'g12', vol: 2, n: '12', name: 'Popcorn Cinema', vi: 'Rạp Phim Bắp Rang Bơ', icon: '🍿', path: 'name-picker-party-2' },
+
+  { id: 'g13', vol: 3, n: '13', name: 'Penguin Overslide', vi: 'Chim Cánh Cụt Trượt Băng', icon: '🐧', path: 'name-picker-party-3' },
+  { id: 'g14', vol: 3, n: '14', name: 'Secret Shell Swap', vi: 'Vỏ Ốc Tráo Chỗ', icon: '🐚', path: 'name-picker-party-3' },
+  { id: 'g15', vol: 3, n: '15', name: 'Alien Costume Party', vi: 'Tiệc Hóa Trang Vũ Trụ', icon: '👽', path: 'name-picker-party-3' },
+  { id: 'g16', vol: 3, n: '16', name: 'Oversleeping Monsters', vi: 'Quái Vật Ngủ Nướng', icon: '😴', path: 'name-picker-party-3' },
+  { id: 'g17', vol: 3, n: '17', name: 'Cat Cafe Mix-Up', vi: 'Tiệm Cà Phê Mèo Nhộn Nhịp', icon: '🐱', path: 'name-picker-party-3' },
+  { id: 'g18', vol: 3, n: '18', name: 'Recycling Truck Mix-Up', vi: 'Xe Tái Chế Vui Nhộn', icon: '♻️', path: 'name-picker-party-3' },
+
+  { id: 'g19', vol: 4, n: '19', name: 'Sock-Eating Washer', vi: 'Máy Giặt Nuốt Tất', icon: '🧦', path: 'name-picker-party-4' },
+  { id: 'g20', vol: 4, n: '20', name: 'Mystery Box Cats', vi: 'Mèo Trốn Trong Hộp', icon: '📦', path: 'name-picker-party-4' },
+  { id: 'g21', vol: 4, n: '21', name: 'Toilet Paper Mummy', vi: 'Xác Ướp Giấy Vệ Sinh', icon: '🧻', path: 'name-picker-party-4' },
+  { id: 'g22', vol: 4, n: '22', name: 'Off-Beat Disco Chickens', vi: 'Gà Nhảy Disco Lệch Nhịp', icon: '🐔', path: 'name-picker-party-4' },
+  { id: 'g23', vol: 4, n: '23', name: 'Frog Lily Pad Jump', vi: 'Ếch Nhảy Lá Sen Vàng', icon: '🐸', path: 'name-picker-party-4' },
+  { id: 'g24', vol: 4, n: '24', name: 'Pirate Parcel Mix-Up', vi: 'Kiện Hàng Hải Tặc', icon: '🏴‍☠️', path: 'name-picker-party-4' },
+
+  { id: 'g25', vol: 5, n: '25', name: 'Weather Machine Cold', vi: 'Cỗ Máy Thời Tiết Cảm Lạnh', icon: '🌦️', path: 'name-picker-party-5' },
+  { id: 'g26', vol: 5, n: '26', name: 'Time Machine Mix-Up', vi: 'Cỗ Máy Thời Gian Tinh Nghịch', icon: '⏳', path: 'name-picker-party-5' },
+  { id: 'g27', vol: 5, n: '27', name: 'Puppy Pool Float Race', vi: 'Cún Con Đua Phao Bơi', icon: '🐶', path: 'name-picker-party-5' },
+  { id: 'g28', vol: 5, n: '28', name: 'Broken Invisibility Cloak', vi: 'Áo Choàng Tàng Hình Hỏng', icon: '🫥', path: 'name-picker-party-5' },
+  { id: 'g29', vol: 5, n: '29', name: 'Stubborn Vending Machine', vi: 'Máy Bán Hàng Bướng Bỉnh', icon: '🥤', path: 'name-picker-party-5' },
+  { id: 'g30', vol: 5, n: '30', name: 'Golden Carrot Bunny Dash', vi: 'Thỏ Đua Cà Rốt Vàng', icon: '🥕', path: 'name-picker-party-5' }
+];
 
 function curLang() {
   return (typeof store !== 'undefined' && store.settings && store.settings.lang === 'vi') ? 'vi' : 'en';

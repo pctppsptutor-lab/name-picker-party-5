@@ -68,8 +68,49 @@ button:disabled{cursor:not-allowed;opacity:.5}
 #stage{display:block;width:100%;height:100%;border-radius:22px;background:#0f172a;cursor:pointer;
   box-shadow:0 0 0 4px #ffffff22,0 20px 44px rgba(0,0,0,.42)}
 body.running #stage{cursor:default}
+/* brand pointer */
+.brand{cursor:pointer;user-select:none}
+
+/* smartboard touch & fullscreen */
 .stageWrap:fullscreen{background:#090f1d;display:flex;align-items:center;justify-content:center;aspect-ratio:auto}
 .stageWrap:fullscreen #stage,.stageWrap:fullscreen .result{width:min(100vw,177.78vh);height:auto;aspect-ratio:16/9;border-radius:0;box-shadow:none}
+.stageWrap:fullscreen .card{padding:4cqw 5cqw 3cqw;border-radius:3cqw}
+.stageWrap:fullscreen .card .name{font-size:max(7cqw,36px)}
+.stageWrap:fullscreen .btns .candy{min-height:56px;padding:12px 28px;font-size:max(1.8cqw,18px)}
+@media (pointer:coarse){
+  .candy,.smallBtn,.vol,.toolBtn,.tab{min-height:48px}
+  .btns .candy{min-height:54px}
+}
+
+/* dual volume sliders */
+.volSliderGroup{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 4px}
+@media (max-width:600px){.volSliderGroup{grid-template-columns:1fr}}
+.volSlider{display:flex;flex-direction:column;gap:2px}
+.volSlider .lab{margin:0 0 2px;font-size:13px}
+.volSlider .row{display:flex;align-items:center;gap:8px}
+.volSlider input[type=range]{flex:1;accent-color:var(--violet)}
+.volSlider b{font-size:13px;font-weight:800;min-width:36px;text-align:right;color:var(--muted)}
+
+/* 30-Game Mega Drawer */
+.drawerSheet{max-width:960px;width:min(960px,100%);max-height:90vh;display:flex;flex-direction:column;padding:20px 24px}
+.drawerHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.drawerHead h2{margin:0;font-family:var(--title);font-size:26px;display:flex;align-items:center;gap:8px}
+.drawerSub{font-size:14px;color:var(--muted);font-weight:600;margin-top:2px}
+.drawerToolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.drawerVolTabs{display:flex;gap:6px;flex-wrap:wrap}
+.drawerTab{border:2px solid var(--line);background:var(--soft);border-radius:10px;padding:4px 12px;font-size:14px;font-weight:800;color:var(--muted);cursor:pointer}
+.drawerTab.on{background:var(--violet);border-color:var(--violet);color:#fff}
+.drawerSearch{flex:1;min-width:180px;font-family:inherit;font-size:15px;font-weight:700;padding:6px 12px;border:2px solid var(--line);border-radius:10px}
+.drawerGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;overflow-y:auto;padding-right:4px;max-height:60vh}
+.drawerCard{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--soft);border:2px solid transparent;cursor:pointer;text-align:left;position:relative;text-decoration:none;color:inherit;transition:transform .12s,background .12s,border-color .12s}
+.drawerCard:hover{transform:translateY(-2px);background:#fff;border-color:var(--violet);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.drawerCard.active{background:#fff;border-color:var(--sun);box-shadow:0 0 0 2px var(--sun)}
+.drawerCard .ico{font-size:28px;width:44px;height:44px;border-radius:12px;background:#fff;display:grid;place-items:center;flex-shrink:0}
+.drawerCard .info{flex:1;min-width:0}
+.drawerCard .meta{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.drawerCard .nm{font-size:15px;font-weight:800;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drawerCard .rule{font-size:12px;color:var(--muted);line-height:1.25;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.drawerCard .badge{position:absolute;top:8px;right:8px;background:var(--sun);color:#3d2600;font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px}
 
 /* result card */
 .result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(9,15,29,.8);animation:fade .22s ease-out}
@@ -163,8 +204,9 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="logo">🥕</span><span>Name Picker Party 5<small id="brandSub">Six more mini-games for calling on students</small></span></div>
+  <div class="brand" id="brandBtn" title="Open 30-Game Catalog (G)"><span class="logo">🎲</span><span>Name Picker Party<small id="brandSub">Fun mini-games for calling on students</small></span></div>
   <button id="classBtn" class="candy classBtn lockable">👩‍🏫 <span id="classLabel">Sample class · 10</span></button>
+  <button id="drawerBtn" class="toolBtn" title="30-Game Catalog (G)"><span class="ico">🎮</span> <span id="drawerBtnTxt">30 Games</span></button>
   <nav class="vols lockable" aria-label="Game volumes">
     <a class="vol" href="https://infinitegamingtv.github.io/goi-ten-vui-nhon/">Vol 1</a>
     <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-2/">Vol 2</a>
@@ -212,6 +254,22 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
       <label class="check"><input type="checkbox" id="restChk"><span id="restTxt">Skip students already picked</span></label>
       <label class="check"><input type="checkbox" id="calmChk"><span><span id="calmTxt">Reduce motion</span><small id="calmSub">No screen shake or zoom</small></span></label>
       <label class="check" id="paintedWrap" style="display:none"><input type="checkbox" id="paintedChk"><span><span id="paintedTxt">Painted backgrounds</span><small id="paintedSub">Games 2–6, about 150 KB each</small></span></label>
+      <div class="volSliderGroup">
+        <div class="volSlider">
+          <label class="lab" id="musicVolLab" for="musicVol">Music volume</label>
+          <div class="row">
+            <input type="range" min="0" max="100" id="musicVol" value="70">
+            <b id="musicVolVal">70%</b>
+          </div>
+        </div>
+        <div class="volSlider">
+          <label class="lab" id="sfxVolLab" for="sfxVol">Sound effects volume</label>
+          <div class="row">
+            <input type="range" min="0" max="100" id="sfxVol" value="90">
+            <b id="sfxVolVal">90%</b>
+          </div>
+        </div>
+      </div>
       <label class="lab" id="readAloudLab" for="voiceSel" style="display:block">Read the name aloud</label>
       <div class="row">
         <select id="voiceSel">
@@ -292,6 +350,24 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
   </div>
 </div>
 
+<!-- 30-Game Mega Drawer Modal -->
+<div id="drawerModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+  <div class="sheet drawerSheet">
+    <div class="drawerHead">
+      <div>
+        <h2 id="drawerTitle">🎮 All 30 Mini-Games</h2>
+        <div class="drawerSub" id="drawerSub">Pick any mini-game across Volumes 1–5</div>
+      </div>
+      <button class="smallBtn" id="drawerCloseBtn" aria-label="Close">✕</button>
+    </div>
+    <div class="drawerToolbar">
+      <div class="drawerVolTabs" id="drawerVolTabs"></div>
+      <input type="text" id="drawerSearch" class="drawerSearch" placeholder="Search games...">
+    </div>
+    <div class="drawerGrid" id="drawerGrid"></div>
+  </div>
+</div>
+
 <script>
 // Shared helpers for games 2-6 (each game registers itself in GAME_IMPL)
 window.GAME_IMPL = {};
@@ -318,8 +394,11 @@ const activeFake = (r, t) => (r.fakes || []).find(f => t >= f.at && t < f.at + f
 <script src="games/g30-bunny.js"></script>
 <script>
 'use strict';
-/* ================= Storage ================= */
+const CURRENT_VOL = 5;
+
+/* ================= Storage & Realtime Sync ================= */
 const LS_KEY = 'goiTenVuiNhon.v1';
+const syncChannel = 'BroadcastChannel' in window ? new BroadcastChannel('name_picker_party_sync') : null;
 const SAMPLE = ['Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Lucas', 'Mia', 'Ethan', 'Sophie', 'Leo'];
 const uid = () => Math.random().toString(36).slice(2, 9);
 function defaultStore() {
@@ -327,7 +406,7 @@ function defaultStore() {
   return {
     classes: [{ id, name: 'Sample class', mode: 'names', count: 30, text: SAMPLE.join('\n'), gender: {} }],
     activeId: id,
-    settings: { duration: 15, rest: true, voice: 'en', sound: true, music: true, calm: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) },
+    settings: { duration: 15, rest: true, voice: 'en', sound: true, music: true, musicVol: 70, sfxVol: 90, calm: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) },
     called: {}
   };
 }
@@ -337,6 +416,8 @@ function loadStore() {
     if (s && Array.isArray(s.classes) && s.classes.length) {
       const d = defaultStore();
       s.settings = Object.assign(d.settings, s.settings || {});
+      s.settings.musicVol = clamp(parseInt(s.settings.musicVol) || 70, 0, 100);
+      s.settings.sfxVol = clamp(parseInt(s.settings.sfxVol) || 90, 0, 100);
       s.called = s.called || {};
       if (!s.classes.find(c => c.id === s.activeId)) s.activeId = s.classes[0].id;
       return s;
@@ -345,7 +426,26 @@ function loadStore() {
   return defaultStore();
 }
 let store = loadStore();
-function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {} }
+function save(skipBroadcast) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {}
+  if (!skipBroadcast && syncChannel) {
+    try { syncChannel.postMessage({ type: 'sync', store }); } catch (e) {}
+  }
+}
+if (syncChannel) {
+  syncChannel.onmessage = e => {
+    if (e.data && e.data.type === 'sync') {
+      store = loadStore();
+      if (!page.classList.contains('hidden')) {
+        draft = JSON.parse(JSON.stringify(store.classes));
+        editId = store.activeId;
+        renderClassPage();
+      }
+      AUD.applyVol();
+      updateUI();
+    }
+  };
+}
 const activeClass = () => store.classes.find(c => c.id === store.activeId);
 
 /* ================= Roster ================= */
@@ -393,8 +493,8 @@ const AUD = {
       try {
         const c = new (window.AudioContext || window.webkitAudioContext)();
         const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(c.destination);
-        this.sfx = c.createGain(); this.sfx.gain.value = .9; this.sfx.connect(comp);
-        this.music = c.createGain(); this.music.gain.value = .34; this.music.connect(comp);
+        this.sfx = c.createGain(); this.sfx.gain.value = ((store.settings.sfxVol ?? 90) / 100) * .9; this.sfx.connect(comp);
+        this.music = c.createGain(); this.music.gain.value = ((store.settings.musicVol ?? 70) / 100) * .34; this.music.connect(comp);
         const b = c.createBuffer(1, c.sampleRate, c.sampleRate), d = b.getChannelData(0);
         for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
         this.noiseBuf = b; this.ctx = c;
@@ -403,7 +503,19 @@ const AUD = {
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
   },
-  duck(on) { if (this.music) this.music.gain.setTargetAtTime(on ? .1 : .34, this.ctx.currentTime, .15); }
+  applyVol() {
+    if (!this.ctx) return;
+    const mv = store.settings.music ? ((store.settings.musicVol ?? 70) / 100) * .34 : 0;
+    const sv = store.settings.sound ? ((store.settings.sfxVol ?? 90) / 100) * .9 : 0;
+    if (this.music) this.music.gain.setTargetAtTime(mv, this.ctx.currentTime, 0.05);
+    if (this.sfx) this.sfx.gain.setTargetAtTime(sv, this.ctx.currentTime, 0.05);
+  },
+  duck(on) {
+    if (this.music && this.ctx) {
+      const base = store.settings.music ? ((store.settings.musicVol ?? 70) / 100) * .34 : 0;
+      this.music.gain.setTargetAtTime(on ? base * .28 : base, this.ctx.currentTime, .15);
+    }
+  }
 };
 const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 // low-level voices, all scheduled at absolute time t on the given bus
@@ -440,7 +552,7 @@ function loadStings(set, base) {
 }
 let STINGS = loadStings('g25', 'assets/g25/');
 const SFX = {
-  sting(n, vol = .9) { if (!store.settings.sound || !STINGS[n]) return; const a = STINGS[n].cloneNode(); a.volume = vol; a.play().catch(() => {}); },
+  sting(n, vol) { if (!store.settings.sound || !STINGS[n]) return; const a = STINGS[n].cloneNode(); a.volume = vol !== undefined ? vol : ((store.settings.sfxVol ?? 90) / 100) * .9; a.play().catch(() => {}); },
   ok() { return store.settings.sound ? AUD.get() : null; },
   run(fn) { const c = this.ok(); if (c) fn(c, AUD.sfx, c.currentTime); },
   tone(f, dur, o = {}) { this.run((c, b, now) => voice(c, b, { f, dur, t: now + (o.delay || 0), ...o })); },
@@ -999,9 +1111,12 @@ langBtn.onclick = () => {
   updateUI();
 };
 const soundBtn = document.getElementById('soundBtn');
-soundBtn.onclick = () => { store.settings.sound = !store.settings.sound; save(); updateUI(); };
+soundBtn.onclick = () => { store.settings.sound = !store.settings.sound; save(); AUD.applyVol(); updateUI(); };
 const musicBtn = document.getElementById('musicBtn');
-musicBtn.onclick = () => { store.settings.music = !store.settings.music; save(); if (store.settings.music && AUD.get() && !Music.mode) Music.play('idle'); updateUI(); };
+musicBtn.onclick = () => { store.settings.music = !store.settings.music; save(); AUD.applyVol(); if (store.settings.music && AUD.get() && !Music.mode) Music.play('idle'); updateUI(); };
+const musicVol = document.getElementById('musicVol'), sfxVol = document.getElementById('sfxVol');
+musicVol.oninput = e => { store.settings.musicVol = +e.target.value; document.getElementById('musicVolVal').textContent = store.settings.musicVol + '%'; save(); AUD.applyVol(); };
+sfxVol.oninput = e => { store.settings.sfxVol = +e.target.value; document.getElementById('sfxVolVal').textContent = store.settings.sfxVol + '%'; save(); AUD.applyVol(); };
 document.addEventListener('click', e => { const b = e.target.closest('button'); if (b && b !== startBtn) SFX.click(); });
 document.getElementById('fsBtn').onclick = () => {
   const el = document.getElementById('stageWrap');
@@ -1026,6 +1141,15 @@ function updateUI() {
   const t = L();
   document.documentElement.lang = curLang();
   document.getElementById('brandSub').textContent = t.subMore;
+  document.getElementById('drawerTitle').textContent = t.drawerTitle;
+  document.getElementById('drawerSub').textContent = t.drawerSub;
+  document.getElementById('drawerBtnTxt').textContent = t.drawerBtn;
+  document.getElementById('drawerSearch').placeholder = t.searchPlaceholder;
+  const mv = store.settings.musicVol ?? 70, sv = store.settings.sfxVol ?? 90;
+  musicVol.value = mv; document.getElementById('musicVolVal').textContent = mv + '%';
+  sfxVol.value = sv; document.getElementById('sfxVolVal').textContent = sv + '%';
+  document.getElementById('musicVolLab').textContent = t.musicVolLab;
+  document.getElementById('sfxVolLab').textContent = t.sfxVolLab;
   langBtn.textContent = t.langToggle; langBtn.title = t.langTitle;
   document.getElementById('fsBtn').textContent = t.fullscreen;
   document.getElementById('ribbonTxt').textContent = t.ribbon;
@@ -1244,11 +1368,107 @@ window.addEventListener('storage', e => {
   }
 });
 
-/* ================= Keyboard & Presenter Shortcuts ================= */
+/* ================= 30-Game Mega Drawer ================= */
+const drawerModal = document.getElementById('drawerModal');
+const drawerGrid = document.getElementById('drawerGrid');
+const drawerVolTabs = document.getElementById('drawerVolTabs');
+const drawerSearch = document.getElementById('drawerSearch');
+let drawerFilterVol = 0, drawerQuery = '';
+
+function getGameUrl(g) {
+  const q = `?cls=${encodeURIComponent(store.activeId)}&game=${encodeURIComponent(g.id)}`;
+  if (location.protocol === 'file:') {
+    if (g.vol === 1) return (CURRENT_VOL === 1) ? `index.html${q}` : `../goi-ten-vui-nhon/GoiTenVuiNhon/index.html${q}`;
+    return (CURRENT_VOL === 1) ? `../../${g.path}/index.html${q}` : `../${g.path}/index.html${q}`;
+  }
+  return `https://infinitegamingtv.github.io/${g.path}/${q}`;
+}
+
+function openDrawer() {
+  if (race && race.phase === 'run') return;
+  drawerModal.classList.remove('hidden');
+  renderDrawerTabs();
+  renderDrawer();
+  setTimeout(() => drawerSearch.focus(), 40);
+}
+function closeDrawer() { drawerModal.classList.add('hidden'); }
+
+function renderDrawerTabs() {
+  const t = L();
+  const vols = [0, 1, 2, 3, 4, 5];
+  drawerVolTabs.innerHTML = vols.map(v => `<button class="drawerTab ${drawerFilterVol === v ? 'on' : ''}" data-vol="${v}">${v === 0 ? t.tabAll : t.tabVol(v)}</button>`).join('');
+  drawerVolTabs.querySelectorAll('[data-vol]').forEach(btn => {
+    btn.onclick = () => { drawerFilterVol = +btn.dataset.vol; renderDrawerTabs(); renderDrawer(); };
+  });
+}
+
+function renderDrawer() {
+  const t = L(), cur = curGame();
+  const q = drawerQuery.toLowerCase().trim();
+  const catalog = typeof ALL_GAMES_30 !== 'undefined' ? ALL_GAMES_30 : [];
+  const filtered = catalog.filter(g => {
+    if (drawerFilterVol > 0 && g.vol !== drawerFilterVol) return false;
+    if (q) {
+      const titleEn = (g.name || '').toLowerCase();
+      const titleVi = (g.vi || trTitle(g.name) || '').toLowerCase();
+      const rule = (trRule(g.name) || '').toLowerCase();
+      if (!titleEn.includes(q) && !titleVi.includes(q) && !rule.includes(q) && !g.id.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  drawerGrid.innerHTML = filtered.map(g => {
+    const isCur = g.vol === CURRENT_VOL && g.id === cur;
+    return `<div class="drawerCard ${isCur ? 'active' : ''}" data-vol="${g.vol}" data-id="${g.id}">
+      <span class="ico">${g.icon}</span>
+      <div class="info">
+        <div class="meta">VOL ${g.vol} &bull; GAME ${g.n}${isCur ? ` <span class="badge">${t.activeBadge}</span>` : ''}</div>
+        <div class="nm">${esc(trTitle(g.name))}</div>
+        <div class="rule">${esc(trRule(g.name))}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  drawerGrid.querySelectorAll('.drawerCard').forEach(card => {
+    card.onclick = () => {
+      const gid = card.dataset.id, gvol = +card.dataset.vol;
+      const g = catalog.find(x => x.id === gid);
+      if (!g) return;
+      if (gvol === CURRENT_VOL) {
+        activateGame(gid);
+        closeDrawer();
+      } else {
+        toast(t.jumpToast(trTitle(g.name), gvol));
+        setTimeout(() => { location.href = getGameUrl(g); }, 350);
+      }
+    };
+  });
+}
+
+document.getElementById('brandBtn').onclick = openDrawer;
+document.getElementById('drawerBtn').onclick = openDrawer;
+document.getElementById('drawerCloseBtn').onclick = closeDrawer;
+drawerSearch.oninput = e => { drawerQuery = e.target.value; renderDrawer(); };
+
+/* ================= Keyboard & Remote Clicker Shortcuts ================= */
 document.addEventListener('keydown', e => {
-  if (!page.classList.contains('hidden')) { if (e.key === 'Escape') closeClasses(); return; }
+  if (!drawerModal.classList.contains('hidden')) {
+    if (e.key === 'Escape' || e.code === 'KeyB' || e.code === 'Period' || e.code === 'KeyG') {
+      e.preventDefault(); closeDrawer(); return;
+    }
+  }
+  if (!page.classList.contains('hidden')) {
+    if (e.key === 'Escape' || e.code === 'KeyB' || e.code === 'Period') {
+      e.preventDefault(); closeClasses(); return;
+    }
+    return;
+  }
   const tag = (e.target.tagName || '').toLowerCase();
   if (['input', 'textarea', 'select'].includes(tag)) return;
+
+  if (e.code === 'KeyG' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault(); openDrawer(); return;
+  }
   if (e.code === 'KeyF' && !e.ctrlKey && !e.metaKey && !e.altKey) {
     e.preventDefault(); document.getElementById('fsBtn').click(); return;
   }
@@ -1261,6 +1481,22 @@ document.addEventListener('keydown', e => {
   if (e.code === 'KeyS' && !e.ctrlKey && !e.metaKey && !e.altKey) {
     e.preventDefault(); soundBtn.click(); return;
   }
+  if (e.code === 'KeyT' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (!resultEl.classList.contains('hidden')) { e.preventDefault(); document.getElementById('timerBtn').click(); return; }
+  }
+  if ((e.code === 'KeyR' || e.code === 'PageUp') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault();
+    if (!resultEl.classList.contains('hidden')) document.getElementById('absentBtn').click();
+    else if (!race || race.phase === 'done') startRace();
+    return;
+  }
+  if (e.code === 'Escape' || e.code === 'KeyB' || e.code === 'Period') {
+    if (!resultEl.classList.contains('hidden')) { e.preventDefault(); continueGame(); return; }
+  }
+  if (e.code.startsWith('Digit') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const idx = parseInt(e.code.slice(5)) - 1;
+    if (idx >= 0 && idx < GAMES.length) { e.preventDefault(); activateGame(GAMES[idx].id); return; }
+  }
   if (e.code === 'Space' || e.code === 'PageDown' || (e.code === 'Enter' && tag !== 'button' && tag !== 'a')) {
     e.preventDefault();
     if (!resultEl.classList.contains('hidden')) continueGame();
@@ -1268,7 +1504,21 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* ================= Boot ================= */
+/* ================= Boot & URL Query Reading ================= */
+try {
+  const urlParams = new URLSearchParams(location.search);
+  const qCls = urlParams.get('cls');
+  if (qCls && store.classes.some(c => c.id === qCls)) {
+    store.activeId = qCls;
+    save(true);
+  }
+  const qGame = urlParams.get('game');
+  if (qGame && GAMES.some(g => g.id === qGame)) {
+    store.settings.game5 = qGame;
+    save(true);
+  }
+} catch (e) {}
+
 updateUI();
 if (document.fonts) document.fonts.load('700 30px "Baloo 2"').then(() => { for (const k in tagCache) delete tagCache[k]; }).catch(() => {});
 activateGame(GAME_IMPL[curGame()] ? curGame() : 'g25', true);
