@@ -1,4 +1,4 @@
-// Game 26 — Time Machine Mix-Up (matching paths & puzzles)
+﻿// Game 26 â€” Time Machine Mix-Up (matching paths & puzzles)
 // Ten time portals each show a colour and an era symbol, then swap places. Matching the right portal pair brings
 // the picked student back to class.
 // Twist: the first portal pair sends someone home with a cooking pot on their head instead of a crown;
@@ -27,8 +27,8 @@
 
   GAME_IMPL.g26 = {
     id: 'g26', title: 'Time Machine Mix-Up', base: 'assets/g26/', titleY: 820, paintedOk: false,
-    assets: gAssets(['observe', 'shuffle', 'choose', 'wrong', 'crown', 'dino', 'win'], [...ICONS, 'q1', 'q20', 'q21', 'q22', 'q23']),
-    startBanner: '⏳ Remember each portal\'s symbol!', mote: '#d6f4ff', rayColor: '#d6f4ff',
+    assets: gAssets(['choose', 'crown', 'dino', 'win'], [...ICONS, 'q1', 'q20', 'q21']),
+    startBanner: 'â³ Remember each portal\'s symbol!', mote: '#d6f4ff', rayColor: '#d6f4ff',
 
     setup(r) {
       const slots = spread(r.players.length), icons = shuffle([...ICONS]);
@@ -42,18 +42,18 @@
 
     tick(r, t, te) {
       const f = activeFake(r, t), D = r.decoy, Wn = r.winner;
-      if (t > .6) cue('open', () => { SFX.swoosh(); r.banner = '🌀 The portals open — remember the eras!'; });
-      if (t > .6 + r.M) cue('close', () => { SFX.tone(220, .3, { type: 'triangle', vol: .12 }); r.banner = '⏳ The portals swap places…'; });
+      if (t > .6) cue('open', () => { SFX.swoosh(); r.banner = 'ðŸŒ€ The portals open â€” remember the eras!'; });
+      if (t > .6 + r.M) cue('close', () => { SFX.tone(220, .3, { type: 'triangle', vol: .12 }); r.banner = 'â³ The portals swap placesâ€¦'; });
       for (const s of r.swaps) if (t > s.at) cue('sw' + s.at, () => SFX.noise(.2, { vol: .1, f: 2200, to: 800, q: .8 }));
-      if (f && te < 0 && t > r.swaps.reduce((m, s) => Math.max(m, s.at), 0)) cue('fk' + f.at, () => { SFX.leader(); r.banner = '🤖 The robot checks ' + f.p.name + "'s portal…"; });
+      if (f && te < 0 && t > r.swaps.reduce((m, s) => Math.max(m, s.at), 0)) cue('fk' + f.at, () => { SFX.leader(); r.banner = 'ðŸ¤– The robot checks ' + f.p.name + "'s portalâ€¦"; });
       if (!r.plain) {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); SFX.swoosh(); r.banner = '🌀 ' + D.name + ' steps through…'; });
-        if (te > .6) cue('b', () => { outcome('wrong_turn', D); SFX.sadTrombone(); r.banner = '🍲 Back with a cooking POT instead of a crown!'; });
-        if (te > 1.1) cue('c', () => { CAM.shake(r, 8); SFX.wheee(); r.banner = '🦖 The dino robot spins the time ring…'; });
-        if (te > 1.8) cue('d', () => { outcome('selected', Wn); SFX.sparkle(); r.banner = '👑 …and opens ' + Wn.name + "'s portal!"; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); SFX.swoosh(); r.banner = 'ðŸŒ€ ' + D.name + ' steps throughâ€¦'; });
+        if (te > .6) cue('b', () => { outcome('wrong_turn', D); SFX.sadTrombone(); r.banner = 'ðŸ² Back with a cooking POT instead of a crown!'; });
+        if (te > 1.1) cue('c', () => { CAM.shake(r, 8); SFX.wheee(); r.banner = 'ðŸ¦– The dino robot spins the time ringâ€¦'; });
+        if (te > 1.8) cue('d', () => { outcome('selected', Wn); SFX.sparkle(); r.banner = 'ðŸ‘‘ â€¦and opens ' + Wn.name + "'s portal!"; });
       } else {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = '🌀 Is it ' + (D || Wn).name + "'s portal?"; });
-        if (te > 1.2) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = '👑 No — this one! Welcome back, ' + Wn.name + '!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = 'ðŸŒ€ Is it ' + (D || Wn).name + "'s portal?"; });
+        if (te > 1.2) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = 'ðŸ‘‘ No â€” this one! Welcome back, ' + Wn.name + '!'; });
       }
     },
 
@@ -90,7 +90,7 @@
       drawImg('q1', 800 + Math.sin(t * .7) * 420, 160 + Math.sin(t * 2) * 10, 120);
     },
     onFinish() { FX.sparkle(800, 650, 40, ['#5df2ff', '#c27cff', '#ffd84a']); },
-    winBanner: r => '🏫 ' + r.winner.name + ' is back in class!',
+    winBanner: r => 'ðŸ« ' + r.winner.name + ' is back in class!',
     winPos: () => ({ x: 800, y: 680 })
   };
 })();

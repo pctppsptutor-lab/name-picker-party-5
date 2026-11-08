@@ -1,4 +1,4 @@
-// Game 27 — Puppy Pool Float Race
+﻿// Game 27 â€” Puppy Pool Float Race
 // Ten puppies paddle along a soft obstacle course of rings, floating bridges and water balls;
 // the puppy that reaches the golden bone platform is picked.
 // Twist: the leading puppy gets busy chasing its tail on a ring float; a float gate swings open and carries another puppy to the platform.
@@ -17,8 +17,8 @@
 
   GAME_IMPL.g27 = {
     id: 'g27', title: 'Puppy Pool Float Race', base: 'assets/g27/', titleY: 230, animals: true, paintedOk: false,
-    assets: gAssets(['idle', 'ready', 'swim', 'bridge', 'false', 'tail', 'win'], ['p7', 'p8', 'p9', 'p10', 'p13', 'p22', 'p27', 'p30', 'p34', 'p35', ...FLOATS]),
-    startBanner: '🐶 Splash! The puppies dive in!', mote: '#e8fbff', rayColor: '#fff2a8',
+    assets: gAssets(['idle', 'ready', 'swim', 'bridge', 'tail', 'win'], ['p7', 'p8', 'p9', 'p10', 'p13', 'p22', 'p27', 'p30', ...FLOATS]),
+    startBanner: 'ðŸ¶ Splash! The puppies dive in!', mote: '#e8fbff', rayColor: '#fff2a8',
 
     setup(r) {
       const n = r.players.length, lanes = shuffle([...Array(n).keys()]);
@@ -39,18 +39,18 @@
       const D = r.decoy, Wn = r.winner;
       if (te < -.25 && t > 1.3) {
         const lead = r.players.reduce((a, b) => progress(r, b, t) > progress(r, a, t) ? b : a);
-        if (lead !== r.leader && t - (r.leaderAt || 0) > .5) { r.leader = lead; r.leaderAt = t; r.banner = '🐶 In the lead: ' + lead.name; SFX.leader(); }
+        if (lead !== r.leader && t - (r.leaderAt || 0) > .5) { r.leader = lead; r.leaderAt = t; r.banner = 'ðŸ¶ In the lead: ' + lead.name; SFX.leader(); }
       }
       if (te < 0 && Math.random() < .05) SFX.paddle();
       if (te < 0 && Math.random() < .01) SFX.tone(500 + Math.random() * 200, .1, { type: 'square', vol: .04, to: 350 });   // woof
       if (!r.plain) {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); r.banner = '🐶 ' + D.name + ' is nearly at the bone…'; });
-        if (te > .5) cue('b', () => { outcome('wrong_turn', D); SFX.wheee(); SFX.sadTrombone(); r.banner = '🌀 …but stops to chase its own tail!'; });
-        if (te > 1.1) cue('c', () => { SFX.swoosh(); r.banner = '🚪 A float gate swings open…'; });
-        if (te > 1.6) cue('d', () => { outcome('selected', Wn); SFX.splash(); r.banner = '🐕 …and ' + Wn.name + ' zooms through!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); r.banner = 'ðŸ¶ ' + D.name + ' is nearly at the boneâ€¦'; });
+        if (te > .5) cue('b', () => { outcome('wrong_turn', D); SFX.wheee(); SFX.sadTrombone(); r.banner = 'ðŸŒ€ â€¦but stops to chase its own tail!'; });
+        if (te > 1.1) cue('c', () => { SFX.swoosh(); r.banner = 'ðŸšª A float gate swings openâ€¦'; });
+        if (te > 1.6) cue('d', () => { outcome('selected', Wn); SFX.splash(); r.banner = 'ðŸ• â€¦and ' + Wn.name + ' zooms through!'; });
       } else {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = '🐶 ' + (D || Wn).name + ' paddles hard…'; });
-        if (te > 1.1) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = '💨 …but ' + Wn.name + ' surfs past!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = 'ðŸ¶ ' + (D || Wn).name + ' paddles hardâ€¦'; });
+        if (te > 1.1) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = 'ðŸ’¨ â€¦but ' + Wn.name + ' surfs past!'; });
       }
       if (te > 2.9) cue('in', () => { SFX.ding(); FX.splash(...GOAL, 20); });
     },
@@ -77,7 +77,7 @@
         tagC(p.name, x - 100, y - 14, (r.leader === p && te < 0) || (p === Wn && te > 1.6));
       }
       // otter lifeguard
-      drawImg(te > .5 && te < 1.6 && !r.plain ? 'p13' : 'p13', 1500, 300, 150, { anchor: 'bottom', flip: te > 1.6 });
+      drawImg(te > .5 && te < 1.6 && !r.plain ? 'p27' : 'p13', 1500, 300, 150, { anchor: 'bottom', flip: te > 1.6 });
       if (done) {
         const k = clamp((rt - r.doneAt) / .4);
         drawImg('p22', GOAL[0] + 100, GOAL[1] - 150, 70);
@@ -94,7 +94,7 @@
       drawImg('p13', 1500, 300, 150, { anchor: 'bottom' });
     },
     onFinish() { FX.splash(GOAL[0], GOAL[1], 30); FX.sparkle(GOAL[0], GOAL[1] - 100, 30); },
-    winBanner: r => '🦴 ' + r.winner.name + ' reaches the golden bone!',
+    winBanner: r => 'ðŸ¦´ ' + r.winner.name + ' reaches the golden bone!',
     winPos: () => ({ x: GOAL[0], y: GOAL[1] - 80 })
   };
 })();

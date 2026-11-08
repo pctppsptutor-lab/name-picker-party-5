@@ -1,10 +1,10 @@
-// Game 29 — Stubborn Vending Machine (chain reaction)
+﻿// Game 29 â€” Stubborn Vending Machine (chain reaction)
 // Students set off a cut-away vending machine: a coin turns a coil, pushes a capsule down a chute, over a seesaw and a lever,
 // and it drops into one of ten trays.
 // Twist: the first capsule gets stuck on the seesaw and sends a false signal; a can with legs kicks a spare lever and the real capsule drops.
 (() => {
   const MACH = [260, 440];
-  const PATH = [[300, 200], [420, 220], [520, 300], [600, 300], [700, 360], [800, 360], [880, 420], [960, 470]];   // coil → chute → seesaw → lever
+  const PATH = [[300, 200], [420, 220], [520, 300], [600, 300], [700, 360], [800, 360], [880, 420], [960, 470]];   // coil â†’ chute â†’ seesaw â†’ lever
   const SEESAW = [650, 330], LEVER = [880, 440];
   const TRAYS = [...Array(10).keys()].map(i => [1110 + (i % 2) * 190, 150 + Math.floor(i / 2) * 140]);
   const KIDS = [...Array(10).keys()].map(i => [130 + i * 120, 860]);
@@ -33,8 +33,8 @@
 
   GAME_IMPL.g29 = {
     id: 'g29', title: 'Stubborn Vending Machine', base: 'assets/g29/', titleY: 640, paintedOk: false,
-    assets: gAssets(['coin', 'coil', 'slide', 'lever', 'stuck', 'kick', 'win'], [...CAPS, 'p0', 'p1', 'p2', 'p12', 'p13', 'p14', 'p19', 'p22', 'p27']),
-    startBanner: '🪙 Coin in — let\'s see what drops!', mote: '#f0e6ff', rayColor: '#fff2a8',
+    assets: gAssets(['coin', 'coil', 'slide', 'lever', 'stuck', 'kick', 'win'], [...CAPS, 'p0', 'p1', 'p12', 'p27']),
+    startBanner: 'ðŸª™ Coin in â€” let\'s see what drops!', mote: '#f0e6ff', rayColor: '#fff2a8',
 
     setup(r) {
       const trays = shuffle([...Array(10).keys()]);
@@ -48,18 +48,18 @@
       const D = r.decoy, Wn = r.winner;
       for (const run of r.runs) {
         if (t > run.at) cue('c' + run.at, () => { SFX.tone(1800, .08, { type: 'triangle', vol: .08 }); SFX.tone(1400, .1, { type: 'triangle', vol: .06, delay: .06 }); });
-        if (t > run.at + run.dur) cue('in' + run.at, () => { SFX.boing(); r.banner = '🎁 A capsule lands in ' + run.p.name + "'s tray… and bounces out!"; });
+        if (t > run.at + run.dur) cue('in' + run.at, () => { SFX.boing(); r.banner = 'ðŸŽ A capsule lands in ' + run.p.name + "'s trayâ€¦ and bounces out!"; });
       }
-      if (t > r.goldAt) cue('gold', () => { SFX.sparkle(); r.banner = '✨ The golden capsule starts rolling!'; });
+      if (t > r.goldAt) cue('gold', () => { SFX.sparkle(); r.banner = 'âœ¨ The golden capsule starts rolling!'; });
       if (te < 0 && Math.random() < .03) SFX.tone(120, .1, { type: 'sawtooth', vol: .03, lp: 400 });
       if (!r.plain) {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); r.banner = '🎁 Heading for ' + D.name + "'s tray…"; });
-        if (te > .4) cue('b', () => { outcome('wrong_turn', D); SFX.sadTrombone(); [0, .25].forEach(d => SFX.tone(660, .2, { type: 'square', vol: .07, delay: d })); r.banner = '😤 Stuck on the seesaw! False signal!'; });
-        if (te > 1) cue('c', () => { CAM.shake(r, 8); SFX.boing(); r.banner = '🥫 A can with legs kicks the spare lever!'; });
-        if (te > 1.4) cue('d', () => { outcome('selected', Wn); SFX.wheee(); r.banner = '🎁 The capsule drops towards ' + Wn.name + '!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); r.banner = 'ðŸŽ Heading for ' + D.name + "'s trayâ€¦"; });
+        if (te > .4) cue('b', () => { outcome('wrong_turn', D); SFX.sadTrombone(); [0, .25].forEach(d => SFX.tone(660, .2, { type: 'square', vol: .07, delay: d })); r.banner = 'ðŸ˜¤ Stuck on the seesaw! False signal!'; });
+        if (te > 1) cue('c', () => { CAM.shake(r, 8); SFX.boing(); r.banner = 'ðŸ¥« A can with legs kicks the spare lever!'; });
+        if (te > 1.4) cue('d', () => { outcome('selected', Wn); SFX.wheee(); r.banner = 'ðŸŽ The capsule drops towards ' + Wn.name + '!'; });
       } else {
-        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = '🎁 Will it be ' + (D || Wn).name + '?'; });
-        if (te > 1) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = '⚙️ The lever flips it another way!'; });
+        if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D || Wn); r.banner = 'ðŸŽ Will it be ' + (D || Wn).name + '?'; });
+        if (te > 1) cue('d', () => { outcome('selected', Wn); SFX.boing(); r.banner = 'âš™ï¸ The lever flips it another way!'; });
       }
       if (te > 2.9) cue('drop', () => { SFX.ding(); FX.sparkle(...TRAYS[Wn.tray], 26); });
     },
@@ -92,15 +92,15 @@
       const b = !done && this.ball(r, rt);
       if (b) { FX.halo(b[0], b[1], 30, '#ffd84a', .6); drawImg('p10', b[0], b[1], 44); }
       if (!r.plain && te > .7 && te < 1.6 && !done) { const k = ease(clamp((te - .7) / .3)); can(lerp(1050, LEVER[0] + 50, k), LEVER[1] + 10, rt, true); }
-      for (const p of r.players) {
-        if (done && p === Wn) continue;
+      for (let i = 0; i < r.players.length; i++) {
+        const p = r.players[i]; if (done && p === Wn) continue;
         let pose = 'coin';
         if (r.runs.some(run => run.p === p && rt > run.at && rt < run.at + run.dur)) pose = 'slide';
         if (rt > r.goldAt && te < 0) pose = 'coil';
         if (p === D && te > 0) pose = !r.plain && te > .4 ? 'stuck' : 'lever';
         if (p === Wn && te > (r.plain ? 1 : 1.4)) pose = 'kick';
         charImg(p.av, pose, p.kx, p.ky, 120);
-        tagC(p.name, p.kx, p.ky + 20, p === Wn && te > 1.4);
+        tagC(p.name, p.kx, p.ky + (i % 2 ? 46 : 16), p === Wn && te > 1.4);
       }
       if (done) {
         const k = clamp((rt - r.doneAt) / .4);
@@ -118,7 +118,7 @@
       KIDS.forEach(([x, y], i) => charImg(i, 'coin', x, y, 120));
     },
     onFinish(r) { FX.sparkle(...TRAYS[r.winner.tray], 40, ['#ffd84a', '#ff9fc4', '#7cf7ff']); },
-    winBanner: r => '🎉 The prize drops for ' + r.winner.name + '!',
+    winBanner: r => 'ðŸŽ‰ The prize drops for ' + r.winner.name + '!',
     winPos: () => ({ x: 800, y: 700 })
   };
 })();

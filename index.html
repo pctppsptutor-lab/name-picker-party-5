@@ -3,24 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Name Picker Party 5</title>
+<title>Name Picker Party</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg1:#1b2a6b; --bg2:#3a1f73; --ink:#1c2550; --muted:#6a74a0; --line:#e3e6f5; --panel:#ffffff; --soft:#f3f5ff;
-  --blue:#3b82f6; --blue-d:#2559c7; --violet:#7c5cff; --violet-d:#5638d6; --sun:#ffc531; --sun-d:#d99a00;
-  --green:#22c55e; --green-d:#15913f; --red:#f04e5e; --red-d:#c2283a; --pink:#ff6fae;
+  --bg1:#1b2a6b; --bg2:#3a1f73; --ink:#1c2550; --muted:#56608c; --line:#e3e6f5; --panel:#ffffff; --soft:#f3f5ff;
+  --blue:#3b82f6; --blue-d:#2559c7; --violet:#5b3ce6; --violet-d:#3f24b8; --sun:#ffc531; --sun-d:#d99a00;
+  --green:#22c55e; --green-d:#15913f; --red:#e03e50; --red-d:#b01e30; --pink:#d92b76;
   --r:22px; --font:"Baloo 2","Segoe UI",system-ui,sans-serif; --title:"Fredoka","Baloo 2",system-ui,sans-serif;
   --lift:0 5px 0 rgba(20,24,60,.18);
 }
 *{box-sizing:border-box}
-html,body{margin:0}
-body{min-height:100vh;color:var(--ink);font-family:var(--font);
+::selection{background:var(--sun);color:#3a2200}
+html,body{margin:0;scrollbar-color:#ffffff44 transparent}
+body{min-height:100vh;color:var(--ink);font-family:var(--font);line-height:1.45;
   background:radial-gradient(1200px 600px at 10% -10%,#4f6bff55,transparent 60%),radial-gradient(900px 600px at 110% 10%,#ff6fae44,transparent 60%),linear-gradient(160deg,var(--bg1),var(--bg2));
   background-attachment:fixed}
-button{font-family:inherit;cursor:pointer;transition:transform .08s,box-shadow .08s,filter .15s}
-button:hover:not(:disabled){filter:brightness(1.06)}
+button,a.vol{font-family:inherit;line-height:1.35;cursor:pointer;transition:transform .08s,box-shadow .08s,filter .15s}
+button:hover:not(:disabled),a.vol:hover{filter:brightness(1.06)}
+button:focus-visible,a.vol:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 button:disabled{cursor:not-allowed;opacity:.5}
 .hidden{display:none!important}
 /* candy button: coloured face with a darker "edge" below that collapses when pressed */
@@ -28,99 +30,104 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .candy:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--cd,var(--blue-d))}
 
 /* top bar */
-.top{display:flex;align-items:center;gap:14px;padding:14px 22px 10px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;color:#fff;font-family:var(--title);font-weight:700;font-size:30px;text-shadow:0 3px 0 rgba(0,0,0,.25)}
-.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,#ffd84a,#ff9f43);box-shadow:0 4px 0 #c46a00;transform:rotate(-6deg)}
-.brand small{display:block;font-family:var(--font);font-size:13px;font-weight:600;color:#c9d2ff;text-shadow:none;margin-top:-6px}
-.classBtn{--c:var(--sun);--cd:var(--sun-d);color:#4a3000;padding:9px 18px;font-size:17px;display:flex;align-items:center;gap:8px}
-.classBtn .pill{background:#fff6;border-radius:999px;padding:0 9px;font-size:14px}
+.top{display:flex;align-items:center;gap:12px;padding:14px 22px 10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;font-family:var(--title);font-weight:700;font-size:30px;line-height:1.35;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:26px;line-height:1.35;background:linear-gradient(135deg,#ffd84a,#ff9f43);box-shadow:0 4px 0 #c46a00;transform:rotate(-6deg)}
+.brand small{display:block;font-family:var(--font);font-size:13px;line-height:1.35;font-weight:600;color:#d6deff;text-shadow:none;margin-top:-4px}
+.classBtn{--c:var(--sun);--cd:var(--sun-d);color:#3d2600;padding:9px 18px;font-size:17px;display:flex;align-items:center;gap:8px;min-height:44px}
+.classBtn .pill{background:#ffffff88;border-radius:999px;padding:0 9px;font-size:14px;line-height:1.35}
+.vols{display:flex;align-items:center;gap:6px;padding:2px}
+.vol{text-decoration:none;color:#dce3ff;font-size:14px;font-weight:800;padding:5px 10px;border-radius:10px;line-height:1.35;background:#ffffff14;border:1px solid #ffffff24}
+.vol.on{background:var(--sun);color:#3d2600;border-color:var(--sun);box-shadow:0 2px 0 var(--sun-d)}
 .spacer{flex:1}
-.toolBtn{display:flex;align-items:center;gap:6px;border:2px solid #ffffff38;background:#ffffff1c;color:#fff;border-radius:14px;padding:7px 13px;font-size:15px;font-weight:700;backdrop-filter:blur(6px)}
+.toolBtn{display:flex;align-items:center;gap:6px;border:2px solid #ffffff38;background:#ffffff1c;color:#fff;border-radius:14px;padding:7px 13px;min-height:42px;font-size:15px;font-weight:700;backdrop-filter:blur(6px)}
 .toolBtn:active{transform:translateY(2px)}
-.toolBtn.off{color:#ffffff88;background:#00000022;text-decoration:line-through}
+.toolBtn.off{color:#ffffffaa;background:#00000033;text-decoration:line-through}
 
 /* game picker */
 .tabs{display:flex;gap:12px;padding:6px 22px 16px;overflow-x:auto;scrollbar-width:thin}
-.tab{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-width:205px;border:0;border-radius:18px;padding:9px 14px 9px 9px;text-align:left;background:#ffffffe8;color:var(--ink);box-shadow:var(--lift)}
-.tab .ico{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:24px;background:var(--soft)}
-.tab b{display:block;font-size:12px;letter-spacing:1px;color:var(--muted)}
-.tab .nm{font-size:16px;font-weight:800;line-height:1.1}
-.tab.active{background:linear-gradient(135deg,#fff,#eef0ff);outline:3px solid var(--sun);box-shadow:0 5px 0 var(--sun-d),0 0 0 6px #ffc53133}
+.tab{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-width:205px;border:0;border-radius:18px;padding:9px 14px 9px 9px;text-align:left;background:#ffffffeb;color:var(--ink);box-shadow:var(--lift)}
+.tab .ico{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:24px;line-height:1.35;background:var(--soft)}
+.tab b{display:block;font-size:12px;line-height:1.35;letter-spacing:.8px;color:var(--muted)}
+.tab .nm{font-size:16px;font-weight:800;line-height:1.35}
+.tab.active{background:linear-gradient(135deg,#fff,#eef0ff);outline:3px solid var(--sun);box-shadow:0 5px 0 var(--sun-d),0 10px 20px rgba(0,0,0,.28)}
 .tab.active .ico{background:linear-gradient(135deg,#ffd84a,#ff9f43)}
 
 /* layout */
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;padding:0 22px 22px;align-items:start}
 @media (max-width:1050px){.layout{grid-template-columns:1fr}}
-.stageWrap{position:relative;border-radius:26px;overflow:hidden;background:#10204a;container-type:inline-size;aspect-ratio:16/9;
+.stageWrap{position:relative;container-type:inline-size;aspect-ratio:16/9}
+#stage{display:block;width:100%;height:100%;border-radius:26px;background:#10204a;cursor:pointer;
   box-shadow:0 0 0 6px #ffffff22,0 0 0 10px #ffffff10,0 24px 50px rgba(0,0,0,.4)}
-#stage{display:block;width:100%;height:100%}
-.stageWrap:fullscreen{border-radius:0;background:#0b1430;display:flex;align-items:center;justify-content:center;aspect-ratio:auto;box-shadow:none}
-.stageWrap:fullscreen #stage{width:min(100vw,177.78vh);height:auto;aspect-ratio:16/9}
+body.running #stage{cursor:default}
+.stageWrap:fullscreen{background:#0b1430;display:flex;align-items:center;justify-content:center;aspect-ratio:auto}
+.stageWrap:fullscreen #stage,.stageWrap:fullscreen .result{width:min(100vw,177.78vh);height:auto;aspect-ratio:16/9;border-radius:0;box-shadow:none}
 
 /* result card */
-.result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#0b1a4588,#0b1a45cc);animation:fade .3s}
+.result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(11,26,69,.78);animation:fade .25s ease-out}
 .card{position:relative;background:#fff;border-radius:3cqw;padding:3.4cqw 5cqw 2.6cqw;text-align:center;max-width:80cqw;
-  box-shadow:0 1cqw 0 #d9ddf3,0 3cqw 7cqw rgba(0,0,0,.4);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
-.ribbon{position:absolute;left:50%;top:-2.2cqw;transform:translateX(-50%);white-space:nowrap;background:linear-gradient(var(--pink),#e2448d);color:#fff;
-  font-size:2.2cqw;font-weight:800;padding:.6cqw 3cqw;border-radius:1.2cqw;box-shadow:0 .5cqw 0 #b0306c}
+  box-shadow:0 1cqw 0 #d9ddf3,0 3cqw 7cqw rgba(0,0,0,.4);animation:pop .4s cubic-bezier(.16,1,.3,1)}
+.ribbon{position:absolute;left:50%;top:-2.2cqw;transform:translateX(-50%);white-space:nowrap;background:linear-gradient(180deg,#d92b76,#b01e5e);color:#fff;
+  font-size:2.2cqw;line-height:1.35;font-weight:800;padding:.6cqw 3cqw;border-radius:1.2cqw;box-shadow:0 .5cqw 0 #7a1040}
 .card img{height:17cqw;display:block;margin:0 auto;filter:drop-shadow(0 .6cqw .6cqw rgba(0,0,0,.2))}
-.card .name{font-family:var(--title);font-size:7.2cqw;font-weight:700;line-height:1.05;margin:.6cqw 0 1.8cqw;word-break:break-word;
-  background:linear-gradient(90deg,#3b82f6,#7c5cff,#ff6fae);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card .name{font-family:var(--title);font-size:7.2cqw;font-weight:700;line-height:1.3;margin:.6cqw 0 1.8cqw;word-break:break-word;
+  color:var(--ink);text-shadow:0 3px 0 #dfe4fa}
 .card .btns{display:flex;gap:1.4cqw;justify-content:center}
 .card button{font-size:2cqw;padding:.9cqw 2.6cqw}
 .btnGo{--c:var(--green);--cd:var(--green-d)}
 .btnSoft{--c:#eef0ff;--cd:#c9cfee;color:var(--ink)!important}
-@keyframes pop{from{transform:scale(.4) rotate(-4deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes fade{from{opacity:0}}
 
 /* sidebar */
 .side{display:flex;flex-direction:column;gap:16px}
 .panel{background:var(--panel);border-radius:var(--r);padding:16px 18px;box-shadow:0 6px 0 #00000026,0 14px 30px rgba(0,0,0,.18)}
-.panel h3{margin:0 0 10px;font-family:var(--title);font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px}
-.panel h3 .badge{margin-left:auto;background:var(--soft);color:var(--violet);border-radius:999px;padding:0 10px;font-size:15px}
+.panel h3{margin:0 0 10px;font-family:var(--title);font-size:20px;line-height:1.35;font-weight:700;display:flex;align-items:center;gap:8px}
+.panel h3 .badge{margin-left:auto;background:var(--soft);color:var(--violet);border-radius:999px;padding:2px 10px;font-size:15px;line-height:1.35}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.lab{font-size:13px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.lab{font-size:14px;line-height:1.35;font-weight:800;letter-spacing:.2px;color:var(--ink);margin:12px 0 6px}
 /* segmented control for the durations */
-#durChips{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--soft);padding:4px;border-radius:14px}
-.chip{border:0;background:transparent;border-radius:10px;padding:6px 0;font-size:16px;font-weight:800;color:var(--muted)}
-.chip.on{background:#fff;color:var(--violet);box-shadow:0 2px 0 #d5d9f2,0 2px 8px rgba(60,60,140,.12)}
+#durChips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.chip{border:2px solid var(--line);background:var(--soft);border-radius:10px;padding:6px 0;min-height:38px;font-size:16px;font-weight:800;color:var(--muted)}
+.chip.on{background:#fff;border-color:var(--violet);color:var(--violet);box-shadow:0 2px 0 #d5d9f2}
 /* switches */
-.check{display:flex;gap:10px;align-items:center;font-weight:600;font-size:15px;margin-top:10px;cursor:pointer;line-height:1.25}
+.check{display:flex;gap:10px;align-items:center;font-weight:600;font-size:15px;margin-top:10px;cursor:pointer;line-height:1.4}
 .check input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:44px;height:26px;border-radius:999px;background:#d9ddef;position:relative;cursor:pointer;transition:background .2s;margin:0}
 .check input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:left .2s}
 .check input:checked{background:var(--green)}
 .check input:checked::after{left:21px}
-.check small{display:block;color:var(--muted);font-weight:500;font-size:13px}
-select{font-family:inherit;font-size:15px;font-weight:700;padding:6px 10px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);flex:1}
+.check input:disabled{opacity:.45;cursor:not-allowed}
+.check small{display:block;color:var(--muted);font-weight:500;font-size:13px;line-height:1.35}
+select{font-family:inherit;font-size:15px;font-weight:700;padding:7px 10px;min-height:40px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);flex:1}
 .startBtn{--c:linear-gradient(180deg,#3ee07a,#1fb555);--cd:#13853d;width:100%;font-family:var(--title);font-size:30px;padding:16px 10px;border-radius:24px;animation:breathe 2.4s ease-in-out infinite}
 .startBtn:disabled{animation:none}
 @keyframes breathe{50%{transform:scale(1.025)}}
-.hint{text-align:center;font-size:14px;color:#c9d2ff;margin-top:8px}
-.hint kbd{background:#fff;color:var(--ink);border-radius:6px;padding:0 7px;box-shadow:0 2px 0 #b8bfe0;font-family:inherit;font-weight:800}
+.hint{text-align:center;font-size:14px;color:#d6deff;margin-top:8px}
+.hint kbd{background:#fff;color:var(--ink);border-radius:6px;padding:1px 7px;box-shadow:0 2px 0 #b8bfe0;font-family:inherit;font-weight:800}
 .status{font-size:15px;font-weight:700;color:var(--muted);margin:0 0 10px}
 .status.done{color:var(--red)}
 .meter{height:10px;border-radius:999px;background:var(--soft);overflow:hidden;margin:-4px 0 12px}
-.meter i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--violet));transition:width .4s}
-.called{list-style:none;margin:0;padding:0;max-height:250px;overflow:auto;display:flex;flex-direction:column;gap:5px}
-.called li{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:700;background:var(--soft);border-radius:12px;padding:4px 10px}
+.meter i{display:block;width:100%;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--violet));transform-origin:left;transform:scaleX(0);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.called{list-style:none;margin:0;padding:0;max-height:250px;overflow:auto;display:flex;flex-direction:column;gap:5px;scrollbar-color:var(--line) transparent}
+.called li{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:700;background:var(--soft);border-radius:12px;padding:5px 10px}
 .called li i{font-style:normal;font-size:12px;font-weight:800;color:#fff;background:var(--violet);border-radius:999px;min-width:24px;height:24px;display:grid;place-items:center}
 .called .empty{background:none;color:var(--muted);font-weight:600}
-.resetBtn{margin-top:12px;width:100%;border:2px dashed #cfd4ee;background:#fff;border-radius:14px;padding:7px;font-size:15px;font-weight:800;color:var(--muted)}
+.resetBtn{margin-top:12px;width:100%;border:2px dashed #cfd4ee;background:#fff;border-radius:14px;padding:8px;min-height:40px;font-size:15px;font-weight:800;color:var(--muted)}
 .resetBtn.confirm{border-style:solid;border-color:var(--red);color:var(--red);background:#fff3f4}
 .note{font-size:13px;color:var(--muted);line-height:1.45}
-.side>.note{color:#c9d2ff;padding:0 6px}
+.side>.note{color:#d6deff;padding:0 8px}
 body.running .lockable{pointer-events:none;opacity:.45}
 
 /* class page */
 .modal{position:fixed;inset:0;background:rgba(10,16,48,.6);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:28px 12px;overflow:auto;z-index:50}
-.sheet{background:#fff;border-radius:26px;width:min(920px,100%);padding:22px 24px;box-shadow:0 8px 0 #00000030,0 30px 70px rgba(0,0,0,.45);animation:pop .35s ease-out}
+.sheet{background:#fff;border-radius:26px;width:min(920px,100%);padding:22px 24px;box-shadow:0 8px 0 #00000030,0 30px 70px rgba(0,0,0,.45);animation:pop .3s cubic-bezier(.16,1,.3,1)}
 .sheet h2{margin:0 0 12px;font-family:var(--title);font-size:28px}
 .sheet .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media (max-width:760px){.sheet .grid{grid-template-columns:1fr}}
 .sheet input[type=text]{font-family:inherit;font-size:17px;font-weight:700;padding:8px 12px;border:2px solid var(--line);border-radius:12px;width:100%;color:var(--ink)}
-.sheet input[type=text]:focus,textarea:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 4px #7c5cff22}
+.sheet input[type=text]:focus,textarea:focus,select:focus{outline:3px solid var(--violet);outline-offset:1px;border-color:var(--violet)}
 textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2px solid var(--line);border-radius:14px;padding:10px 12px;color:var(--ink);resize:vertical;line-height:1.45;background:var(--soft)}
-.smallBtn{border:2px solid var(--line);background:#fff;border-radius:12px;padding:4px 12px;font-size:14px;font-weight:800;color:var(--ink);box-shadow:0 3px 0 var(--line)}
+.smallBtn{border:2px solid var(--line);background:#fff;border-radius:12px;padding:6px 13px;min-height:38px;font-size:14px;font-weight:800;color:var(--ink);box-shadow:0 3px 0 var(--line)}
 .smallBtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
 .smallBtn.add{border-color:#cbbcff;color:var(--violet);box-shadow:0 3px 0 #cbbcff}
 .smallBtn.danger.confirm{border-color:var(--red);color:var(--red);background:#fff3f4;box-shadow:0 3px 0 #f6b5bc}
@@ -128,34 +135,41 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
 .numBox{display:flex;align-items:center;gap:10px;margin:6px 0}
 .numBox input[type=range]{flex:1;accent-color:var(--violet)}
 .numBox b{font-family:var(--title);font-size:28px;min-width:48px;text-align:center;color:var(--violet)}
-.gchips{display:flex;flex-wrap:wrap;gap:6px;max-height:300px;overflow:auto}
-.gchip{border:2px solid #bcd3ff;background:#eef4ff;border-radius:999px;padding:2px 11px;font-size:15px;font-weight:700;color:#2559c7}
-.gchip.f{border-color:#ffc2dc;background:#fff0f7;color:#c2306f}
-.done{--c:var(--green);--cd:var(--green-d);font-size:20px;padding:9px 32px}
-.backup{margin-top:18px;padding:12px 14px;border-radius:16px;background:var(--soft);display:flex;flex-direction:column;gap:8px;font-size:15px}
+.gchips{display:flex;flex-wrap:wrap;gap:6px;max-height:300px;overflow:auto;padding:2px}
+.gchip{border:2px solid #bcd3ff;background:#eef4ff;border-radius:999px;padding:5px 12px;min-height:36px;font-size:15px;font-weight:700;color:#1e4bb8}
+.gchip.f{border-color:#ffc2dc;background:#fff0f7;color:#a81d58}
+.done{--c:var(--green);--cd:var(--green-d);font-size:20px;padding:9px 32px;min-height:44px}
+.backup{margin-top:18px;padding-top:14px;border-top:2px solid var(--line);display:flex;flex-direction:column;gap:8px;font-size:15px}
 .sheetFoot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;flex-wrap:wrap}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 20px;border-radius:999px;font-weight:700;z-index:60;animation:fade .2s;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="logo">🥕</span><span>Name Picker Party 5<small>Six more mini-games for calling on students</small></span></div>
+  <div class="brand"><span class="logo">🎲</span><span>Name Picker Party<small>Random student caller · Games 01–06</small></span></div>
   <button id="classBtn" class="candy classBtn lockable">👩‍🏫 <span id="classLabel">Sample class · 10</span></button>
+  <nav class="vols lockable" aria-label="Game volumes">
+    <a class="vol on" href="https://infinitegamingtv.github.io/goi-ten-vui-nhon/" aria-current="page">Vol 1</a>
+    <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-2/">Vol 2</a>
+    <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-3/">Vol 3</a>
+    <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-4/">Vol 4</a>
+    <a class="vol" href="https://infinitegamingtv.github.io/name-picker-party-5/">Vol 5</a>
+  </nav>
   <div class="spacer"></div>
-  <button id="musicBtn" class="toolBtn">🎵 Music</button>
-  <button id="soundBtn" class="toolBtn">🔊 Sound</button>
-  <button id="fsBtn" class="toolBtn">⛶ Full screen</button>
+  <button id="musicBtn" class="toolBtn" title="Toggle music (M)">🎵 Music</button>
+  <button id="soundBtn" class="toolBtn" title="Toggle sound effects (S)">🔊 Sound</button>
+  <button id="fsBtn" class="toolBtn" title="Toggle full screen (F)">⛶ Full screen</button>
 </header>
 
-<nav id="gameTabs" class="tabs lockable"></nav>
+<nav id="gameTabs" class="tabs lockable" aria-label="Mini-games"></nav>
 
 <main class="layout">
-  <section class="stageWrap" id="stageWrap">
-    <canvas id="stage" width="1920" height="1080"></canvas>
-    <div id="result" class="result hidden">
+  <section class="stageWrap" id="stageWrap" aria-label="Game stage">
+    <canvas id="stage" width="1920" height="1080" title="Click or press Space to pick a name"></canvas>
+    <div id="result" class="result hidden" role="dialog" aria-modal="true" aria-labelledby="resName">
       <div class="card">
-        <div class="ribbon">🎉 And the pick is…</div>
-        <img id="resImg" alt="">
+        <span class="ribbon">🎉 And the pick is…</span>
+        <img id="resImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Selected student character">
         <div class="name" id="resName"></div>
         <div class="btns">
           <button class="candy btnGo" id="contBtn">Next round ▶</button>
@@ -168,17 +182,17 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
   <aside class="side">
     <div>
       <button class="candy startBtn" id="startBtn">▶ Pick a name!</button>
-      <div class="hint">or press <kbd>Space</kbd></div>
+      <div class="hint">or press <kbd>Space</kbd> / click stage</div>
     </div>
 
-    <div class="panel lockable">
+    <section class="panel lockable" aria-label="Settings">
       <h3>⚙️ Settings</h3>
       <div class="lab">Round length</div>
-      <div id="durChips"></div>
+      <div id="durChips" role="group" aria-label="Round length"></div>
       <label class="check"><input type="checkbox" id="restChk"><span>Skip students already picked</span></label>
-      <label class="check"><input type="checkbox" id="calmChk"><span>Reduce motion<small>No screen shake or zoom</small></span></label>
-      <label class="check"><input type="checkbox" id="paintedChk"><span>Painted backgrounds<small>Games 2–6, about 200 KB more each</small></span></label>
-      <div class="lab">Read the name aloud</div>
+      <label class="check"><input type="checkbox" id="calmChk"><span>Reduce motion<small>No screen shake, zoom or slow-mo</small></span></label>
+      <label class="check" id="paintedWrap" style="display:none"><input type="checkbox" id="paintedChk"><span>Painted backgrounds<small id="paintedSub">Code-drawn scene for this game</small></span></label>
+      <label class="lab" for="voiceSel" style="display:block">Read the name aloud</label>
       <div class="row">
         <select id="voiceSel">
           <option value="en">English</option>
@@ -187,27 +201,27 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
         </select>
         <button class="smallBtn" id="testBtn">Test sound</button>
       </div>
-    </div>
+    </section>
 
-    <div class="panel">
+    <section class="panel" aria-label="Picked students">
       <h3>📋 Picked so far <span class="badge" id="calledCount"></span></h3>
-      <div class="status" id="status"></div>
+      <div class="status" id="status" aria-live="polite"></div>
       <div class="meter"><i id="meterBar"></i></div>
       <ol class="called" id="calledList"></ol>
       <button class="resetBtn lockable" id="resetBtn">↺ Start over</button>
-    </div>
+    </section>
     <div class="note">Every pick is truly random. The winner is chosen the moment you press Pick; the near-misses are just for suspense.</div>
   </aside>
 </main>
 
 <!-- Class list page -->
-<div id="classPage" class="modal hidden">
+<div id="classPage" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="classModalTitle">
   <div class="sheet">
-    <h2>👩‍🏫 Class lists</h2>
-    <div class="row" id="classTabs"></div>
+    <h2 id="classModalTitle">👩‍🏫 Class lists</h2>
+    <div class="row" id="classTabs" role="tablist" aria-label="Classes"></div>
     <div class="grid" style="margin-top:14px">
       <div>
-        <div class="lab">Class name</div>
+        <label class="lab" for="className" style="display:block">Class name</label>
         <input type="text" id="className" maxlength="40">
         <div class="lab">Call students by</div>
         <div class="row">
@@ -215,16 +229,16 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
           <button class="smallBtn" data-mode="numbers">Number</button>
         </div>
         <div id="numPane" class="hidden">
-          <div class="lab">Class size (calls “No. 1, No. 2…”)</div>
+          <label class="lab" for="numRange" style="display:block">Class size (calls “No. 1, No. 2…”)</label>
           <div class="numBox">
-            <button class="smallBtn" id="numMinus">−</button>
+            <button class="smallBtn" id="numMinus" aria-label="Decrease class size">−</button>
             <input type="range" min="2" max="50" id="numRange">
-            <button class="smallBtn" id="numPlus">+</button>
+            <button class="smallBtn" id="numPlus" aria-label="Increase class size">+</button>
             <b id="numVal">30</b>
           </div>
         </div>
         <div id="namePane">
-          <div class="lab">One name per line — short names read best</div>
+          <label class="lab" for="namesBox" style="display:block">One name per line — short names read best</label>
           <textarea id="namesBox" spellcheck="false" placeholder="Emma&#10;Liam&#10;Alex (girl)"></textarea>
           <div class="row" style="margin-top:8px">
             <button class="smallBtn" id="importBtn">📄 Import .txt / .csv</button>
@@ -274,12 +288,11 @@ const activeFake = (r, t) => (r.fakes || []).find(f => t >= f.at && t < f.at + f
 <script src="games/decor.js"></script>
 <script src="games/bases.js"></script>
 <script src="games/scenes.js"></script>
-<script src="games/g25-weather.js"></script>
-<script src="games/g26-time.js"></script>
-<script src="games/g27-puppies.js"></script>
-<script src="games/g28-cloak.js"></script>
-<script src="games/g29-vending.js"></script>
-<script src="games/g30-bunny.js"></script>
+<script src="games/g2-eggs.js"></script>
+<script src="games/g3-cauldron.js"></script>
+<script src="games/g4-dragon.js"></script>
+<script src="games/g5-robots.js"></script>
+<script src="games/g6-hotel.js"></script>
 <script>
 'use strict';
 /* ================= Storage ================= */
@@ -402,7 +415,7 @@ function loadStings(set, base) {
   ['almost_selected', 'selected', 'wrong_turn', 'win'].forEach(n => { const a = new Audio(base + 'sfx_' + n + '.wav'); a.preload = 'auto'; s[n] = a; });
   return s;
 }
-let STINGS = {};
+let STINGS = loadStings('g25', 'assets/g25/');
 const SFX = {
   sting(n, vol = .9) { if (!store.settings.sound || !STINGS[n]) return; const a = STINGS[n].cloneNode(); a.volume = vol; a.play().catch(() => {}); },
   ok() { return store.settings.sound ? AUD.get() : null; },
@@ -528,165 +541,40 @@ function speak(name) {
 if ('speechSynthesis' in window) speechSynthesis.getVoices();
 
 /* ================= Assets ================= */
-const IMGSETS = { g1: {} };
-let IMG = IMGSETS.g1;          // images of the game being shown
+const IMGSETS = {};
+let IMG = {};          // images of the game being shown
 function loadImages(set, base, names) {
   const dict = IMGSETS[set] = IMGSETS[set] || {};
   return Promise.all(names.map(n => dict[n] ? 0 : new Promise(res => {
     const im = new Image(); im.onload = () => { dict[n] = im; res(); }; im.onerror = res; im.src = base + n + '.webp';
   })));
 }
-const ASSET_NAMES = ['name_plate', 'vfx_almost_selected', 'vfx_selected', 'vfx_wrong_turn', 'vfx_win', 'buoy_gold', 'buoy_red', 'tornado', 'splash_wave', 'bubble', 'whirl', 'splash_crown', 'splash_up', 'splash_s', 'wave1', 'wave2', 'wave3', 'ripple_spark',
-  'turtle_idle', 'turtle_whistle', 'turtle_point', 'turtle_point2', 'turtle_shock', 'turtle_cheer',
-  'float_a0', 'float_a1', 'float_a2', 'float_a3', 'float_b0', 'float_b1', 'float_b2', 'float_b3', 'float_c0', 'float_c1', 'float_c2', 'float_c3'];
-for (let i = 0; i < 10; i++) ASSET_NAMES.push('duck' + i + '_swim', 'duck' + i + '_dive', 'duck' + i + '_win');
-// head position (fraction of width/height) on each swim sprite, used to place the bow
-const HEAD = [[.593, .004], [.648, .005], [.626, .006], [.6, .005], [.525, 0], [.595, .005], [.61, 0], [.605, .004], [.632, .007], [.647, .005]];
-const FLOATS = ['float_a0', 'float_a1', 'float_a2', 'float_a3', 'float_b0', 'float_b1', 'float_b2', 'float_b3', 'float_c0', 'float_c1', 'float_c2', 'float_c3'];
-const assetsReady = Promise.resolve();   // Vol. 5 has no duck race
+const assetsReady = Promise.resolve();
 
-/* ================= Stage / scene ================= */
+/* ================= Stage / shared canvas helpers ================= */
 const W = 1600, H = 900;
-const RIVER_TOP = 250, RIVER_BOT = 862;
-const START_X = 400, FINISH_X = 1440, RACE_LEN = 1000;
-const BUOY = { x: 1500, y: 560 };
-const CHUTE = [[188, 112], [330, 108], [250, 318], [372, 316]];
-const DUCK_W = 104;
 const cv = document.getElementById('stage'), ctx = cv.getContext('2d');
 const SCALE = cv.width / W;
-const bezier = (p, t) => { const u = 1 - t; return [0, 1].map(k => u * u * u * p[0][k] + 3 * u * u * t * p[1][k] + 3 * u * t * t * p[2][k] + t * t * t * p[3][k]); };
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 const lerp = (a, b, t) => a + (b - a) * t;
-
-let bgCanvas = null;
-function buildBackground() {
-  const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
-  // sky
-  let gr = g.createLinearGradient(0, 0, 0, RIVER_TOP); gr.addColorStop(0, '#9fdcff'); gr.addColorStop(1, '#e9f9ff');
-  g.fillStyle = gr; g.fillRect(0, 0, W, RIVER_TOP);
-  // clouds
-  g.fillStyle = 'rgba(255,255,255,.9)';
-  [[520, 70, 1], [880, 48, .8], [1180, 92, .9], [330, 150, .6]].forEach(([x, y, s]) => {
-    [[0, 0, 34], [36, -14, 40], [76, 0, 32], [38, 12, 34]].forEach(([dx, dy, r]) => { g.beginPath(); g.arc(x + dx * s, y + dy * s, r * s, 0, 7); g.fill(); });
-  });
-  // far hills
-  g.fillStyle = '#a6dd84';
-  g.beginPath(); g.moveTo(0, 215);
-  for (let x = 0; x <= W; x += 40) g.lineTo(x, 190 - Math.sin(x / 170) * 26 - Math.sin(x / 63) * 8);
-  g.lineTo(W, RIVER_TOP); g.lineTo(0, RIVER_TOP); g.fill();
-  g.fillStyle = '#86cc63';
-  g.beginPath(); g.moveTo(0, 230);
-  for (let x = 0; x <= W; x += 40) g.lineTo(x, 214 - Math.sin(x / 120 + 2) * 14);
-  g.lineTo(W, RIVER_TOP); g.lineTo(0, RIVER_TOP); g.fill();
-  // trees on far bank
-  [[470, 205], [610, 198], [760, 210], [990, 200], [1120, 208], [1260, 202]].forEach(([x, y], i) => {
-    g.fillStyle = '#7a5a3a'; g.fillRect(x - 5, y - 10, 10, 26);
-    g.fillStyle = i % 2 ? '#4fae4a' : '#5cbc55';
-    g.beginPath(); g.arc(x, y - 26, 26, 0, 7); g.arc(x - 18, y - 12, 18, 0, 7); g.arc(x + 18, y - 12, 18, 0, 7); g.fill();
-  });
-  // near bank strip
-  g.fillStyle = '#5cb84a'; g.fillRect(0, RIVER_TOP - 18, W, 26);
-  g.fillStyle = '#e8d29a'; g.fillRect(0, RIVER_TOP + 2, W, 8);
-  // river
-  gr = g.createLinearGradient(0, RIVER_TOP, 0, RIVER_BOT); gr.addColorStop(0, '#6fd3f2'); gr.addColorStop(.5, '#3db5e6'); gr.addColorStop(1, '#2595cf');
-  g.fillStyle = gr; g.fillRect(0, RIVER_TOP + 8, W, RIVER_BOT - RIVER_TOP - 8);
-  // bottom bank
-  g.fillStyle = '#e8d29a'; g.fillRect(0, RIVER_BOT, W, 10);
-  g.fillStyle = '#5cb84a'; g.fillRect(0, RIVER_BOT + 8, W, H - RIVER_BOT);
-  for (let x = 10; x < W; x += 46) { g.fillStyle = (x / 46) % 3 < 1 ? '#ffd35c' : '#ff8fb1'; g.beginPath(); g.arc(x + (x % 17), RIVER_BOT + 24 + (x % 9), 4, 0, 7); g.fill(); }
-  // reeds near finish
-  g.strokeStyle = '#3f9a3c'; g.lineWidth = 4; g.lineCap = 'round';
-  for (let i = 0; i < 9; i++) { const x = 1555 + (i % 3) * 12, y = RIVER_BOT + 4; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x - 6, y - 30, x + (i % 2 ? 8 : -8), y - 50 - (i % 4) * 8); g.stroke(); }
-  // start line
-  g.save(); g.globalAlpha = .55;
-  for (let y = RIVER_TOP + 14; y < RIVER_BOT - 6; y += 18) { g.fillStyle = ((y / 18) | 0) % 2 ? '#fff' : '#1d3557'; g.fillRect(START_X - 40, y, 9, 18); }
-  g.restore();
-  drawTower(g);
-  bgCanvas = c;
-}
-function drawTower(g) {
-  // legs & braces
-  g.strokeStyle = '#9b6a3f'; g.lineWidth = 12; g.lineCap = 'round';
-  [[52, 120, 40, 300], [176, 120, 190, 300]].forEach(([x1, y1, x2, y2]) => { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); });
-  g.lineWidth = 7; g.strokeStyle = '#b5814f';
-  [[48, 160, 182, 220], [182, 160, 48, 220], [44, 230, 186, 285], [186, 230, 44, 285]].forEach(([a, b, c2, d]) => { g.beginPath(); g.moveTo(a, b); g.lineTo(c2, d); g.stroke(); });
-  // ladder
-  g.strokeStyle = '#c99561'; g.lineWidth = 5;
-  g.beginPath(); g.moveTo(16, 300); g.lineTo(40, 112); g.moveTo(40, 300); g.lineTo(62, 112); g.stroke();
-  for (let i = 0; i < 7; i++) { const t = i / 7, y = 290 - t * 170; g.beginPath(); g.moveTo(18 + t * 24, y); g.lineTo(42 + t * 22, y); g.stroke(); }
-  // platform
-  g.fillStyle = '#c98b52'; roundRect(g, 32, 98, 168, 22, 6); g.fill();
-  g.fillStyle = '#a86c39'; g.fillRect(36, 116, 160, 6);
-  // railing
-  g.strokeStyle = '#ffffff'; g.lineWidth = 5;
-  g.beginPath(); g.moveTo(40, 98); g.lineTo(40, 66); g.lineTo(128, 66); g.lineTo(128, 98); g.moveTo(84, 66); g.lineTo(84, 98); g.stroke();
-  // flag
-  g.strokeStyle = '#555'; g.lineWidth = 4; g.beginPath(); g.moveTo(60, 66); g.lineTo(60, 18); g.stroke();
-  g.fillStyle = '#ef5b5b'; g.beginPath(); g.moveTo(60, 20); g.lineTo(104, 32); g.lineTo(60, 44); g.fill();
-  // chute supports
-  g.strokeStyle = '#d9d9d9'; g.lineWidth = 6;
-  [.35, .6].forEach(t => { const [x, y] = bezier(CHUTE, t); g.beginPath(); g.moveTo(x, y + 14); g.lineTo(x, RIVER_TOP + 6); g.stroke(); });
-  // chute body
-  const path = () => { g.beginPath(); g.moveTo(...CHUTE[0]); g.bezierCurveTo(...CHUTE[1], ...CHUTE[2], ...CHUTE[3]); };
-  g.lineCap = 'round';
-  path(); g.strokeStyle = '#b4520f'; g.lineWidth = 44; g.stroke();
-  path(); g.strokeStyle = '#ff8a2a'; g.lineWidth = 36; g.stroke();
-  path(); g.strokeStyle = '#8fe0ff'; g.lineWidth = 22; g.stroke();
-  path(); g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 4; g.setLineDash([18, 14]); g.stroke(); g.setLineDash([]);
+const quad = (a, b, c, k) => (1 - k) * (1 - k) * a + 2 * (1 - k) * k * b + k * k * c;
+function arcTo(sx, sy, ex, ey, k, lift = 30, bend = 0) {
+  const cx = (sx + ex) / 2 + bend, cy = Math.min(sy, ey) - lift;
+  return [quad(sx, cx, ex, k), quad(sy, cy, ey, k)];
 }
 function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 
 function drawImg(name, cx, cy, w, { anchor = 'center', alpha = 1, rot = 0, flip = false } = {}) {
   const im = IMG[name]; if (!im) return 0;
   const h = im.height * w / im.width;
-  if (anchor === 'bottom' && alpha > .5 && !rot) contactShadow(cx, cy - 2, w * .9, .26 * alpha);   // grounded props cast a shadow
+  if (anchor === 'bottom' && alpha > .5 && !rot) contactShadow(cx, cy - 2, w * .9, .26 * alpha);
   ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(cx, cy); if (rot) ctx.rotate(rot); if (flip) ctx.scale(-1, 1);
   if (alpha > .6 && w > 60) { ctx.shadowColor = 'rgba(20,20,60,.25)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3; }
   ctx.drawImage(im, -w / 2, anchor === 'bottom' ? -h : -h / 2, w, h);
   ctx.restore(); return h;
 }
 
-function drawWater(t) {
-  // flowing streaks
-  ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.28)'; ctx.lineWidth = 3; ctx.lineCap = 'round';
-  for (let i = 0; i < 26; i++) {
-    const y = RIVER_TOP + 30 + (i * 97) % (RIVER_BOT - RIVER_TOP - 50);
-    const x = ((i * 233 + t * 60) % (W + 200)) - 100;
-    ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 25, y - 6, x + 50, y); ctx.quadraticCurveTo(x + 75, y + 6, x + 100, y); ctx.stroke();
-  }
-  ctx.restore();
-  // float ropes along banks
-  for (let x = 20, k = 0; x < W; x += 54, k++) {
-    drawImg(FLOATS[k % 12], x, RIVER_TOP + 18 + Math.sin(t * 2 + k) * 2, 44);
-    drawImg(FLOATS[(k + 5) % 12], x + 20, RIVER_BOT - 10 + Math.sin(t * 2 + k + 1) * 2, 44);
-  }
-  // finish rope (vertical)
-  for (let y = RIVER_TOP + 50, k = 0; y < RIVER_BOT - 30; y += 34, k++) {
-    if (Math.abs(y - BUOY.y) < 70) continue;
-    drawImg(FLOATS[(k * 7) % 12], FINISH_X + Math.sin(t * 2 + k) * 2, y, 42, { rot: Math.PI / 2 });
-  }
-}
-function drawBuoy(t, glow) {
-  const bob = Math.sin(t * 2.2) * 4;
-  drawImg('ripple_spark', BUOY.x, BUOY.y + 18, 200, { alpha: glow ? 1 : .75 });
-  drawImg('buoy_gold', BUOY.x, BUOY.y + 30 + bob, 92, { anchor: 'bottom' });
-}
-function drawTurtle(pose, t) {
-  const bounce = pose === 'turtle_cheer' ? Math.abs(Math.sin(t * 8)) * 10 : 0;
-  drawImg(pose, 1515, RIVER_TOP + 10 - bounce, 128, { anchor: 'bottom' });
-}
-
-/* ---- duck rendering ---- */
-function duckH(sp, w = DUCK_W) { const im = IMG['duck' + sp + '_swim']; return im ? im.height * w / im.width : 70; }
-function drawBow(x, y, s) {
-  ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.rotate(-.25);
-  ctx.fillStyle = '#e8283c'; ctx.strokeStyle = '#7a0f1c'; ctx.lineWidth = 2;
-  [-1, 1].forEach(d => { ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(d * 12, -12, d * 16, -2); ctx.quadraticCurveTo(d * 14, 10, 0, 0); ctx.fill(); ctx.stroke(); });
-  ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, 7); ctx.fill(); ctx.stroke();
-  ctx.restore();
-}
-// long names: keep the last two words, then shrink the font, then cut with an ellipsis
 const TAG_MAX = 170;
 function fitTag(text) {
   let t = text, size = 25;
@@ -696,298 +584,38 @@ function fitTag(text) {
   if (ctx.measureText(t).width > TAG_MAX) { while (t.length > 3 && ctx.measureText(t + '…').width > TAG_MAX) t = t.slice(0, -1); t = t.trimEnd() + '…'; }
   return t;
 }
-function drawTag(text, xRight, y, lead) {
+function drawTag(text, xRight, y, lead, centered = false) {
   ctx.save(); text = fitTag(text);
-  const w = ctx.measureText(text).width + 22, h = 34, x = xRight - w;
+  const w = ctx.measureText(text).width + 22, h = 34, x = centered ? xRight - w / 2 : xRight - w;
   ctx.fillStyle = lead ? '#ffd54a' : 'rgba(255,255,255,.95)';
   ctx.strokeStyle = lead ? '#c98a00' : 'rgba(29,53,87,.25)'; ctx.lineWidth = 2;
   roundRect(ctx, x, y - h / 2, w, h, 17); ctx.fill(); ctx.stroke();
   ctx.fillStyle = '#1d3557'; ctx.textBaseline = 'middle'; ctx.fillText(text, x + 11, y + 2);
   ctx.restore();
 }
-function drawSwimDuck(d, x, y, t, { rot = 0, w = DUCK_W, wake = true, alpha = 1 } = {}) {
-  const im = IMG['duck' + d.sp + '_swim']; if (!im) return;
-  const h = im.height * w / im.width, bob = Math.sin(t * 5 + d.seed * 6) * 2.5;
-  ctx.save(); ctx.globalAlpha = alpha;
-  if (wake) {
-    ctx.strokeStyle = 'rgba(255,255,255,.65)'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.ellipse(x, y + 4, w * .55, 9, 0, 0, 7); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x - w * .5, y + 2); ctx.lineTo(x - w * .5 - 30, y - 8); ctx.moveTo(x - w * .5, y + 6); ctx.lineTo(x - w * .5 - 30, y + 16); ctx.stroke();
-  }
-  ctx.translate(x, y + bob); ctx.rotate(rot + Math.sin(t * 4 + d.seed * 9) * .04);
-  ctx.drawImage(im, -w / 2, -h + 8, w, h);
-  if (d.gender === 'f') { const hd = HEAD[d.sp]; drawBow(-w / 2 + hd[0] * w - 10, -h + 8 + hd[1] * h + 8, w / 104); }
-  ctx.restore();
-}
 
-/* ================= Race logic ================= */
-let race = null;          // current race state
-let idleDucks = [];
-function makeIdle() {
-  idleDucks = Array.from({ length: 10 }, (_, i) => ({ sp: i, seed: Math.random(), x: 520 + (i % 5) * 190 + (i > 4 ? 90 : 0), y: 470 + (i > 4 ? 190 : 0) + (i % 2) * 20, gender: 'm' }));
-}
-makeIdle();
-
-function buildCurve(end, boosts, seed) {
-  const K = 240, sp = [], P = new Float32Array(K + 1);
-  const a1 = seed * 7, a2 = seed * 13, f1 = 1.5 + seed * 2, f2 = 4 + seed * 3;
-  for (let k = 0; k <= K; k++) {
-    const u = k / K; let s = 1 + .3 * Math.sin(f1 * u * 6.283 + a1) + .18 * Math.sin(f2 * u * 6.283 + a2);
-    for (const b of boosts) s += b.amp * Math.exp(-Math.pow((u - b.c) / b.w, 2));
-    sp.push(Math.max(.2, s));
-  }
-  let acc = 0; P[0] = 0;
-  for (let k = 1; k <= K; k++) { acc += (sp[k] + sp[k - 1]) / 2; P[k] = acc; }
-  for (let k = 0; k <= K; k++) P[k] = P[k] / acc * end;
-  return P;
-}
-const sampleCurve = (P, u) => { const K = P.length - 1, f = clamp(u) * K, i = Math.min(K - 1, f | 0); return P[i] + (P[i + 1] - P[i]) * (f - i); };
-
-/* ================= Finish twists ================= */
-// Every twist runs in the last 3.2 s (te = 0 → 3.2) and must land the winner on GOAL at te = 3.2.
-// The winner is already decided; a twist only changes how the reveal looks.
-const GOAL = [BUOY.x - 82, BUOY.y + 22];
-const quad = (a, b, c, k) => (1 - k) * (1 - k) * a + 2 * (1 - k) * k * b + k * k * c;
-function arcTo(sx, sy, ex, ey, k, lift = 30, bend = 0) {
-  const cx = (sx + ex) / 2 + bend, cy = Math.min(sy, ey) - lift;
-  return [quad(sx, cx, ex, k), quad(sy, cy, ey, k)];
-}
-function sprintToGoal(d, te, from, dur) {          // winner swims hard to the gold buoy
-  const k = ease(clamp((te - from) / dur));
-  const [x, y] = arcTo(d.sx, d.sy, GOAL[0], GOAL[1], k, 30);
-  if (k > 0 && k < 1) addTrail(x, y, race.now);
-  return [x, y, d.end + k * .2];
-}
-const dizzy = (d, te) => { d.rot = Math.sin(te * 9) * .3; };
-
-const TWISTS = {
-  // decoy dives after a shiny button, a whirlpool flings the real winner to the buoy
-  button: {
-    cues(r, te) {
-      if (r.decoy && te > -.6) cue('btn', () => { SFX.sparkle(); Music.play('tension'); outcome('almost_selected', r.decoy); r.banner = '✨ Ooh! Something shiny in the water…'; });
-      if (r.decoy && te > .5) cue('dive', () => { outcome('wrong_turn', r.decoy); SFX.bloop(); SFX.splash(); SFX.bubbles(); SFX.sadTrombone(); addFx('splash_up', r.decoy.x + 50, r.decoy.y, 90, .5); r.banner = '🫧 ' + r.decoy.name + ' dives after the shiny button!'; });
-      if (te > .8) cue('whirl', () => { outcome('selected', r.winner); SFX.swoosh(); SFX.bubbles(); if (!r.decoy) Music.play('tension'); r.banner = '🌀 A sudden whirlpool!!'; });
-      if (te > 1.7) cue('fly', () => { CAM.shake(race, 8); FX.splash(r.winner.x, r.winner.y, 22); FX.bubbles(r.winner.x, r.winner.y, 10); SFX.splash(); SFX.boing(); SFX.wheee(.1); SFX.quack(.3, 1.3); });
-    },
-    duck(d, te, r) {
-      if (d === r.decoy) { const p = d.end + .035 * clamp(te / .5); if (te > .5) d.pose = 'dive'; return [START_X + p * RACE_LEN, d.laneY, p]; }
-      if (d !== r.winner) return null;
-      const p = d.end + .03 * clamp(te / .8); let x = START_X + p * RACE_LEN, y = d.laneY;
-      if (te > .8 && te <= 1.7) {
-        const k = (te - .8) / .9; d.rot = k * k * Math.PI * 4;
-        x += Math.cos(k * 12) * 14 * k; y += Math.sin(k * 12) * 10 * k;
-      } else if (te > 1.7) {
-        const k = ease(clamp((te - 1.7) / 1.5));
-        [x, y] = arcTo(x, y, GOAL[0], GOAL[1], k, 120, 40);
-        d.rot = (1 - k) * Math.PI * 4 % (Math.PI * 2) * (1 - k);
-        addTrail(x, y, r.now);
-      }
-      return [x, y, p];
-    },
-    render(r, te, t) {
-      if (r.decoy && te > -.6 && te < .9) drawShinyButton(START_X + (r.decoy.end + .05) * RACE_LEN + 20, r.decoy.laneY + 10, t, clamp((te + .6) / .3));
-      if (te > .8) {
-        const k = clamp((te - .8) / .4), fade = 1 - clamp((te - 2.4) / .8), w = r.winner;
-        ctx.save(); ctx.globalAlpha = fade;
-        ctx.translate(te > 1.7 ? START_X + (w.end + .03) * RACE_LEN : w.x, te > 1.7 ? w.laneY : w.y); ctx.scale(1, .45); ctx.rotate(-te * 7);
-        if (IMG.whirl) ctx.drawImage(IMG.whirl, -120 * k, -120 * k, 240 * k, 240 * k);
-        ctx.restore();
-      }
-    },
-    turtle: te => te > .5 ? 'turtle_shock' : null
-  },
-
-  // a big wave rolls in from behind; the winner surfs it to the buoy and knocks the leader into a spin
-  wave: {
-    waveAt(r, te) {
-      const w = r.winner;
-      if (te < 1) { const k = ease(clamp((te + .4) / 1.4)); return [lerp(START_X - 120, w.sx - 30, k), w.sy]; }
-      return [w.x - 30, w.y];
-    },
-    cues(r, te) {
-      if (te > -.4) cue('wave', () => { Music.play('tension'); outcome('almost_selected', r.decoy); SFX.swoosh(); r.banner = '🌊 Look out! A huge wave is coming!'; });
-      if (te > 1) cue('surf', () => { outcome('selected', r.winner); FX.splash(r.winner.x, r.winner.y, 20); SFX.splash(); SFX.wheee(); SFX.quack(.2, 1.3); r.banner = '🏄 Someone is surfing the wave!!'; });
-      if (r.decoy && te > 2) cue('knock', () => { CAM.shake(race, 9); outcome('wrong_turn', r.decoy); SFX.splash(); SFX.boing(); addFx('splash_crown', r.decoy.x, r.decoy.y + 10, 140, .5); });
-    },
-    duck(d, te, r) {
-      if (d === r.winner) {
-        if (te < 1) { const p = d.end + .01 * te; return [START_X + p * RACE_LEN, d.sy, p]; }
-        const k = ease(clamp((te - 1) / 2.2)); d.rot = -.12 * Math.sin(k * Math.PI);
-        const [x, y] = arcTo(d.sx, d.sy, GOAL[0], GOAL[1], k, 40);
-        addTrail(x, y, r.now); return [x, y, d.end + k * .2];
-      }
-      if (d === r.decoy) {
-        const k = ease(clamp((te - 2) / .8)), p = d.end + .03 * clamp(te / 1.2) - .06 * k;
-        if (te > 2) d.rot = k * Math.PI * 4 + (k >= 1 ? Math.sin(te * 9) * .3 : 0);
-        return [START_X + p * RACE_LEN, d.sy, p];
-      }
-      return null;
-    },
-    render(r, te, t) {
-      if (te < -.4) return;
-      const [x, y] = this.waveAt(r, te), a = clamp((te + .4) / .3) * (1 - clamp((te - 2.9) / .3));
-      drawImg('splash_wave', x - 40, y + 34 + Math.sin(t * 8) * 3, 230, { anchor: 'bottom', alpha: a });
-    },
-    turtle: te => te > .2 ? 'turtle_shock' : null
-  },
-
-  // a water tornado lifts the leader into the sky and drops it behind; the winner sprints through
-  tornado: {
-    cues(r, te) {
-      if (te > -.3) cue('torn', () => { Music.play('tension'); outcome('almost_selected', r.decoy); SFX.swoosh(); r.banner = '🌪️ A waterspout appears!'; });
-      if (te > .5) cue('lift', () => { outcome('wrong_turn', r.decoy); FX.splash(r.decoy.x, r.decoy.y, 18); SFX.wheee(); SFX.boing(); SFX.quack(.2, 1.4); r.banner = '😵 ' + r.decoy.name + ' gets swept into the sky!'; });
-      if (te > 1.8) cue('drop', () => { CAM.shake(race, 12); FX.splash(r.decoy.sx - 140, r.decoy.sy, 24); SFX.splash(); SFX.sadTrombone(); addFx('splash_crown', r.decoy.sx - 140, r.decoy.sy + 10, 150, .6); });
-      if (te > 1) cue('dash', () => { outcome('selected', r.winner); r.banner = '💨 Someone speeds to the finish!'; SFX.quack(0, 1.2); });
-    },
-    duck(d, te, r) {
-      if (d === r.winner) { if (te < .9) { const p = d.end + .012 * te; return [START_X + p * RACE_LEN, d.sy, p]; } return sprintToGoal(d, te, .9, 2.3); }
-      if (d !== r.decoy) return null;
-      if (te < .5) { const p = d.end + .02 * te; return [START_X + p * RACE_LEN, d.sy, p]; }
-      if (te < 1.8) { const k = (te - .5) / 1.3; d.rot = k * Math.PI * 6; return [d.sx + 10 + Math.sin(k * 10) * 22, d.sy - 230 * ease(k), d.end]; }
-      if (te < 2.2) { const k = (te - 1.8) / .4; d.rot = te * 12; return [lerp(d.sx + 10, d.sx - 140, k), d.sy - 230 + 230 * k * k, d.end - .1]; }
-      dizzy(d, te); return [d.sx - 140, d.sy, d.end - .14];
-    },
-    render(r, te, t) {
-      if (te < -.3 || te > 2.3) return;
-      const k = clamp((te + .3) / .4), fade = 1 - clamp((te - 1.8) / .5), d = r.decoy;
-      drawImg('tornado', d.sx + 10 + Math.sin(t * 5) * 10, d.sy + 40, 210 * (.4 + .6 * k), { anchor: 'bottom', alpha: fade });
-    },
-    turtle: te => te > .5 ? 'turtle_shock' : null
-  },
-
-  // the leader proudly touches a RED buoy, the referee points to the GOLD one, the winner gets there
-  wrongBuoy: {
-    redAt(r) {   // keep the red buoy well away from the gold one so the mix-up reads clearly
-      let y = r.decoy.laneY + 10;
-      if (Math.abs(y - BUOY.y) < 130) y = BUOY.y + (y < BUOY.y ? -140 : 140);
-      return [FINISH_X - 10, clamp(y, RIVER_TOP + 60, RIVER_BOT - 30)];
-    },
-    cues(r, te) {
-      if (te > -.5) cue('red', () => { Music.play('tension'); SFX.pop(); SFX.sparkle(); r.banner = '🔴 A buoy just popped up…'; });
-      if (te > 1) cue('touch', () => { outcome('almost_selected', r.decoy); SFX.ding(); SFX.quack(0, 1.3); r.banner = '🎉 ' + r.decoy.name + ' touches the buoy…?'; });
-      if (te > 1.5) cue('wrong', () => { outcome('wrong_turn', r.decoy); outcome('selected', r.winner); SFX.whistle(); SFX.sadTrombone(); r.banner = '❌ Oops! That was the RED buoy, not the GOLD one!'; });
-    },
-    duck(d, te, r) {
-      if (d === r.winner) { if (te < 1) { const p = d.end + .012 * te; return [START_X + p * RACE_LEN, d.sy, p]; } return sprintToGoal(d, te, 1, 2.2); }
-      if (d !== r.decoy) return null;
-      const [rx, ry] = this.redAt(r), k = ease(clamp(te / 1));
-      if (te > 1.5) dizzy(d, te); else if (te > 1) d.rot = Math.sin(te * 20) * .08;
-      return [lerp(d.sx, rx - 66, k), lerp(d.sy, ry + 2, k), d.end + .05 * k];
-    },
-    render(r, te, t) {
-      if (te < -.5) return;
-      const [x, y] = this.redAt(r), k = clamp((te + .5) / .3), pop = k < 1 ? 1.25 - .25 * k : 1;
-      drawImg('buoy_red', x, y + 18 + Math.sin(t * 2.4) * 3, 62 * k * pop, { anchor: 'bottom' });
-    },
-    turtle: te => te > 1.5 ? 'turtle_point' : te > 1 ? 'turtle_shock' : null
-  },
-
-  // no trick: a neck-and-neck sprint, the winner edges ahead at the very end
-  none: {
-    setup(r, decoys) { r.winner.end = .84; if (decoys[0]) decoys[0].end = .87; if (decoys[1]) decoys[1].end = .855; },
-    cues(r, te) {
-      if (te > -.4) cue('sprint', () => { Music.play('tension'); outcome('almost_selected', r.decoy); SFX.cheer(); r.banner = '🔥 Final sprint — it is neck and neck!!'; });
-      if (te > 2) cue('who', () => { outcome('selected', r.winner); r.banner = '😱 Who will touch the buoy first?'; });
-    },
-    duck(d, te, r) {
-      if (d === r.winner) {
-        const k = Math.pow(clamp(te / 3.2), 1.7), [x, y] = arcTo(d.sx, d.sy, GOAL[0], GOAL[1], k, 20);
-        if (te > 1.5) addTrail(x, y, r.now); return [x, y, d.end + k * .2];
-      }
-      const i = r.rivals.indexOf(d); if (i < 0) return null;
-      const k = 1 - Math.pow(1 - clamp(te / 2.9), 2), slot = r.rivalSlots[i];
-      const [x, y] = arcTo(d.sx, d.sy, slot[0], slot[1], k, 20);
-      return [x, y, d.end + k * .18];
-    },
-    render() {},
-    turtle: te => te > 2 ? 'turtle_shock' : null
-  }
-};
-function pickTwist(hasDecoy) {
-  if (!hasDecoy) return Math.random() < .5 ? 'none' : 'wave';
-  const roll = Math.random();
-  if (roll < .25) return 'none';
-  return ['button', 'wave', 'tornado', 'wrongBuoy'][Math.floor((roll - .25) / .1875) % 4];
-}
+/* ================= Race lifecycle ================= */
+let race = null;
+function makeIdle() {}
 
 function startRace() {
   if (race && race.phase !== 'done') return;
-  const cls = activeClass(), pool = eligible(cls);
+  const cls = activeClass(), all = roster(cls), pool = eligible(cls);
   if (!pool.length) return;
   hideResult();
-  const T = store.settings.duration, S = 2.6, TW = T - 3.2;
-  const winnerStu = pool[randInt(pool.length)];                    // decided now, everything after is show
-  const others = shuffle(pool.filter(s => s !== winnerStu)).slice(0, 9);
+  const T = store.settings.duration;
+  const winnerStu = pool[randInt(pool.length)];
+  let others = shuffle(pool.filter(s => s !== winnerStu)).slice(0, 9);
+  if (others.length < Math.min(all.length - 1, 5)) {
+    const usedNames = new Set([winnerStu.name, ...others.map(s => s.name)]);
+    const extra = shuffle(all.filter(s => !usedNames.has(s.name))).slice(0, 9 - others.length);
+    others = [...others, ...extra];
+  }
   const racers = shuffle([winnerStu, ...others]);
   if (curImpl()) return startGeneric(cls, T, winnerStu, racers);
-  const sprites = shuffle([...Array(10).keys()]);
-  const n = racers.length;
-  const span = Math.min(62, (RIVER_BOT - RIVER_TOP - 120) / Math.max(n - 1, 1));
-  const midY = (RIVER_TOP + RIVER_BOT) / 2 + 10;
-  const ducks = racers.map((s, i) => ({
-    name: s.name, gender: cls.mode === 'numbers' ? null : s.gender, sp: sprites[i], seed: Math.random(),
-    laneY: midY + (i - (n - 1) / 2) * span, isWinner: s === winnerStu
-  }));
-  const winner = ducks.find(d => d.isWinner);
-  const decoys = shuffle(ducks.filter(d => !d.isWinner));
-  const decoy = decoys[0] || null;
-  // fake leaders through the race; the last one is the decoy who "almost wins"
-  const fakes = T <= 10 ? 2 : T <= 15 ? 3 : T <= 20 ? 4 : 5;
-  const leaders = [];
-  for (let j = 0; j < fakes - 1 && decoys.length > 1; j++) leaders.push(j === 0 && Math.random() < .35 ? winner : decoys[1 + (j % (decoys.length - 1))]);
-  ducks.forEach(d => { d.end = .42 + Math.random() * .3; d.boosts = []; });
-  winner.end = .76 + Math.random() * .04;
-  if (decoy) decoy.end = .9;
-  const twistName = (decoy && window.FORCE_TWIST) || pickTwist(!!decoy), twist = TWISTS[twistName];
-  if (twist.setup) twist.setup({ winner }, decoys);
-  ducks.forEach(d => { d.sx = START_X + d.end * RACE_LEN; d.sy = d.laneY; });
-  const rivals = decoys.slice(0, 2).sort((a, b) => a.laneY - b.laneY);
-  const rivalSlots = rivals.length === 2 ? [[BUOY.x - 150, BUOY.y - 80], [BUOY.x - 165, BUOY.y + 95]]
-    : [[BUOY.x - 155, rivals[0] && rivals[0].laneY < BUOY.y ? BUOY.y - 80 : BUOY.y + 95]];
-  leaders.forEach((d, j) => { d.boosts.push({ c: (j + .7) / (fakes + .2), w: .07, amp: 2.4 }); });
-  if (decoy) decoy.boosts.push({ c: .9, w: .08, amp: 1.5 });
-  ducks.forEach(d => { d.P = buildCurve(d.end, d.boosts, d.seed); });
-  // slide order
-  shuffle([...ducks]).forEach((d, k) => { d.slideAt = .35 + k * .17; });
-  race = { T, S, TW, ducks, winner, decoy, twist, twistName, rivals, rivalSlots, t0: performance.now(), phase: 'run', leader: null, leaderAt: 0, banner: 'The ducks whoosh down the water slide!', confetti: [], cues: {}, lastTick: -1 };
-  document.body.classList.add('running');
-  SFX.whistle(); SFX.cheer(); Music.play('race');
-  updateUI();
-}
-
-function racePos(d, t) {
-  const { S, TW } = race;
-  const u = clamp((t - S) / (TW - S));
-  const p = sampleCurve(d.P, u);
-  return [START_X + p * RACE_LEN, d.laneY, p];
 }
 
 function cue(key, fn) { if (!race.cues[key]) { race.cues[key] = true; fn(); } }
-
-function updateDuck(d, t) {
-  const r = race, te = t - r.TW;
-  d.pose = 'swim'; d.rot = 0; d.alpha = 1;
-  // slide down chute
-  if (t < d.slideAt) { d.hidden = true; return; }
-  d.hidden = false;
-  cue('pop' + d.sp, () => { SFX.pop(); SFX.wheee(.04); });
-  const ride = .75, sT = (t - d.slideAt) / ride;
-  if (sT < 1) {
-    const [x, y] = bezier(CHUTE, sT * sT), [x2, y2] = bezier(CHUTE, Math.min(1, sT * sT + .02));
-    d.x = x; d.y = y + 6; d.rot = Math.atan2(y2 - y, x2 - x) * .7; d.pose = 'slide'; d.scale = .8 + .2 * Math.min(1, sT * 5);
-    return;
-  }
-  cue('splash' + d.sp, () => { FX.splash(CHUTE[3][0] + 20, CHUTE[3][1] + 10, 14); addFx('splash_crown', CHUTE[3][0] + 10, CHUTE[3][1] + 8, 130, .5); SFX.splash(); if (Math.random() < .6) SFX.quack(.1, .8 + Math.random() * .5); });
-  d.scale = 1;
-  const exitT = d.slideAt + ride, blend = ease(clamp((t - exitT) / .9));
-  let [x, y, p] = racePos(d, t);
-  if (te > 0) {
-    const o = r.twist.duck(d, te, r);
-    if (o) [x, y, p] = o; else { p = d.end + .012 * te; x = START_X + p * RACE_LEN; }
-  }
-  const ex = CHUTE[3][0] + 30, ey = CHUTE[3][1] + 10;
-  d.x = lerp(ex, x, blend); d.y = lerp(ey, y, blend); d.p = p;
-}
 
 function outcome(kind, duck, size = 230) {
   if (!duck) return;
@@ -1004,33 +632,21 @@ function addFx(img, x, y, w, dur, opt = {}) { race.fx = race.fx || []; race.fx.p
 function tickRace(now) {
   const r = race; const t = (now - r.t0) / 1000; r.now = t;
   const te = t - r.TW;
-  if (r.game) { r.game.tick(r, t, te); countdown(r, t); return; }
-  r.ducks.forEach(d => updateDuck(d, t));
-  // leader tracking / banners
-  if (t > r.S + .3 && te < -.25) {
-    const lead = r.ducks.reduce((a, b) => (b.p || 0) > (a.p || 0) ? b : a);
-    if (lead !== r.leader && t - r.leaderAt > .45) { r.leader = lead; r.leaderAt = t; r.banner = '🏁 In the lead: ' + lead.name; SFX.leader(); }
-  }
-  if (t > r.S && te < 0) {   // ambient paddling and the odd quack while racing
-    if (Math.random() < .05) SFX.paddle();
-    if (Math.random() < .008) SFX.quack(0, .75 + Math.random() * .6);
-  }
-  r.twist.cues(r, te);
-  countdown(r, t);
+  if (r.game) { r.game.tick(r, t, te); countdown(r, t); }
 }
-function countdown(r, t) {   // heartbeat in the last 3 seconds, then finish
+function countdown(r, t) {
   const left = Math.ceil(r.T - t);
-  if (left <= 3 && left > 0 && left !== r.lastTick) { r.lastTick = left; SFX.heartbeat(); }
+  if (left <= 3 && left > 0 && (r.lastTick < 0 || left < r.lastTick)) { r.lastTick = left; SFX.heartbeat(); }
   if (t >= r.T && r.phase === 'run') finishRace();
 }
 
 function finishRace() {
   const r = race; r.phase = 'done'; r.doneAt = r.now;
-  r.banner = r.game ? r.game.winBanner(r) : '🎉 ' + r.winner.name + ' touches the golden buoy!';
-  Music.stop(); SFX.whistle(); SFX.victory(); SFX.confettiPops(); SFX.applause(); if (!r.game) SFX.quack(.6, 1.2);
+  r.banner = r.game ? r.game.winBanner(r) : '🎉 ' + r.winner.name + ' wins!';
+  Music.stop(); SFX.whistle(); SFX.victory(); SFX.confettiPops(); SFX.applause();
   setTimeout(() => { if (race === r) Music.play('idle'); }, 3500);
   burstConfetti();
-  const wp = r.winRays = r.game ? r.game.winPos(r) : { x: BUOY.x - 20, y: BUOY.y - 30 };
+  const wp = r.winRays = r.game ? r.game.winPos(r) : { x: 800, y: 450 };
   r.fx = r.fx || []; r.fx.push({ atlas: 'vfx_win', duck: wp, w: 380, t0: r.now, dur: 1.4 }); SFX.sting('win');
   FX.ring(wp.x, wp.y + 40, '#ffd84a', 280); FX.ring(wp.x, wp.y + 40, '#ffffff', 180); FX.sparkle(wp.x, wp.y, 60);
   CAM.follow(r, wp, 1.3); CAM.shake(r, 9);
@@ -1059,22 +675,10 @@ function frame(now) {
   ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
   CAM.begin(race, dt);
   const impl = curImpl();
-  if (impl) { renderGeneric(impl, now, t, dt); requestAnimationFrame(frame); return; }
-  if (bgCanvas) ctx.drawImage(bgCanvas, 0, 0); else { ctx.fillStyle = '#3db5e6'; ctx.fillRect(0, 0, W, H); }
-  drawWater(t);
-  if (race) {
-    if (race.phase === 'run') tickRace(now); else race.now = (now - race.t0) / 1000;
-    renderRace(t, dt);
-  } else renderIdle(t);
+  if (impl) renderGeneric(impl, now, t, dt);
   requestAnimationFrame(frame);
 }
 
-function renderIdle(t) {
-  drawBuoy(t, false);
-  drawTurtle('turtle_idle', t);
-  idleDucks.forEach((d, i) => drawSwimDuck(d, d.x + Math.sin(t * .6 + i) * 20, d.y + Math.cos(t * .5 + i) * 6, t, { wake: false }));
-  idleOverlay('Duck Slide Race', t);
-}
 function idleOverlay(title, t, y = 420) {
   const pool = eligible(activeClass()).length;
   banner(pool ? 'Press ▶ Pick a name! or Space' : 'Everyone has been picked! Press ↺ Start over', t);
@@ -1083,41 +687,6 @@ function idleOverlay(title, t, y = 420) {
   ctx.strokeText(title, 800, y); ctx.fillText(title, 800, y); ctx.restore();
 }
 
-function renderRace(t, dt) {
-  const r = race, rt = r.now, te = rt - r.TW, done = r.phase === 'done';
-  // turtle referee
-  const pose = done ? 'turtle_cheer' : (te > 0 && r.twist.turtle(te)) || (rt < 1.2 ? 'turtle_whistle' : (Math.floor(rt / 2) % 2 ? 'turtle_point' : 'turtle_point2'));
-  drawTurtle(pose, t);
-  if (!done) drawBuoy(t, te > 1.7);
-  else { FX.rays(BUOY.x - 20, BUOY.y - 30, 330, t); drawImg('ripple_spark', BUOY.x, BUOY.y + 18, 230); }
-  if (!done) r.twist.render(r, te, t);
-  // fx
-  drawFx(r);
-  // ducks sorted by depth
-  const order = [...r.ducks].filter(d => !d.hidden).sort((a, b) => a.y - b.y);
-  for (const d of order) {
-    if (done && d === r.winner) continue;
-    if (d.pose === 'dive') {
-      const k = clamp((te - .5) / .4);
-      drawImg('duck' + d.sp + '_dive', d.x + 40, d.y + 26, 150 * (.7 + .3 * k), { anchor: 'bottom', alpha: .4 + .6 * k });
-      for (let i = 0; i < 4; i++) { const bt = (t * .9 + i * .25) % 1; drawImg('bubble', d.x + 30 + Math.sin(i * 3 + t * 3) * 14, d.y - 10 - bt * 70, 16 + i * 3, { alpha: 1 - bt }); }
-    } else {
-      drawSwimDuck(d, d.x, d.y, t, { rot: d.rot, w: DUCK_W * (d.scale || 1), wake: d.pose !== 'slide' });
-    }
-  }
-  // name tags on top so they never get covered
-  for (const d of order) {
-    if (d.pose === 'slide' || (done && d === r.winner)) continue;
-    const w = DUCK_W * (d.scale || 1);
-    drawTag(d.name, d.x - w * .45, d.y - duckH(d.sp) * .45, !done && d === r.leader && te < 0);
-  }
-  if (done) {
-    const k = clamp((rt - r.doneAt) / .4);
-    drawImg('duck' + r.winner.sp + '_win', BUOY.x - 20, BUOY.y + 40, 230 * (.6 + .4 * ease(k)), { anchor: 'bottom' });
-    drawTag(r.winner.name, BUOY.x - 120, BUOY.y - 100, true);
-  }
-  hud(r, t, dt);
-}
 function drawFx(r) {
   const rt = r.now;
   (r.fx || []).forEach(f => { const k = (rt - f.t0) / f.dur; if (k >= 0 && k < 1 && f.atlas) drawBurst(f, k); else if (k >= 0 && k < 1) drawImg(f.img, f.x, f.y, f.w * (.6 + .4 * k), { alpha: 1 - k, anchor: 'bottom', rot: f.rot || 0 }); });
@@ -1141,7 +710,7 @@ function startGeneric(cls, T, winnerStu, racers) {
   const girls = shuffle([...AV_GIRLS]), boys = shuffle([...AV_BOYS]), any = shuffle([...Array(10).keys()]);
   const used = new Set();
   const pickAv = gender => {
-    const pool = g.animals ? any : gender === 'f' ? girls : gender === 'm' ? boys : any;
+    const pool = gender === 'f' ? girls : gender === 'm' ? boys : any;
     let a = pool.find(x => !used.has(x)); if (a === undefined) a = any.find(x => !used.has(x)); used.add(a); return a;
   };
   const players = racers.map(s => ({ name: s.name, gender: cls.mode === 'numbers' ? null : s.gender, isWinner: s === winnerStu, seed: Math.random(), x: 0, y: 0 }));
@@ -1161,7 +730,7 @@ function renderGeneric(g, now, t, dt) {
     ctx.textAlign = 'center'; ctx.fillText('Loading ' + g.title + '…', 800, 460); ctx.textAlign = 'left'; return;
   }
   // code-drawn base by default; the painted picture is optional and only downloaded when chosen
-  const painted = store.settings.paintedBg && g.paintedOk !== false;   // only where the picture matches the play layout
+  const painted = store.settings.paintedBg;
   if (painted && !IMG.bg && !g.bgLoading) g.bgLoading = loadImages(g.id, g.base, ['bg']);
   const base = painted && IMG.bg ? IMG.bg : BASES.get(g.id);
   if (base) ctx.drawImage(base, 0, 0, W, H);
@@ -1175,10 +744,7 @@ function renderGeneric(g, now, t, dt) {
   } else { g.idle(t); if (sc) sc.front(t); idleOverlay(g.title, t, g.titleY || 860); }
 }
 // a name tag centred on cx
-function tagC(text, cx, y, lead) {
-  ctx.save(); ctx.font = '700 25px "Baloo 2","Segoe UI",sans-serif'; const w = ctx.measureText(text).width + 22; ctx.restore();
-  drawTag(text, cx + w / 2, y, lead);
-}
+function tagC(text, cx, y, lead) { drawTag(text, cx, y, lead, true); }
 // draw a character pose of the current game, anchored at its feet; returns the drawn width
 // soft oval shadow on the ground where something stands
 function contactShadow(x, y, w, a = .3) {
@@ -1213,29 +779,12 @@ function activateGame(id) {
   race = null; hideResult();
   const g = GAME_IMPL[id];
   IMG = IMGSETS[id] = IMGSETS[id] || {};
-  STINGS = loadStings(id, g.base);
+  STINGS = loadStings('g25', 'assets/g25/');
   if (g && !g.loading) g.loading = loadImages(id, g.base, g.assets).then(() => { g.ready = true; updateUI(); });
   (g ? g.loading : assetsReady).then(preloadGames);
   updateUI();
 }
 
-function addTrail(x, y, rt) {
-  const r = race; if (r.lastTrail && rt - r.lastTrail < .12) return; r.lastTrail = rt;
-  FX.splash(x - 30, y + 6, 3);
-  r.fx = r.fx || []; r.fx.push({ img: ['wave1', 'wave2', 'wave3'][Math.floor(rt * 10) % 3], x: x - 40, y: y + 20, w: 140, t0: rt, dur: .6 });
-}
-function drawShinyButton(x, y, t, a) {
-  ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y);
-  const g = ctx.createRadialGradient(-5, -5, 2, 0, 0, 18); g.addColorStop(0, '#fff7c2'); g.addColorStop(.5, '#ffd23f'); g.addColorStop(1, '#d99a00');
-  ctx.fillStyle = g; ctx.strokeStyle = '#9c6b00'; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.arc(0, 0, 18, 0, 7); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#9c6b00'; [[-5, -5], [5, -5], [-5, 5], [5, 5]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.arc(dx, dy, 2.6, 0, 7); ctx.fill(); });
-  for (let i = 0; i < 4; i++) {
-    const ang = t * 2 + i * 1.57, rr = 30 + Math.sin(t * 6 + i) * 6;
-    star(Math.cos(ang) * rr, Math.sin(ang) * rr * .7, 6 + Math.sin(t * 8 + i) * 3);
-  }
-  ctx.restore();
-}
 function star(x, y, s) {
   ctx.fillStyle = '#fff3a0'; ctx.beginPath();
   for (let i = 0; i < 8; i++) { const r = i % 2 ? s * .35 : s, a = i * Math.PI / 4; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); }
@@ -1284,11 +833,16 @@ function showResult(d) {
   document.getElementById('resName').textContent = d.name;
   document.getElementById('resImg').src = race && race.game ? race.game.base + 'c' + d.av + '_' + (race.game.resultPose || 'win') + '.webp' : 'assets/duck-race/duck' + d.sp + '_win.webp';
   resultEl.classList.remove('hidden');
+  setTimeout(() => document.getElementById('contBtn').focus(), 40);
 }
 function hideResult() { resultEl.classList.add('hidden'); }
 function continueGame() { hideResult(); race = null; makeIdle(); Music.play('idle'); updateUI(); }
 document.getElementById('contBtn').onclick = continueGame;
 document.getElementById('sayBtn').onclick = () => race && speak(race.winner.name);
+cv.onclick = () => {
+  if (!resultEl.classList.contains('hidden')) continueGame();
+  else if (!race || race.phase === 'done') startRace();
+};
 
 /* ================= Main UI ================= */
 const GAMES = [
@@ -1348,18 +902,24 @@ function updateUI() {
   document.getElementById('classLabel').innerHTML = esc(cls.name) + ' <span class="pill">' + all.length + '</span>';
   [...durChips.children].forEach(b => b.classList.toggle('on', +b.dataset.s === store.settings.duration));
   document.querySelectorAll('#gameTabs .tab').forEach(b => b.classList.toggle('active', b.dataset.game === curGame()));
-  restChk.checked = store.settings.rest; calmChk.checked = !!store.settings.calm; paintedChk.checked = !!store.settings.paintedBg; voiceSel.value = store.settings.voice;
+  const impl = curImpl();
+  const canPaint = !!(impl && impl.paintedOk !== false);
+  paintedChk.checked = !!store.settings.paintedBg;
+  paintedChk.disabled = !canPaint;
+  document.getElementById('paintedWrap').style.opacity = canPaint ? '1' : '.55';
+  document.getElementById('paintedSub').textContent = canPaint ? 'Code-drawn scene for this game' : 'Code-drawn scene for this game';
+  restChk.checked = store.settings.rest; calmChk.checked = !!store.settings.calm; voiceSel.value = store.settings.voice;
   soundBtn.textContent = store.settings.sound ? '🔊 Sound' : '🔇 Sound'; soundBtn.classList.toggle('off', !store.settings.sound);
   musicBtn.textContent = store.settings.music ? '🎵 Music' : '🔕 Music'; musicBtn.classList.toggle('off', !store.settings.music);
   const running = race && race.phase === 'run';
-  startBtn.disabled = running || !pool.length || !!(curImpl() && !curImpl().ready);
+  startBtn.disabled = running || !pool.length || !!(impl && !impl.ready);
   startBtn.textContent = running ? '⏳ Picking…' : '▶ Pick a name!';
   const st = document.getElementById('status');
   if (!all.length) { st.textContent = 'No students yet — press the yellow class button to add names.'; st.className = 'status done'; }
   else if (!pool.length) { st.textContent = 'Everyone has been picked! Press ↺ Start over.'; st.className = 'status done'; }
   else { st.textContent = store.settings.rest ? `${pool.length} of ${all.length} still waiting` : 'Anyone can be picked again'; st.className = 'status'; }
   document.getElementById('calledCount').textContent = called.length || '';
-  document.getElementById('meterBar').style.width = (all.length ? Math.min(100, (all.length - pool.length) / all.length * 100) : 0) + '%';
+  document.getElementById('meterBar').style.transform = 'scaleX(' + (all.length ? Math.min(1, (all.length - pool.length) / all.length) : 0) + ')';
   const ol = document.getElementById('calledList');
   ol.innerHTML = called.length ? called.map((n, i) => `<li><i>${i + 1}.</i>${esc(n)}</li>`).join('') : '<li class="empty">Nobody picked yet.</li>';
   ol.scrollTop = ol.scrollHeight;
@@ -1370,7 +930,7 @@ function toast(msg) { const t = document.createElement('div'); t.className = 'to
 /* ================= Class page ================= */
 const page = document.getElementById('classPage');
 let draft = null, editId = null;
-function openClasses() { if (race && race.phase === 'run') return; draft = JSON.parse(JSON.stringify(store.classes)); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); }
+function openClasses() { if (race && race.phase === 'run') return; draft = JSON.parse(JSON.stringify(store.classes)); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); setTimeout(() => document.getElementById('className').focus(), 40); }
 function closeClasses() {
   if (!draft) return;
   store.classes = draft; store.activeId = editId;
@@ -1378,6 +938,7 @@ function closeClasses() {
   draft = null; save(); page.classList.add('hidden');
   if (race && race.phase === 'done') continueGame();
   updateUI();
+  document.getElementById('classBtn').focus();
 }
 document.getElementById('classBtn').onclick = openClasses;
 document.getElementById('doneBtn').onclick = closeClasses;
@@ -1418,7 +979,10 @@ document.getElementById('backupIn').onchange = e => {
       const called = data.called && Array.isArray(data.called[c.id]) ? data.called[c.id].map(String) : [];
       store.called[c.id] = called;
     }
-    editId = clean[0].id; save(); renderClassPage();
+    editId = clean[0].id;
+    store.classes = JSON.parse(JSON.stringify(draft));
+    store.activeId = editId;
+    save(); renderClassPage(); updateUI();
     toast('Imported ' + clean.length + ' class(es) from the backup');
   };
   rd.readAsText(f, 'utf-8');
@@ -1488,21 +1052,42 @@ twoStep(document.getElementById('delClassBtn'), 'Delete class', 'Press again to 
   draft = draft.filter(c => c.id !== editId); editId = draft[0].id; renderClassPage();
 });
 
-/* ================= Keyboard ================= */
+window.addEventListener('storage', e => {
+  if (e.key === LS_KEY) {
+    store = loadStore();
+    if (!page.classList.contains('hidden')) {
+      draft = JSON.parse(JSON.stringify(store.classes));
+      editId = store.activeId;
+      renderClassPage();
+    }
+    updateUI();
+  }
+});
+
+/* ================= Keyboard & Presenter Shortcuts ================= */
 document.addEventListener('keydown', e => {
   if (!page.classList.contains('hidden')) { if (e.key === 'Escape') closeClasses(); return; }
-  if (e.code !== 'Space') return;
   const tag = (e.target.tagName || '').toLowerCase();
   if (['input', 'textarea', 'select'].includes(tag)) return;
-  e.preventDefault();
-  if (!resultEl.classList.contains('hidden')) continueGame();
-  else if (!race || race.phase === 'done') startRace();
+  if (e.code === 'KeyF' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault(); document.getElementById('fsBtn').click(); return;
+  }
+  if (e.code === 'KeyM' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault(); musicBtn.click(); return;
+  }
+  if (e.code === 'KeyS' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault(); soundBtn.click(); return;
+  }
+  if (e.code === 'Space' || e.code === 'PageDown' || (e.code === 'Enter' && tag !== 'button' && tag !== 'a')) {
+    e.preventDefault();
+    if (!resultEl.classList.contains('hidden')) continueGame();
+    else if (!race || race.phase === 'done') startRace();
+  }
 });
 
 /* ================= Boot ================= */
 updateUI();
-const fontReady = document.fonts ? document.fonts.load('700 30px "Baloo 2"').catch(() => {}) : Promise.resolve();
-Promise.all([assetsReady, fontReady]).then(() => { buildBackground(); });
+if (document.fonts) document.fonts.load('700 30px "Baloo 2"').catch(() => {});
 activateGame(GAME_IMPL[curGame()] ? curGame() : 'g25');
 requestAnimationFrame(frame);
 </script>
