@@ -111,16 +111,27 @@ body.running #stage{cursor:default}
 .drawerCard .nm{font-size:15px;font-weight:800;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .drawerCard .rule{font-size:12px;color:var(--muted);line-height:1.25;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .drawerCard .badge{position:absolute;top:8px;right:8px;background:var(--sun);color:#3d2600;font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px}
+.drawerCard[data-vol="1"]{border-left:5px solid #0284c7;background:linear-gradient(90deg,#0284c712,#f8fafc)}
+.drawerCard[data-vol="2"]{border-left:5px solid #16a34a;background:linear-gradient(90deg,#16a34a12,#f8fafc)}
+.drawerCard[data-vol="3"]{border-left:5px solid #0d9488;background:linear-gradient(90deg,#0d948812,#f8fafc)}
+.drawerCard[data-vol="4"]{border-left:5px solid #ea580c;background:linear-gradient(90deg,#ea580c12,#f8fafc)}
+.drawerCard[data-vol="5"]{border-left:5px solid #eab308;background:linear-gradient(90deg,#eab30814,#f8fafc)}
+.drawerCard[data-vol="1"] .meta{color:#0284c7}
+.drawerCard[data-vol="2"] .meta{color:#16a34a}
+.drawerCard[data-vol="3"] .meta{color:#0d9488}
+.drawerCard[data-vol="4"] .meta{color:#ea580c}
+.drawerCard[data-vol="5"] .meta{color:#ca8a04}
 
-/* result card */
+/* result card with gold shimmer & avatar aura */
 .result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(9,15,29,.8);animation:fade .22s ease-out}
 .card{position:relative;background:#fff;border-radius:2.6cqw;padding:3cqw 4.2cqw 2.4cqw;text-align:center;max-width:84cqw;
-  box-shadow:0 .8cqw 0 #cbd5e1,0 2.6cqw 6cqw rgba(0,0,0,.45);animation:pop .36s cubic-bezier(.16,1,.3,1)}
+  box-shadow:0 0 0 .3cqw #ffd84a,0 .8cqw 0 #cbd5e1,0 2.6cqw 6cqw rgba(0,0,0,.45);animation:pop .36s cubic-bezier(.16,1,.3,1)}
+.card::before{content:"";position:absolute;inset:-.4cqw;border-radius:3cqw;background:linear-gradient(135deg,#ffd84a55,#ff9f4300,#38bdf855,#ffd84a60);z-index:-1;pointer-events:none}
 .ribbon{position:absolute;left:50%;top:-2cqw;transform:translateX(-50%);white-space:nowrap;background:linear-gradient(180deg,#e11d48,#be123c);color:#fff;
   font-size:2cqw;line-height:1.35;font-weight:800;padding:.5cqw 2.8cqw;border-radius:1cqw;box-shadow:0 .4cqw 0 #881337}
-.card img{height:15.5cqw;display:block;margin:0 auto;filter:drop-shadow(0 .5cqw .5cqw rgba(0,0,0,.2))}
+.card img{height:15.5cqw;display:block;margin:0 auto;filter:drop-shadow(0 0 2.2cqw rgba(255,215,0,.65)) drop-shadow(0 .5cqw .5cqw rgba(0,0,0,.2))}
 .card .name{font-family:var(--title);font-size:6.6cqw;font-weight:700;line-height:1.25;margin:.5cqw 0 1.5cqw;word-break:break-word;
-  color:var(--ink);text-shadow:0 2px 0 #e2e8f0}
+  color:var(--ink);text-shadow:0 2px 0 #cbd5e1,0 4px 12px rgba(0,0,0,.15)}
 .card .btns{display:flex;gap:1cqw;justify-content:center;flex-wrap:wrap}
 .card button{font-size:1.7cqw;padding:.75cqw 2cqw}
 .btnGo{--c:var(--green);--cd:var(--green-d)}
@@ -162,8 +173,9 @@ select{font-family:inherit;font-size:14.5px;font-weight:700;padding:6px 10px;min
 .hint kbd{background:#fff;color:var(--ink);border-radius:6px;padding:1px 7px;box-shadow:0 2px 0 #94a3b8;font-family:inherit;font-weight:800}
 .status{font-size:14.5px;font-weight:700;color:var(--muted);margin:0 0 8px}
 .status.done{color:var(--red)}
-.meter{height:9px;border-radius:999px;background:var(--soft);overflow:hidden;margin:-2px 0 10px}
+.meter{position:relative;height:10px;border-radius:999px;background:var(--soft);overflow:visible;margin:-2px 0 10px}
 .meter i{display:block;width:100%;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),#0ea5e9);transform-origin:left;transform:scaleX(0);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.meterStar{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);font-size:14px;line-height:1;transition:left .4s cubic-bezier(.16,1,.3,1),opacity .3s;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));pointer-events:none}
 .called{list-style:none;margin:0;padding:0;max-height:280px;overflow:auto;display:flex;flex-direction:column;gap:5px;scrollbar-color:var(--line) transparent}
 .called li{display:flex;gap:10px;align-items:center;font-size:15.5px;font-weight:700;background:var(--soft);border-radius:11px;padding:5px 10px}
 .called li:last-child:not(.empty){animation:itemIn .26s cubic-bezier(.22,1,.36,1)}
@@ -284,7 +296,7 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
     <section class="panel" aria-label="Picked students">
       <h3><span id="pickedHdrTxt">📋 Picked so far</span> <span class="badge" id="calledCount"></span></h3>
       <div class="status" id="status" aria-live="polite"></div>
-      <div class="meter"><i id="meterBar"></i></div>
+      <div class="meter"><i id="meterBar"></i><span id="meterStar" class="meterStar">⭐</span></div>
       <ol class="called" id="calledList"></ol>
       <button class="resetBtn lockable" id="resetBtn">↺ Start over</button>
     </section>
@@ -849,6 +861,7 @@ function countdown(r, t) {
 
 function finishRace() {
   const r = race; r.phase = 'done'; r.doneAt = r.now;
+  r.flashUntil = performance.now() + 120;
   r.banner = r.game ? r.game.winBanner(r) : '🎉 ' + r.winner.name + ' wins!';
   Music.stop(); SFX.whistle(); SFX.victory(); SFX.confettiPops(); SFX.applause();
   setTimeout(() => { if (race === r) Music.play('idle'); }, 3500);
@@ -874,13 +887,34 @@ function burstConfetti() {
   }
 }
 
-/* ================= Render loop ================= */
+/* ================= Render loop & Touch Ripples ================= */
 let lastNow = performance.now(), hasPool = true;
+let ripples = [];
+function addRipple(cx, cy) { ripples.push({ x: cx, y: cy, t0: performance.now(), dur: 450 }); }
+function drawRipples(now) {
+  if (!ripples.length) return;
+  ctx.save();
+  ripples = ripples.filter(rp => now - rp.t0 < rp.dur);
+  for (const rp of ripples) {
+    const k = (now - rp.t0) / rp.dur;
+    const r = 16 + 90 * ease(k);
+    ctx.strokeStyle = 'rgba(255,216,74,' + ((1 - k) * .75) + ')';
+    ctx.lineWidth = Math.max(1, 4 * (1 - k));
+    ctx.beginPath(); ctx.arc(rp.x, rp.y, r, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+}
+cv.addEventListener('pointerdown', e => {
+  const rect = cv.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width), y = (e.clientY - rect.top) * (H / rect.height);
+  addRipple(x, y);
+});
 function frame(now) {
   const dt = Math.min(.05, (now - lastNow) / 1000); lastNow = now;
   const t = now / 1000;
   ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
   CAM.begin(race, dt);
+  drawRipples(now);
   const impl = curImpl();
   if (impl) renderGeneric(impl, now, t, dt);
   requestAnimationFrame(frame);
@@ -938,12 +972,30 @@ function phaseHud(r) {
   }
   ctx.restore();
 }
+function drawVignette(a) {
+  ctx.save();
+  const g = ctx.createRadialGradient(800, 450, 360, 800, 450, 960);
+  g.addColorStop(0, 'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(5,9,24,' + a + ')');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+}
 function hud(r, t, dt) {
   FX.draw(r, dt);
   CAM.end();
   banner(r.banner, t);
   phaseHud(r);
   if (r.phase !== 'done') timerChip(Math.max(0, Math.ceil(r.T - r.now)));
+  const left = r.T - r.now;
+  if (r.phase === 'run' && left <= 3 && left > 0) {
+    const pulse = .24 + .12 * Math.sin(r.now * 8);
+    drawVignette(pulse);
+  }
+  if (r.flashUntil && performance.now() < r.flashUntil) {
+    const k = (r.flashUntil - performance.now()) / 120;
+    ctx.save(); ctx.fillStyle = 'rgba(255,255,255,' + (k * .7) + ')'; ctx.fillRect(0, 0, W, H); ctx.restore();
+  }
   r.confetti.forEach(c => { c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.vx *= .99; c.r += c.vr * dt;
     ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.r); ctx.fillStyle = c.c; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });
   r.confetti = r.confetti.filter(c => c.y < H + 40);
@@ -1263,7 +1315,10 @@ function updateUI() {
   else if (!pool.length) { st.textContent = t.allPicked; st.className = 'status done'; }
   else { st.textContent = store.settings.rest ? t.waitingFmt(pool.length, all.length) : t.anyoneAgain; st.className = 'status'; }
   document.getElementById('calledCount').textContent = called.length || '';
-  document.getElementById('meterBar').style.transform = 'scaleX(' + (all.length ? Math.min(1, (all.length - pool.length) / all.length) : 0) + ')';
+  const meterFrac = all.length ? Math.min(1, (all.length - pool.length) / all.length) : 0;
+  document.getElementById('meterBar').style.transform = 'scaleX(' + meterFrac + ')';
+  const starEl = document.getElementById('meterStar');
+  if (starEl) { starEl.style.left = (meterFrac * 100) + '%'; starEl.style.opacity = meterFrac > 0 ? '1' : '0'; }
   const ol = document.getElementById('calledList');
   ol.innerHTML = called.length ? called.map((n, i) => `<li><i>${i + 1}.</i>${esc(n)}</li>`).join('') : `<li class="empty">${t.nobodyYet}</li>`;
   ol.scrollTop = ol.scrollHeight;
