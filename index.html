@@ -122,16 +122,31 @@ body.running #stage{cursor:default}
 .drawerCard[data-vol="4"] .meta{color:#ea580c}
 .drawerCard[data-vol="5"] .meta{color:#ca8a04}
 
-/* result card with gold shimmer & avatar aura */
-.result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(9,15,29,.8);animation:fade .22s ease-out}
-.card{position:relative;background:#fff;border-radius:2.6cqw;padding:3cqw 4.2cqw 2.4cqw;text-align:center;max-width:84cqw;
-  box-shadow:0 0 0 .3cqw #ffd84a,0 .8cqw 0 #cbd5e1,0 2.6cqw 6cqw rgba(0,0,0,.45);animation:pop .36s cubic-bezier(.16,1,.3,1)}
-.card::before{content:"";position:absolute;inset:-.4cqw;border-radius:3cqw;background:linear-gradient(135deg,#ffd84a55,#ff9f4300,#38bdf855,#ffd84a60);z-index:-1;pointer-events:none}
-.ribbon{position:absolute;left:50%;top:-2cqw;transform:translateX(-50%);white-space:nowrap;background:linear-gradient(180deg,#e11d48,#be123c);color:#fff;
-  font-size:2cqw;line-height:1.35;font-weight:800;padding:.5cqw 2.8cqw;border-radius:1cqw;box-shadow:0 .4cqw 0 #881337}
-.card img{height:15.5cqw;display:block;margin:0 auto;filter:drop-shadow(0 0 2.2cqw rgba(255,215,0,.65)) drop-shadow(0 .5cqw .5cqw rgba(0,0,0,.2))}
-.card .name{font-family:var(--title);font-size:6.6cqw;font-weight:700;line-height:1.25;margin:.5cqw 0 1.5cqw;word-break:break-word;
-  color:var(--ink);text-shadow:0 2px 0 #cbd5e1,0 4px 12px rgba(0,0,0,.15)}
+/* Celebration overlay */
+.result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;isolation:isolate;overflow:hidden;
+  background:radial-gradient(ellipse at center,#40255755 10%,#0c102bcb 75%);animation:fade .22s ease-out}
+.result::before{content:"";position:absolute;inset:-30%;z-index:-1;pointer-events:none;
+  background:repeating-conic-gradient(from -12deg,#ffd45d30 0deg 9deg,transparent 9deg 24deg);
+  mask-image:radial-gradient(ellipse,#000 16%,transparent 62%);animation:celebrate-rays .85s ease-out both}
+.card{position:relative;background:radial-gradient(ellipse at 50% 22%,#fff0a9 0%,#fff9df 30%,#fff 65%);
+  border:.34cqw solid #ffd84a;border-radius:2.6cqw;padding:3.2cqw 4.2cqw 2.4cqw;text-align:center;max-width:84cqw;
+  box-shadow:0 0 5cqw #ffc93e65,0 .75cqw 0 #b67614,0 2.6cqw 6cqw #0007;animation:pop .42s cubic-bezier(.16,1,.3,1)}
+.card::before,.card::after{position:absolute;top:19%;font-size:3.5cqw;line-height:1;color:#a96006;pointer-events:none;animation:celebrate-star .65s .12s ease-out both}
+.card::before{content:"✦";left:12%;transform:rotate(-14deg)}
+.card::after{content:"✧";right:12%;transform:rotate(14deg)}
+.ribbon{position:absolute;left:50%;top:-2.1cqw;transform:translateX(-50%);white-space:nowrap;
+  background:linear-gradient(180deg,#9734cc,#67188e);color:#fff;font-family:var(--title);
+  font-size:2.6cqw;line-height:1.2;font-weight:800;padding:.65cqw 2.8cqw;border-radius:999px;
+  box-shadow:0 .35cqw 0 #48125f,0 0 0 .22cqw #ffd84a}
+.card img{height:15.5cqw;display:block;margin:0 auto;filter:drop-shadow(0 0 2.2cqw #ffc844a8) drop-shadow(0 .5cqw .5cqw #0003)}
+.card .name{font-family:var(--title);font-size:6.6cqw;font-weight:800;line-height:1.15;margin:.6cqw 0 1.65cqw;overflow-wrap:anywhere;
+  color:#31204e;text-shadow:0 .2cqw 0 #ffda76}
+@keyframes celebrate-rays{from{transform:scale(.72) rotate(-8deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes celebrate-star{from{scale:.35;opacity:0}to{scale:1;opacity:1}}
+.result.calm,.result.calm .card,.result.calm::before,.result.calm .card::before,.result.calm .card::after{animation:none}
+@media(prefers-reduced-motion:reduce){
+  .result,.result .card,.result::before,.result .card::before,.result .card::after{animation:none}
+}
 .card .btns{display:flex;gap:1cqw;justify-content:center;flex-wrap:wrap}
 .card button{font-size:1.7cqw;padding:.75cqw 2cqw}
 .btnGo{--c:var(--green);--cd:var(--green-d)}
@@ -240,12 +255,11 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
     <canvas id="stage" width="1920" height="1080" title="Click or press Space to pick a name"></canvas>
     <div id="result" class="result hidden" role="dialog" aria-modal="true" aria-labelledby="resName">
       <div class="card">
-        <span class="ribbon" id="ribbonTxt">🎉 And the pick is…</span>
+        <span class="ribbon" id="ribbonTxt">🎉 Congratulations!</span>
         <img id="resImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Selected student character">
         <div class="name" id="resName"></div>
         <div class="btns">
           <button class="candy btnGo" id="contBtn">Next round ▶</button>
-          <button class="candy btnSoft" id="sayBtn">🔈 Say it again</button>
           <button class="candy btnSoft btnTimer" id="timerBtn">⏱ 30s Timer</button>
           <button class="candy btnSoft" id="absentBtn">↩ Absent · Re-spin</button>
         </div>
@@ -281,15 +295,6 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
             <b id="sfxVolVal">90%</b>
           </div>
         </div>
-      </div>
-      <label class="lab" id="readAloudLab" for="voiceSel" style="display:block">Read the name aloud</label>
-      <div class="row">
-        <select id="voiceSel">
-          <option value="en">English</option>
-          <option value="vi">Vietnamese</option>
-          <option value="off">Sound only</option>
-        </select>
-        <button class="smallBtn" id="testBtn">🔔 Test</button>
       </div>
     </details>
 
@@ -430,7 +435,7 @@ function defaultStore() {
   return {
     classes: [{ id, name: 'Sample class', mode: 'names', count: 30, text: SAMPLE.join('\n'), gender: {} }],
     activeId: id,
-    settings: { duration: 15, rest: true, voice: 'en', sound: true, music: true, musicVol: 70, sfxVol: 90, calm: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) },
+    settings: { duration: 15, rest: true, sound: true, music: true, musicVol: 70, sfxVol: 90, calm: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) },
     called: {}
   };
 }
@@ -534,12 +539,6 @@ const AUD = {
     const sv = store.settings.sound ? ((store.settings.sfxVol ?? 90) / 100) * .9 : 0;
     if (this.music) this.music.gain.setTargetAtTime(mv, this.ctx.currentTime, 0.05);
     if (this.sfx) this.sfx.gain.setTargetAtTime(sv, this.ctx.currentTime, 0.05);
-  },
-  duck(on) {
-    if (this.music && this.ctx) {
-      const base = store.settings.music ? ((store.settings.musicVol ?? 70) / 100) * .34 : 0;
-      this.music.gain.setTargetAtTime(on ? base * .28 : base, this.ctx.currentTime, .15);
-    }
   }
 };
 const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
@@ -743,32 +742,15 @@ const Music = {
   if (AUD.get()) { if (!Music.mode) Music.play(race && race.phase === 'run' ? 'race' : 'idle'); else Music.next = AUD.ctx.currentTime + .05; }
 }, { once: true }));
 
-/* ================= Speech ================= */
-let speakId = 0, duckTimer = null;
-function speak(name) {
-  const v = store.settings.voice; if (v === 'off' || !('speechSynthesis' in window)) return;
-  const id = ++speakId, lang = v === 'vi' ? 'vi-VN' : 'en-US';
-  const text = v === 'en' ? name.replace(/^No\. (\d+)$/, 'Number $1') : name.replace(/^No\. (\d+)$/, 'Số $1');
-  const u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = .9;
-  const unduck = () => { if (id === speakId) { clearTimeout(duckTimer); AUD.duck(false); } };
-  u.onstart = () => { if (id === speakId) { clearTimeout(duckTimer); AUD.duck(true); duckTimer = setTimeout(unduck, 4000); } };
-  u.onend = u.onerror = unduck;
-  const voice = speechSynthesis.getVoices().find(x => x.lang && x.lang.replace('_', '-').toLowerCase().startsWith(lang.slice(0, 2)));
-  if (voice) u.voice = voice;
-  speechSynthesis.cancel(); speechSynthesis.speak(u);
-}
-if ('speechSynthesis' in window) speechSynthesis.getVoices();
-
 /* ================= Assets ================= */
 const IMGSETS = {};
 let IMG = {};          // images of the game being shown
-function loadImages(set, base, names) {
+function loadImages(set, base, names, priority = 'auto') {
   const dict = IMGSETS[set] = IMGSETS[set] || {};
   return Promise.all(names.map(n => dict[n] ? 0 : new Promise(res => {
-    const im = new Image(); im.onload = () => { dict[n] = im; res(); }; im.onerror = res; im.src = base + n + '.webp';
+    const im = new Image(); im.fetchPriority = priority; im.onload = () => { dict[n] = im; res(); }; im.onerror = res; im.src = base + n + '.webp';
   })));
 }
-const assetsReady = Promise.resolve();
 
 /* ================= Stage / shared canvas helpers ================= */
 const W = 1600, H = 900;
@@ -818,13 +800,12 @@ function drawTag(text, xRight, y, lead, centered = false) {
 let race = null;
 
 function pickRandomGame() {
-  const ready = GAMES.filter(g => GAME_IMPL[g.id] && GAME_IMPL[g.id].ready);
-  const pool = ready.length > 1 ? ready.filter(g => g.id !== curGame()) : (ready.length ? ready : GAMES);
+  const pool = GAMES.filter(g => g.id !== curGame());
   return pool[randInt(pool.length)].id;
 }
 
 function startRace(fromRandom, classId = store.activeId) {
-  if (race && race.phase !== 'done') return;
+  if ((race && race.phase !== 'done') || !gameAssets(curGame())?.ready) return;
   const cls = store.classes.find(c => c.id === classId);
   if (!cls) return;
   const all = roster(cls), pool = eligible(cls);
@@ -832,8 +813,13 @@ function startRace(fromRandom, classId = store.activeId) {
   if (store.settings.randomGame && !fromRandom) {
     const pick = pickRandomGame();
     if (pick !== curGame()) activateGame(pick, true);
-    const impl = curImpl();
-    if (impl && !impl.ready) { impl.loading.then(() => startRace(true, classId)); return; }
+    const assets = gameAssets(pick);
+    if (!assets.ready) {
+      assets.loading.then(() => {
+        if (curGame() === pick && store.settings.randomGame) startRace(true, classId);
+      });
+      return;
+    }
   }
   hideResult();
   const T = store.settings.duration;
@@ -875,11 +861,10 @@ function countdown(r, t) {
 
 function finishRace() {
   const r = race; r.phase = 'done'; r.doneAt = r.now;
-  r.flashUntil = performance.now() + 120;
   r.banner = r.game ? r.game.winBanner(r) : '🎉 ' + r.winner.name + ' wins!';
   Music.stop(); SFX.whistle(); SFX.victory(); SFX.confettiPops(); SFX.applause();
   setTimeout(() => { if (race === r) Music.play('idle'); }, 3500);
-  burstConfetti();
+  if (!store.settings.calm && !matchMedia('(prefers-reduced-motion: reduce)').matches) burstConfetti();
   const wp = r.winRays = r.game ? r.game.winPos(r) : { x: 800, y: 450 };
   r.fx = r.fx || []; r.fx.push({ atlas: 'vfx_win', duck: wp, w: 380, t0: r.now, dur: 1.4 }); SFX.sting('win');
   FX.ring(wp.x, wp.y + 40, '#ffd84a', 280); FX.ring(wp.x, wp.y + 40, '#ffffff', 180); FX.sparkle(wp.x, wp.y, 60);
@@ -889,7 +874,6 @@ function finishRace() {
   if (cls) { calledOf(cls).push(r.winner.name); save(); }
   document.body.classList.remove('running');
   setTimeout(() => { if (race === r) showResult(r.winner); }, 900);
-  setTimeout(() => { if (race === r) speak(r.winner.name); }, 450);
   updateUI();
 }
 
@@ -1006,10 +990,6 @@ function hud(r, t, dt) {
     const pulse = .24 + .12 * Math.sin(r.now * 8);
     drawVignette(pulse);
   }
-  if (r.flashUntil && performance.now() < r.flashUntil) {
-    const k = (r.flashUntil - performance.now()) / 120;
-    ctx.save(); ctx.fillStyle = 'rgba(255,255,255,' + (k * .7) + ')'; ctx.fillRect(0, 0, W, H); ctx.restore();
-  }
   r.confetti.forEach(c => { c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.vx *= .99; c.r += c.vr * dt;
     ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.r); ctx.fillStyle = c.c; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });
   r.confetti = r.confetti.filter(c => c.y < H + 40);
@@ -1067,7 +1047,9 @@ function contactShadow(x, y, w, a = .3) {
   ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, w * .5, w * .13, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
 }
 function charImg(av, pose, x, y, h, opt = {}) {
-  const im = IMG['c' + av + '_' + pose] || IMG['c' + av + '_' + (opt.fallback || 'idle')]; if (!im) return 0;
+  const key = 'c' + av + '_';
+  const im = IMG[key + pose] || IMG[key + (opt.fallback || 'idle')] || IMG[key + curImpl()?.previewPose];
+  if (!im) return 0;
   let w = im.width * h / im.height;
   const maxW = h * 1.15;
   if (w > maxW) { h = h * (maxW / w); w = maxW; }
@@ -1079,26 +1061,31 @@ function charImg(av, pose, x, y, h, opt = {}) {
 }
 const curGame = () => store.settings.game5 || 'g25';
 const curImpl = () => GAME_IMPL[curGame()] || null;
-// after the visible game is ready, fetch the others one by one so switching is instant
-let preloading = false;
-function preloadGames() {
-  if (preloading) return; preloading = true;
-  const queue = Object.values(GAME_IMPL);
-  (function next() {
-    const g = queue.shift(); if (!g) return;
-    if (!g.loading) g.loading = loadImages(g.id, g.base, g.assets).then(() => { g.ready = true; updateUI(); });
-    g.loading.then(() => setTimeout(next, 300));
-  })();
+const gameAssets = id => GAME_IMPL[id];
+function prepareGame(g) {
+  if (!g.loading) {
+    g.previewPose = g.assets.find(n => n.startsWith('c0_'))?.slice(3);
+    const later = n => n.startsWith('vfx_') || (/^c\d+_/.test(n)
+      && !n.endsWith('_' + g.previewPose) && !n.endsWith('_win'));
+    g.deferredAssets = g.assets.filter(later);
+    g.loading = loadImages(g.id, g.base, g.assets.filter(n => !later(n))).then(() => {
+      g.ready = true;
+      updateUI();
+    });
+  }
+  g.loading.then(() => {
+    if (curGame() === g.id && !g.detailsLoading) {
+      g.detailsLoading = loadImages(g.id, g.base, g.deferredAssets, 'low');
+    }
+  });
 }
 function activateGame(id, keepRandom = false) {
   if (race && race.phase === 'run') return;
   if (!keepRandom) store.settings.randomGame = false;
   store.settings.game5 = id; save();
   race = null; hideResult();
-  const g = GAME_IMPL[id];
   IMG = IMGSETS[id] = IMGSETS[id] || {};
-  if (g && !g.loading) g.loading = loadImages(id, g.base, g.assets).then(() => { g.ready = true; updateUI(); });
-  (g ? g.loading : assetsReady).then(preloadGames);
+  prepareGame(gameAssets(id));
   updateUI();
 }
 
@@ -1153,13 +1140,13 @@ function showResult(d) {
   stopAnsTimer();
   document.getElementById('resName').textContent = d.name;
   if (race && race.game) document.getElementById('resImg').src = race.game.base + 'c' + d.av + '_' + (race.game.resultPose || 'win') + '.webp';
+  resultEl.classList.toggle('calm', !!store.settings.calm);
   resultEl.classList.remove('hidden');
   setTimeout(() => document.getElementById('contBtn').focus(), 40);
 }
 function hideResult() { stopAnsTimer(); resultEl.classList.add('hidden'); }
 function continueGame() { hideResult(); race = null; Music.play('idle'); updateUI(); }
 document.getElementById('contBtn').onclick = continueGame;
-document.getElementById('sayBtn').onclick = () => race && speak(race.winner.name);
 document.getElementById('timerBtn').onclick = () => {
   if (ansTimer) { stopAnsTimer(); return; }
   const b = document.getElementById('timerBtn');
@@ -1211,7 +1198,7 @@ document.querySelectorAll('#gameTabs .tab[data-game]').forEach(b => b.onclick = 
 document.getElementById('randTab').onclick = () => {
   if (race && race.phase === 'run') return;
   store.settings.randomGame = !store.settings.randomGame;
-  save(); preloadGames(); updateUI();
+  save(); updateUI();
 };
 
 const durChips = document.getElementById('durChips');
@@ -1222,18 +1209,9 @@ const calmChk = document.getElementById('calmChk');
 calmChk.onchange = () => { store.settings.calm = calmChk.checked; save(); };
 const restChk = document.getElementById('restChk');
 restChk.onchange = () => { store.settings.rest = restChk.checked; save(); updateUI(); };
-const voiceSel = document.getElementById('voiceSel');
-voiceSel.onchange = () => { store.settings.voice = voiceSel.value; save(); };
-document.getElementById('testBtn').onclick = () => {
-  SFX.ding(); SFX.quack(.4); if (AUD.get() && !Music.mode) Music.play('idle');
-  const v = store.settings.voice;
-  if (v === 'off') toast(L().toastVoiceOff);
-  else speak(v === 'vi' ? 'Xin chào cả lớp' : 'Hello everyone!');
-};
 const langBtn = document.getElementById('langBtn');
 langBtn.onclick = () => {
   store.settings.lang = curLang() === 'vi' ? 'en' : 'vi';
-  if (store.settings.voice !== 'off') store.settings.voice = store.settings.lang;
   save();
   if (!page.classList.contains('hidden')) { renderClassPage(true); backupNote(); }
   updateUI();
@@ -1282,7 +1260,6 @@ function updateUI() {
   document.getElementById('fsBtn').textContent = t.fullscreen;
   document.getElementById('ribbonTxt').textContent = t.ribbon;
   document.getElementById('contBtn').textContent = t.nextRound;
-  document.getElementById('sayBtn').textContent = t.sayAgain;
   document.getElementById('absentBtn').textContent = t.absentRespin;
   if (!ansTimer) document.getElementById('timerBtn').textContent = t.answerTimer;
   document.getElementById('hintTxt').innerHTML = t.hintHtml;
@@ -1293,11 +1270,6 @@ function updateUI() {
   document.getElementById('calmTxt').textContent = t.reduceMotion;
   document.getElementById('calmSub').textContent = t.reduceMotionSub;
   document.getElementById('paintedTxt').textContent = t.paintedBg;
-  document.getElementById('readAloudLab').textContent = t.readAloud;
-  voiceSel.options[0].textContent = t.voiceEn;
-  voiceSel.options[1].textContent = t.voiceVi;
-  voiceSel.options[2].textContent = t.voiceOff;
-  document.getElementById('testBtn').textContent = t.testBtn;
   document.getElementById('pickedHdrTxt').textContent = t.pickedHdr;
   if (!resetBtn.classList.contains('confirm')) resetBtn.textContent = t.startOver;
 
@@ -1320,11 +1292,11 @@ function updateUI() {
   paintedChk.disabled = !canPaint;
   document.getElementById('paintedWrap').style.opacity = canPaint ? '1' : '.55';
   document.getElementById('paintedSub').textContent = canPaint ? t.paintedSubCode : t.paintedSubCode;
-  restChk.checked = store.settings.rest; calmChk.checked = !!store.settings.calm; voiceSel.value = store.settings.voice;
+  restChk.checked = store.settings.rest; calmChk.checked = !!store.settings.calm;
   soundBtn.textContent = store.settings.sound ? t.soundOn : t.soundOff; soundBtn.classList.toggle('off', !store.settings.sound);
   musicBtn.textContent = store.settings.music ? t.musicOn : t.musicOff; musicBtn.classList.toggle('off', !store.settings.music);
   const running = race && race.phase === 'run';
-  startBtn.disabled = running || !pool.length || !!(impl && !impl.ready);
+  startBtn.disabled = running || !pool.length || !gameAssets(curGame())?.ready;
   if (running) startBtn.textContent = t.pickingBtn;
   else startBtn.innerHTML = esc(t.pickBtn) + (store.settings.rest && pool.length ? ` <span class="cnt">${pool.length}</span>` : '');
   const st = document.getElementById('status');
@@ -1749,7 +1721,6 @@ try {
 updateUI();
 if (document.fonts) document.fonts.load('700 30px "Baloo 2"').then(() => { for (const k in tagCache) delete tagCache[k]; }).catch(() => {});
 activateGame(GAME_IMPL[curGame()] ? curGame() : 'g25', true);
-if (store.settings.randomGame) preloadGames();
 requestAnimationFrame(frame);
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});

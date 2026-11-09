@@ -491,9 +491,9 @@ const UI_STRINGS = {
     musicOff: '🔕 Music',
     langToggle: '🇻🇳 Tiếng Việt',
     langTitle: 'Switch interface and commentary to Vietnamese',
-    ribbon: '🎉 And the pick is…',
+    ribbon: '🎉 Congratulations!',
     nextRound: 'Next round ▶',
-    sayAgain: '🔈 Say it again',
+
     absentRespin: '↩ Absent · Re-spin',
     answerTimer: '⏱ 30s Timer',
     answerTimeUp: '⏰ Time is up!',
@@ -510,11 +510,11 @@ const UI_STRINGS = {
     paintedSubVol1: 'Games 2–6, about 150 KB each',
     paintedSubVol2: 'Games 7, 8 & 12, about 150 KB each',
     paintedSubCode: 'Code-drawn scene for this game',
-    readAloud: 'Read the name aloud',
-    voiceEn: 'English',
-    voiceVi: 'Vietnamese',
-    voiceOff: 'Sound only',
-    testBtn: '🔔 Test',
+
+
+
+
+
     pickedHdr: '📋 Picked so far',
     startOver: '↺ Start over',
     confirmReset: 'Press again to confirm',
@@ -553,7 +553,7 @@ const UI_STRINGS = {
     backupHint: 'Save a file to keep your classes safe if the browser is cleared, or to move them to another computer.',
     doneSave: '✓ Save & Play',
     // Toasts
-    toastVoiceOff: 'Name reading is off — playing sound effects only',
+
     toastReset: 'Started over — everyone is back in',
     toastBackupSaved: 'Backup file saved',
     toastBadBackup: 'That file is not a Name Picker Party backup',
@@ -587,9 +587,9 @@ const UI_STRINGS = {
     musicOff: '🔕 Nhạc nền',
     langToggle: '🇬🇧 English',
     langTitle: 'Chuyển giao diện và lời bình sang tiếng Anh',
-    ribbon: '🎉 Học sinh được chọn là…',
+    ribbon: '🎉 Chúc mừng!',
     nextRound: 'Lượt tiếp theo ▶',
-    sayAgain: '🔈 Đọc lại tên',
+
     absentRespin: '↩ Vắng · Quay lại',
     answerTimer: '⏱ Đếm giờ 30s',
     answerTimeUp: '⏰ Hết giờ trả lời!',
@@ -606,11 +606,11 @@ const UI_STRINGS = {
     paintedSubVol1: 'Game 2–6, khoảng 150 KB mỗi cảnh',
     paintedSubVol2: 'Game 7, 8 & 12, khoảng 150 KB mỗi cảnh',
     paintedSubCode: 'Cảnh vẽ trực tiếp cho trò chơi này',
-    readAloud: 'Đọc to tên học sinh',
-    voiceEn: 'Tiếng Anh',
-    voiceVi: 'Tiếng Việt',
-    voiceOff: 'Chỉ phát hiệu ứng',
-    testBtn: '🔔 Thử loa',
+
+
+
+
+
     pickedHdr: '📋 Đã được gọi',
     startOver: '↺ Chơi lại từ đầu',
     confirmReset: 'Bấm lần nữa để xác nhận',
@@ -649,7 +649,7 @@ const UI_STRINGS = {
     backupHint: 'Lưu file về máy để bảo toàn danh sách lớp khi xóa dữ liệu trình duyệt hoặc chuyển sang máy tính khác.',
     doneSave: '✓ Lưu & Chơi ngay',
     // Toasts
-    toastVoiceOff: 'Đang tắt đọc tên — chỉ phát hiệu ứng âm thanh',
+
     toastReset: 'Đã đặt lại — cả lớp đã sẵn sàng cho lượt mới',
     toastBackupSaved: 'Đã lưu file sao lưu về máy',
     toastBadBackup: 'File này không phải bản sao lưu của Name Picker Party',
