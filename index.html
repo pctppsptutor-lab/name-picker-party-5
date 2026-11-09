@@ -74,9 +74,12 @@ body.running #stage{cursor:default}
 /* smartboard touch & fullscreen */
 .stageWrap:fullscreen{background:#090f1d;display:flex;align-items:center;justify-content:center;aspect-ratio:auto}
 .stageWrap:fullscreen #stage,.stageWrap:fullscreen .result{width:min(100vw,177.78vh);height:auto;aspect-ratio:16/9;border-radius:0;box-shadow:none}
-.stageWrap:fullscreen .card{padding:4cqw 5cqw 3cqw;border-radius:3cqw}
-.stageWrap:fullscreen .card .name{font-size:max(7cqw,36px)}
-.stageWrap:fullscreen .btns .candy{min-height:56px;padding:12px 28px;font-size:max(1.8cqw,18px)}
+.stageWrap:fullscreen .result{inset:auto}
+.stageWrap:fullscreen .card{padding:clamp(20px,4vh,46px) clamp(24px,5vw,68px) clamp(16px,3vh,36px);max-width:min(85vw,148vh)}
+.stageWrap:fullscreen .card .name{font-size:clamp(28px,min(7vw,13vh),110px)}
+.stageWrap:fullscreen .card img{height:min(17vw,26vh)}
+.stageWrap:fullscreen .btns .candy{min-height:44px;padding:8px 18px;font-size:clamp(14px,2.8vh,24px)}
+.stageWrap:fullscreen .btns .btnGo{min-width:14ch}
 @media (pointer:coarse){
   .candy,.smallBtn,.vol,.toolBtn,.tab{min-height:48px}
   .btns .candy{min-height:54px}
@@ -126,14 +129,16 @@ body.running #stage{cursor:default}
 .result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;isolation:isolate;overflow:hidden;
   background:radial-gradient(ellipse at center,#40255755 10%,#0c102bcb 75%);animation:fade .22s ease-out}
 .result::before{content:"";position:absolute;inset:-30%;z-index:-1;pointer-events:none;
-  background:repeating-conic-gradient(from -12deg,#ffd45d30 0deg 9deg,transparent 9deg 24deg);
+  background:repeating-conic-gradient(from -12deg,var(--theme-rays,#ffd45d30) 0deg 9deg,transparent 9deg 24deg);
   mask-image:radial-gradient(ellipse,#000 16%,transparent 62%);animation:celebrate-rays .85s ease-out both}
-.card{position:relative;background:radial-gradient(ellipse at 50% 22%,#fff0a9 0%,#fff9df 30%,#fff 65%);
+.card{position:relative;background:radial-gradient(ellipse at 50% 22%,var(--theme-halo,#fff0a9) 0%,#fff9df 30%,#fff 65%);
   border:.34cqw solid #ffd84a;border-radius:2.6cqw;padding:3.2cqw 4.2cqw 2.4cqw;text-align:center;max-width:84cqw;
   box-shadow:0 0 5cqw #ffc93e65,0 .75cqw 0 #b67614,0 2.6cqw 6cqw #0007;animation:pop .42s cubic-bezier(.16,1,.3,1)}
 .card::before,.card::after{position:absolute;top:19%;font-size:3.5cqw;line-height:1;color:#a96006;pointer-events:none;animation:celebrate-star .65s .12s ease-out both}
-.card::before{content:"✦";left:12%;transform:rotate(-14deg)}
-.card::after{content:"✧";right:12%;transform:rotate(14deg)}
+.card::before{content:attr(data-motif);left:12%;transform:rotate(-14deg)}
+.card::after{content:attr(data-motif);right:12%;transform:rotate(14deg)}
+.result[data-game="g1"]{--theme-rays:#48c9ff55;--theme-halo:#c3f0ff}
+.result[data-game="g20"]{--theme-rays:#ffadba55;--theme-halo:#ffdce3}
 .ribbon{position:absolute;left:50%;top:-2.1cqw;transform:translateX(-50%);white-space:nowrap;
   background:linear-gradient(180deg,#9734cc,#67188e);color:#fff;font-family:var(--title);
   font-size:2.6cqw;line-height:1.2;font-weight:800;padding:.65cqw 2.8cqw;border-radius:999px;
@@ -776,23 +781,54 @@ function drawImg(name, cx, cy, w, { anchor = 'center', alpha = 1, rot = 0, flip 
   ctx.restore(); return h;
 }
 
-const TAG_MAX = 170, tagCache = {};
+const TAG_MAX = 178, tagCache = Object.create(null);
 function fitTag(text) {
   if (tagCache[text]) return tagCache[text];
-  let t = text, size = 25;
-  ctx.font = `700 ${size}px "Baloo 2","Segoe UI",sans-serif`;
-  if (ctx.measureText(t).width > TAG_MAX) { const w = t.split(/\s+/); if (w.length > 2) t = w.slice(-2).join(' '); }
-  while (ctx.measureText(t).width > TAG_MAX && size > 19) { size -= 1; ctx.font = `700 ${size}px "Baloo 2","Segoe UI",sans-serif`; }
-  if (ctx.measureText(t).width > TAG_MAX) { while (t.length > 3 && ctx.measureText(t + '…').width > TAG_MAX) t = t.slice(0, -1); t = t.trimEnd() + '…'; }
-  return tagCache[text] = { t, font: `700 ${size}px "Baloo 2","Segoe UI",sans-serif`, w: ctx.measureText(t).width + 22 };
+  const font = '800 25px "Baloo 2","Segoe UI",sans-serif';
+  ctx.font = font;
+  const chars = Array.from(text.slice(0, 100));
+  const width = value => ctx.measureText(value).width;
+  let first = chars.join(''), second = '';
+  if (width(first) > TAG_MAX) {
+    let end = 1;
+    while (end < chars.length && width(chars.slice(0, end + 1).join('')) <= TAG_MAX) end++;
+    const wordEnd = chars.slice(0, end + 1).lastIndexOf(' ');
+    if (wordEnd > 0) end = wordEnd;
+    first = chars.slice(0, end).join('').trimEnd();
+    second = chars.slice(end).join('').trim();
+  }
+  let clipped = text.length > 100;
+  const lines = second ? [first, second] : [first];
+  const last = Array.from(lines.at(-1));
+  while (last.length && width(last.join('') + (clipped ? '…' : '')) > TAG_MAX) {
+    last.pop();
+    clipped = true;
+  }
+  lines[lines.length - 1] = last.join('').trimEnd() + (clipped ? '…' : '');
+  return tagCache[text] = { lines, font, w: Math.max(...lines.map(width)) + 24 };
 }
 function drawTag(text, xRight, y, lead, centered = false) {
-  ctx.save(); const { t, font, w } = fitTag(text), h = 34, x = centered ? xRight - w / 2 : xRight - w;
+  ctx.save();
+  const { lines, font, w } = fitTag(text);
+  const h = lines.length === 1 ? 36 : 60;
+  const x = clamp(centered ? xRight - w / 2 : xRight - w, 8, W - w - 8);
   ctx.font = font;
-  ctx.fillStyle = lead ? '#ffd54a' : 'rgba(255,255,255,.95)';
-  ctx.strokeStyle = lead ? '#c98a00' : 'rgba(29,53,87,.25)'; ctx.lineWidth = 2;
-  roundRect(ctx, x, y - h / 2, w, h, 17); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#1d3557'; ctx.textBaseline = 'middle'; ctx.fillText(t, x + 11, y + 2);
+  ctx.fillStyle = lead ? '#ffe26d' : '#14243c';
+  ctx.strokeStyle = lead ? '#a36b00' : '#c3d3ee';
+  ctx.lineWidth = 2;
+  roundRect(ctx, x, y - h / 2, w, h, 13); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = lead ? '#342008' : '#fff';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  lines.forEach((line, i) => ctx.fillText(line, x + w / 2, y + (i - (lines.length - 1) / 2) * 24));
+  ctx.restore();
+}
+function winnerSpotlight(winner) {
+  const x = winner.x, y = winner.y - 55;
+  const shade = ctx.createRadialGradient(x, y, 95, x, y, 560);
+  shade.addColorStop(0, '#080c2300');
+  shade.addColorStop(1, '#080c23a8');
+  ctx.save();
+  ctx.fillStyle = shade; ctx.fillRect(-W, -H, W * 3, H * 3);
   ctx.restore();
 }
 
@@ -1031,10 +1067,12 @@ function renderGeneric(g, now, t, dt) {
   FX.motes(t, g.mote);
   const sc = SCENES[g.id];
   if (sc) sc.back(t);
-  if (race && race.phase === 'done' && race.winRays) FX.rays(race.winRays.x, race.winRays.y + 30, 340, t, g.rayColor);
+  if (race && race.phase === 'done' && race.winRays) FX.rays(race.winRays.x, race.winRays.y + 30, 340, store.settings.calm ? 0 : t, g.rayColor);
   if (race) {
     if (race.phase === 'run') tickRace(dt); else race.now += dt;
-    g.render(race, t, dt); drawFx(race); if (sc) sc.front(t); FX.ambientFront(t, g.rayColor || g.mote); hud(race, t, dt);
+    g.render(race, t, dt); drawFx(race); if (sc) sc.front(t); FX.ambientFront(t, g.rayColor || g.mote);
+    if (race.phase === 'done' && race.winRays) winnerSpotlight(race.winRays);
+    hud(race, t, dt);
   } else { g.idle(t); if (sc) sc.front(t); FX.ambientFront(t, g.rayColor || g.mote); idleOverlay(g.title, t, g.titleY || 860); }
 }
 // a name tag centred on cx
@@ -1140,6 +1178,13 @@ function showResult(d) {
   stopAnsTimer();
   document.getElementById('resName').textContent = d.name;
   if (race && race.game) document.getElementById('resImg').src = race.game.base + 'c' + d.av + '_' + (race.game.resultPose || 'win') + '.webp';
+  const id = race?.game?.id || curGame();
+  const game = GAMES.find(item => item.id === id);
+  resultEl.dataset.game = id;
+  resultEl.querySelector('.card').dataset.motif = id === 'g1' ? '🌊' : id === 'g20' ? '🐾' : game?.icon || '✦';
+  const color = id === 'g20' ? '' : race?.game?.rayColor;
+  resultEl.style.setProperty('--theme-rays', color ? 'color-mix(in srgb, ' + color + ' 32%, transparent)' : '');
+  resultEl.style.setProperty('--theme-halo', color ? 'color-mix(in srgb, ' + color + ' 34%, #fff)' : '');
   resultEl.classList.toggle('calm', !!store.settings.calm);
   resultEl.classList.remove('hidden');
   setTimeout(() => document.getElementById('contBtn').focus(), 40);
