@@ -774,7 +774,7 @@ const assetsReady = Promise.resolve();
 const W = 1600, H = 900;
 const cv = document.getElementById('stage'), ctx = cv.getContext('2d');
 const SCALE = cv.width / W;
-const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+function clamp(v, a = 0, b = 1) { return Math.max(a, Math.min(b, v)); }
 const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 const lerp = (a, b, t) => a + (b - a) * t;
 const quad = (a, b, c, k) => (1 - k) * (1 - k) * a + 2 * (1 - k) * k * b + k * k * c;
