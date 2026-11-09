@@ -450,8 +450,9 @@ function loadStore() {
     if (s && Array.isArray(s.classes) && s.classes.length) {
       const d = defaultStore();
       s.settings = Object.assign(d.settings, s.settings || {});
-      s.settings.musicVol = clamp(parseInt(s.settings.musicVol) || 70, 0, 100);
-      s.settings.sfxVol = clamp(parseInt(s.settings.sfxVol) || 90, 0, 100);
+      const musicVol = parseInt(s.settings.musicVol, 10), sfxVol = parseInt(s.settings.sfxVol, 10);
+      s.settings.musicVol = clamp(Number.isFinite(musicVol) ? musicVol : 70, 0, 100);
+      s.settings.sfxVol = clamp(Number.isFinite(sfxVol) ? sfxVol : 90, 0, 100);
       s.called = s.called || {};
       if (!s.classes.find(c => c.id === s.activeId)) s.activeId = s.classes[0].id;
       return s;
@@ -571,17 +572,8 @@ const DRUM = {
   clap(c, bus, t, v = .3) { [0, .012, .024].forEach(d => noiseVoice(c, bus, { t: t + d, dur: .09, vol: v, f: 1400, q: 1.2 })); }
 };
 
-// recorded outcome stings from the asset pack (HTMLAudio so they also play from file://)
-const STINGSETS = {};
-function loadStings(set, base) {
-  if (STINGSETS[set]) return STINGSETS[set];
-  const s = STINGSETS[set] = {};
-  ['almost_selected', 'selected', 'wrong_turn', 'win'].forEach(n => { const a = new Audio(base + 'sfx_' + n + '.wav'); a.preload = 'auto'; s[n] = a; });
-  return s;
-}
-let STINGS = loadStings('g25', 'assets/g25/');
 const SFX = {
-  sting(n, vol) { if (!store.settings.sound || !STINGS[n]) return; const a = STINGS[n].cloneNode(); a.volume = vol !== undefined ? vol : ((store.settings.sfxVol ?? 90) / 100) * .9; a.play().catch(() => {}); },
+  sting(kind) { this.run((c, bus, now) => playGameCue(c, bus, now, kind, audioTheme())); },
   ok() { return store.settings.sound ? AUD.get() : null; },
   run(fn) { const c = this.ok(); if (c) fn(c, AUD.sfx, c.currentTime); },
   tone(f, dur, o = {}) { this.run((c, b, now) => voice(c, b, { f, dur, t: now + (o.delay || 0), ...o })); },
@@ -594,7 +586,9 @@ const SFX = {
       for (let i = 0; i < 18; i++) DRUM.clap(c, b, now + .1 + Math.random() * 1.3, .12 + Math.random() * .1);
     });
   },
-  applause() { this.run((c, b, now) => { for (let i = 0; i < 60; i++) DRUM.clap(c, b, now + Math.random() * 2.6, .08 + Math.random() * .12); noiseVoice(c, b, { t: now, dur: 2.8, vol: .1, f: 1500, q: .4, attack: .2 }); }); },
+  applause() { this.run((c, b, now) => {
+    for (let i = 0; i < 10; i++) DRUM.clap(c, b, now + .5 + i * .085 + Math.random() * .07, .048);
+  }); },
   pop() { this.tone(500, .08, { to: 1300, vol: .14 }); },
   wheee(d = 0) { this.run((c, b, now) => { const t = now + d, o = c.createOscillator(), g = c.createGain(); o.type = 'square';
     o.frequency.setValueAtTime(520, t); o.frequency.linearRampToValueAtTime(1250, t + .22); o.frequency.exponentialRampToValueAtTime(420, t + .7);
@@ -618,127 +612,123 @@ const SFX = {
   steam() { this.noise(.28, { vol: .16, f: 2200, to: 600, q: .9 }); },
   magicChime() { [0, .06, .12, .18, .24].forEach((d, i) => this.tone(mtof(72 + [0, 4, 7, 11, 12][i]), .35, { type: 'sine', vol: .07, attack: .01, delay: d })); },
   spring() { this.tone(160, .45, { type: 'triangle', vol: .18, to: 620, vib: 35, vibRate: 20 }); },
-  victory() {  // rich fanfare with drums, celebratory claps and chime arpeggio
-    this.run((c, b, now) => {
-      const n = [[72, 0, .14], [72, .15, .14], [72, .3, .14], [76, .45, .5], [74, .98, .14], [76, 1.13, .14], [79, 1.28, 1.2]];
-      n.forEach(([m, d, dur]) => { voice(c, b, { f: mtof(m), t: now + d, dur, type: 'sawtooth', vol: .1, lp: 2800, attack: .02 }); voice(c, b, { f: mtof(m + 12), t: now + d, dur, type: 'square', vol: .035, lp: 3200, attack: .02 }); });
-      [60, 64, 67, 72, 76, 79].forEach((m, i) => voice(c, b, { f: mtof(m), t: now + 1.28 + i * .02, dur: 1.5, type: 'sine', vol: .07, attack: .03 }));
-      [0, .45, .98, 1.28].forEach(d => { DRUM.kick(c, b, now + d, .8); DRUM.hat(c, b, now + d, .1, true); });
-      for (let i = 0; i < 8; i++) DRUM.snare(c, b, now + .98 + i * .04, .12 + i * .03);
-      for (let i = 0; i < 16; i++) DRUM.clap(c, b, now + 1.3 + Math.random() * 1.5, .08 + Math.random() * .06);
-      noiseVoice(c, b, { t: now + 1.28, dur: 1.6, vol: .12, f: 7500, type: 'highpass', q: .6 });
-    });
-  },
-  confettiPops() { for (let i = 0; i < 6; i++) this.noise(.08, { vol: .18, f: 2200, q: .8, delay: i * .07 + Math.random() * .04 }); }
 };
 
-/* ================= Background music ================= */
-// Step sequencer with 3 distinct harmonic moods, dynamic tempo ramping, and smooth fading
-const _ = null;
-const STYLES = {
-  pop: {
-    chords: [{ root: 36, tri: [60, 64, 67] }, { root: 33, tri: [57, 60, 64] }, { root: 29, tri: [53, 57, 60] }, { root: 31, tri: [55, 59, 62] }],
-    melody: [
-      76, _, 79, _, 84, _, 79, _, 81, 79, 76, _, 74, _, 76, _,
-      72, _, 76, _, 81, _, 76, _, 79, 76, 72, _, 74, _, 76, _,
-      77, _, 81, _, 84, _, 81, _, 79, _, 77, _, 76, _, 74, _,
-      74, _, 79, _, 83, _, 86, _, 84, _, 83, _, 79, _, _, _],
-    bassType: 'square'
-  },
-  arcade: {
-    chords: [{ root: 36, tri: [60, 63, 67] }, { root: 38, tri: [62, 65, 69] }, { root: 41, tri: [65, 68, 72] }, { root: 43, tri: [67, 70, 74] }],
-    melody: [
-      72, 75, 79, 82, 84, 82, 79, 75, 74, 77, 81, 84, 82, 81, 77, 74,
-      77, 80, 84, 87, 86, 84, 80, 77, 79, 82, 86, 89, 88, 86, 82, 79,
-      72, 75, 79, 82, 84, 82, 79, 75, 74, 77, 81, 84, 82, 81, 77, 74,
-      79, _, 82, _, 86, _, 89, _, 86, _, 82, _, 79, _, _, _],
-    bassType: 'sawtooth'
-  },
-  mystery: {
-    chords: [{ root: 33, tri: [57, 60, 64] }, { root: 29, tri: [53, 57, 60] }, { root: 26, tri: [50, 53, 57] }, { root: 28, tri: [52, 56, 59] }],
-    melody: [
-      69, _, 72, _, 76, _, 72, _, 74, 72, 69, _, 67, _, 69, _,
-      65, _, 69, _, 72, _, 69, _, 71, 69, 65, _, 67, _, 69, _,
-      72, _, 76, _, 79, _, 76, _, 74, _, 72, _, 71, _, 69, _,
-      67, _, 71, _, 74, _, 77, _, 76, _, 74, _, 71, _, _, _],
-    bassType: 'triangle'
-  }
+/* ================= Game music and cues ================= */
+const INSTRUMENTS = {
+  mallet: { type: 'sine', lp: 3000, attack: .004, length: .16 },
+  pluck: { type: 'triangle', lp: 1400, attack: .005, length: .14 },
+  bell: { type: 'sine', lp: 4200, attack: .006, length: .35 },
+  brass: { type: 'sawtooth', lp: 850, attack: .035, length: .24 },
+  chip: { type: 'square', lp: 1800, attack: .004, length: .12 },
+  glass: { type: 'sine', lp: 3800, attack: .018, length: .26 },
+  reed: { type: 'triangle', lp: 2400, attack: .012, length: .2 }
 };
-const GAME_STYLES = {
-  g3: 'mystery', g4: 'mystery', g6: 'mystery', g10: 'mystery', g14: 'mystery', g16: 'mystery', g20: 'mystery', g28: 'mystery',
-  g5: 'arcade', g8: 'arcade', g9: 'arcade', g12: 'arcade', g18: 'arcade', g19: 'arcade', g22: 'arcade', g26: 'arcade', g29: 'arcade'
+const theme = (bpm, key, mode, instrument, melody, drums, cueFrom, cueTo, cueLength) => ({
+  bpm, key, minor: mode === 'minor', instrument, drums, cueFrom, cueTo, cueLength,
+  melody: melody.split(' ').map(note => note === '-' ? null : Number(note))
+});
+const GAME_AUDIO = {
+  g25: theme(109, 62, 'major', 'glass', '0 4 11 - 9 7 14 12', 'k-hhs-h-', 480, 2900, 0.3), // Weather Machine Cold
+  g26: theme(122, 61, 'minor', 'chip', '0 7 12 10 15 12 7 -', 'kh-hshsh', 1920, 330, 0.23), // Time Machine Mix-Up
+  g27: theme(124, 65, 'major', 'mallet', '0 4 9 7 2 7 - 12', 'k-hskh-h', 730, 320, 0.23), // Puppy Pool Float Race
+  g28: theme(85, 60, 'minor', 'bell', '0 - 7 - 3 14 - 10', 'k---s--h', 820, 2100, 0.31), // Broken Invisibility Cloak
+  g29: theme(116, 59, 'major', 'chip', '0 7 4 12 - 9 7 2', 'ksh-hsk-', 2350, 480, 0.11), // Stubborn Vending Machine
+  g30: theme(132, 63, 'major', 'pluck', '0 4 7 12 9 - 7 4', 'khshk-hh', 330, 1200, 0.14), // Golden Carrot Bunny Dash
 };
-const curStyle = () => (typeof curGame === 'function' && GAME_STYLES[curGame()]) || 'pop';
-const BASS_IDLE = [0, _, _, _, _, _, 7, _, 12, _, _, _, 7, _, _, _];
+const audioTheme = () => GAME_AUDIO[curGame()] || Object.values(GAME_AUDIO)[0];
+
+function playGameCue(c, bus, now, kind, game) {
+  const instrument = INSTRUMENTS[game.instrument];
+  const third = game.minor ? 3 : 4;
+  const notes = {
+    start: [0, 7, 12],
+    almost_selected: [7, 9],
+    wrong_turn: [7, third, 1],
+    selected: [0, third, 12],
+    win: [0, 4, 7, 12]
+  }[kind];
+  if (!notes) return;
+  const win = kind === 'win';
+  const gap = win ? .14 : kind === 'wrong_turn' ? .10 : .075;
+  const direction = kind === 'wrong_turn' ? [game.cueTo, game.cueFrom] : [game.cueFrom, game.cueTo];
+  const [f, to] = direction;
+  noiseVoice(c, bus, { t: now, dur: game.cueLength, vol: .075, f, to, q: game.instrument === 'reed' ? 3 : 1.2 });
+  notes.forEach((note, i) => voice(c, bus, {
+    ...instrument, f: mtof(game.key + note + (win ? 12 : 7)), t: now + i * gap,
+    dur: win && i === notes.length - 1 ? .65 : instrument.length + .035,
+    vol: win ? .16 : .11
+  }));
+  if (win) [0, 4, 7].forEach((note, i) => voice(c, bus, {
+    f: mtof(game.key + note), t: now + .42 + i * .022, dur: .6,
+    type: 'triangle', vol: .085, attack: .025
+  }));
+}
+
 const Music = {
-  mode: null, step: 0, next: 0, timer: null, bpm: { idle: 100, race: 150, tension: 150 },
+  mode: null, game: null, step: 0, next: 0, timer: null,
   play(mode) {
-    if (this.mode === mode) return;
-    this.mode = mode; this.step = 0;
-    const c = AUD.ctx; if (c) {
+    const game = audioTheme();
+    if (this.mode === mode && this.game === game) return;
+    this.mode = mode; this.game = game; this.step = 0;
+    const c = AUD.ctx;
+    if (c) {
       this.next = c.currentTime + .06;
-      if (AUD.music && store.settings.music) {
-        const targetVol = ((store.settings.musicVol ?? 70) / 100) * .34;
-        AUD.music.gain.cancelScheduledValues(c.currentTime);
-        AUD.music.gain.setValueAtTime(0.0001, c.currentTime);
-        AUD.music.gain.linearRampToValueAtTime(targetVol, c.currentTime + .15);
-      }
+      const gain = AUD.music.gain;
+      const volume = store.settings.music ? ((store.settings.musicVol ?? 70) / 100) * .34 : 0;
+      gain.cancelScheduledValues(c.currentTime);
+      gain.setTargetAtTime(volume, c.currentTime, .06);
     }
     if (!this.timer) this.timer = setInterval(() => this.pump(), 25);
-    if (mode === 'tension' && c && store.settings.music) noiseVoice(c, AUD.music, { t: c.currentTime, dur: 3.2, vol: .22, f: 300, to: 4800, q: 1.5, attack: 2.8 });
   },
-  stop(fade = .2) {
+  stop() {
     if (!this.mode) return;
+    this.mode = null;
+    clearInterval(this.timer); this.timer = null;
     const c = AUD.ctx;
-    if (c && AUD.music && fade > 0) {
+    if (c) {
       AUD.music.gain.cancelScheduledValues(c.currentTime);
-      AUD.music.gain.linearRampToValueAtTime(0.0001, c.currentTime + fade);
-      setTimeout(() => { this.mode = null; }, fade * 1000);
-    } else {
-      this.mode = null;
+      AUD.music.gain.setTargetAtTime(0, c.currentTime, .065);
     }
   },
   pump() {
-    const c = AUD.ctx; if (!c || !this.mode || c.state !== 'running') return;
-    const baseBpm = this.bpm[this.mode] || 150;
-    const curBpm = this.mode === 'tension' ? Math.min(176, baseBpm + Math.floor(this.step / 8) * 4) : baseBpm;
-    const spb = 60 / curBpm / 4;
-    if (this.next < c.currentTime - .05) this.next = c.currentTime + .02;   // tab was throttled: skip, don't burst
+    const c = AUD.ctx;
+    if (!c || !this.mode || c.state !== 'running') return;
+    const lift = this.mode === 'tension' ? 28 : this.mode === 'race' ? 18 : 0;
+    const beat = 60 / (this.game.bpm + lift) / 2;
+    if (this.next < c.currentTime - .05) this.next = c.currentTime + .02;
     while (this.next < c.currentTime + .12) {
-      if (store.settings.music) this.note(this.step, this.next, spb);
-      this.next += spb; this.step++;
+      if (store.settings.music) this.note(this.step, this.next, beat);
+      this.next += beat; this.step++;
     }
   },
-  note(s, t, spb) {
-    const c = AUD.ctx, b = AUD.music, i = s % 16, bar = Math.floor(s / 16) % 4;
-    const style = STYLES[curStyle()] || STYLES.pop;
-    const ch = style.chords[bar];
-    if (this.mode === 'idle') {
-      if (i === 0 || i === 10) DRUM.kick(c, b, t, .5);
-      if (i % 4 === 2) DRUM.hat(c, b, t, .06);
-      if (i === 8) DRUM.snare(c, b, t, .12);
-      if (BASS_IDLE[i] !== null) voice(c, b, { f: mtof(ch.root + 12 + BASS_IDLE[i]), t, dur: spb * 3, type: 'triangle', vol: .32 });
-      if ([0, 3, 6, 10, 12].includes(i)) ch.tri.forEach((m, k) => voice(c, b, { f: mtof(m), t: t + k * .012, dur: .35, type: 'triangle', vol: .07 }));
-      const m = style.melody[s % 64]; if (m && i % 4 === 0 && Math.floor(s / 64) % 2) voice(c, b, { f: mtof(m + 12), t, dur: .5, vol: .06 });
-      return;
-    }
-    if (this.mode === 'race') {
-      if (i % 4 === 0) DRUM.kick(c, b, t, .85);
-      if (i === 4 || i === 12) { DRUM.snare(c, b, t, .32); DRUM.clap(c, b, t, .12); }
-      DRUM.hat(c, b, t, i % 4 === 2 ? .13 : .05, i % 4 === 2);
-      if (i % 2 === 0) voice(c, b, { f: mtof(ch.root + (i % 4 === 2 ? 24 : 12)), t, dur: spb * 1.8, type: style.bassType || 'square', vol: .16, lp: 900 });
-      voice(c, b, { f: mtof(ch.tri[i % 3] + (i % 6 < 3 ? 0 : 12)), t, dur: spb * .9, type: 'triangle', vol: .045 });
-      const m = style.melody[s % 64];
-      if (m && s >= 32) { voice(c, b, { f: mtof(m), t, dur: spb * 1.7, type: 'square', vol: .07, lp: 3200 }); voice(c, b, { f: mtof(m + 12), t, dur: spb * 1.2, vol: .03 }); }
-      if (i === 15 && bar === 3) DRUM.snare(c, b, t, .2);
-      return;
-    }
-    if (this.mode === 'tension') {
-      const lift = Math.min(5, Math.floor(s / 8));        // climbs a semitone every half bar
-      if (i % 8 === 0) DRUM.kick(c, b, t, .9);
-      if (s >= 8 || i % 2 === 0) DRUM.snare(c, b, t, .1 + Math.min(.25, s * .006));
-      if (i % 2 === 0) voice(c, b, { f: mtof(31 + 12 + lift), t, dur: spb * 1.8, type: 'sawtooth', vol: .16, lp: 500 + s * 40 });
-      if (i % 4 === 0) [55, 59, 62, 65].forEach(m => voice(c, b, { f: mtof(m + lift), t, dur: spb * 3.5, type: 'triangle', vol: .035 }));
+  note(step, t, beat) {
+    const c = AUD.ctx, bus = AUD.music, g = this.game;
+    const i = step % 8, bar = Math.floor(step / 8) % 4;
+    const idle = this.mode === 'idle', tension = this.mode === 'tension';
+    const root = g.key + (g.minor ? [0, 8, 3, 7] : [0, 5, 9, 7])[bar];
+    const shift = [0, 2, 0, -2][bar];
+    const chordThird = (g.minor ? bar < 1 : bar === 2) ? 3 : 4;
+    const rhythm = g.drums[i], strength = idle ? .48 : .8;
+    if (rhythm === 'k') DRUM.kick(c, bus, t, .38 * strength);
+    if (rhythm === 'h') DRUM.hat(c, bus, t, .065 * strength);
+    if (rhythm === 's') DRUM.snare(c, bus, t, .13 * strength);
+    if (tension && i % 2 === 1) DRUM.hat(c, bus, t, .07);
+    if (i === 0 || i === 4 || (!idle && i === 6)) voice(c, bus, {
+      f: mtof(root - 24 + (i === 4 ? 7 : 0)), t, dur: beat * (idle ? 1.6 : 1.1),
+      type: 'triangle', vol: idle ? .16 : .22
+    });
+    if (i === 0 || i === 4) [0, chordThird, 7].forEach(note => voice(c, bus, {
+      f: mtof(root - 12 + note), t, dur: beat * 1.6, type: 'sine', vol: idle ? .042 : .055
+    }));
+    const note = g.melody[i];
+    if (note !== null) {
+      const instrument = INSTRUMENTS[g.instrument];
+      const pitch = mtof(g.key + note + shift + (tension && i >= 4 ? 12 : 0));
+      voice(c, bus, { ...instrument, f: pitch, t, dur: Math.min(beat * 1.4, instrument.length), vol: idle ? .078 : .10 });
+      if (g.instrument === 'bell' || g.instrument === 'glass' || g.instrument === 'mallet') {
+        voice(c, bus, { f: pitch * 2, t, dur: instrument.length * .55, type: 'sine', vol: .022 });
+      }
     }
   }
 };
@@ -898,7 +888,7 @@ function countdown(r, t) {
 function finishRace() {
   const r = race; r.phase = 'done'; r.doneAt = r.now;
   r.banner = r.game ? r.game.winBanner(r) : '🎉 ' + r.winner.name + ' wins!';
-  Music.stop(); SFX.whistle(); SFX.victory(); SFX.confettiPops(); SFX.applause();
+  Music.stop(); SFX.applause();
   setTimeout(() => { if (race === r) Music.play('idle'); }, 3500);
   if (!store.settings.calm && !matchMedia('(prefers-reduced-motion: reduce)').matches) burstConfetti();
   const wp = r.winRays = r.game ? r.game.winPos(r) : { x: 800, y: 450 };
@@ -1050,7 +1040,7 @@ function startGeneric(cls, T, winnerStu, racers) {
     t0: performance.now(), now: 0, phase: 'run', banner: g.startBanner, confetti: [], cues: {}, lastTick: -1, fx: [] };
   g.setup(r);
   document.body.classList.add('running');
-  SFX.whistle(); SFX.cheer(); Music.play('race');
+  SFX.sting('start'); Music.play('race');
   updateUI();
 }
 function renderGeneric(g, now, t, dt) {
@@ -1124,6 +1114,7 @@ function activateGame(id, keepRandom = false) {
   race = null; hideResult();
   IMG = IMGSETS[id] = IMGSETS[id] || {};
   prepareGame(gameAssets(id));
+  if (Music.mode) Music.play('idle');
   updateUI();
 }
 
