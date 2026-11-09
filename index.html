@@ -448,11 +448,6 @@ if (syncChannel) {
   syncChannel.onmessage = e => {
     if (e.data && e.data.type === 'sync') {
       store = loadStore();
-      if (!page.classList.contains('hidden')) {
-        draft = JSON.parse(JSON.stringify(store.classes));
-        editId = store.activeId;
-        renderClassPage();
-      }
       AUD.applyVol();
       updateUI();
     }
@@ -1474,11 +1469,6 @@ twoStep(document.getElementById('delClassBtn'), () => L().deleteClass, () => L()
 window.addEventListener('storage', e => {
   if (e.key === LS_KEY) {
     store = loadStore();
-    if (!page.classList.contains('hidden')) {
-      draft = JSON.parse(JSON.stringify(store.classes));
-      editId = store.activeId;
-      renderClassPage();
-    }
     updateUI();
   }
 });
