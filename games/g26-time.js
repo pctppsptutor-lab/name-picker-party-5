@@ -9,10 +9,22 @@
   const ICONS = ['q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q27', 'q0'];
   const MACH = [1440, 470], SWAP = .5;
 
-  function portal(x, y, open, icon, glow, t, purple) {
+  function portal(x, y, open, icon, glow, t, purple, winner = false) {
     if (glow) FX.halo(x, y, 110, purple ? '#c27cff' : '#5df2ff', .55 + .2 * Math.sin(t * 9));
-    drawImg(purple ? 'q21' : 'q20', x, y, 130, { rot: t * (purple ? -1.5 : 1.5) });
-    if (open > 0 && icon) drawImg(icon, x, y, 62 * open);
+    drawImg(purple ? 'q21' : 'q20', x, y, 130, { rot: store.settings.calm ? 0 : t * (purple ? -1.5 : 1.5) });
+    ctx.save(); ctx.translate(x, y);
+    ctx.strokeStyle = winner ? '#ffe27a' : purple ? '#dcc5ff' : '#a6f1ff';
+    ctx.lineWidth = winner ? 6 : 3;
+    ctx.beginPath();
+    if (purple) {
+      ctx.moveTo(0, -67); ctx.lineTo(67, 0); ctx.lineTo(0, 67); ctx.lineTo(-67, 0); ctx.closePath();
+    } else ctx.arc(0, 0, 62, 0, Math.PI * 2);
+    ctx.stroke();
+    if (open > 0) {
+      ctx.fillStyle = '#14243cdd'; ctx.beginPath(); ctx.arc(0, 0, 43 * open, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+    if (open > 0 && icon) drawImg(icon, x, y, 72 * open);
   }
   function layout(r, t) {
     const slot = r.players.map(p => p.slot0), out = new Map(); let moving = null;
@@ -67,12 +79,16 @@
         if (f && f.p === p && te < 0 && memOpen === 0) glow = true;
         if (p === D && te > 0 && !done) { open = 1; glow = !r.plain || te < 1.2; }
         if (p === Wn && te > (r.plain ? 1.2 : 1.8)) { open = 1; glow = true; }
-        portal(x, y, open, p.icon, glow, rt, p.purple);
+        portal(x, y, open, p.icon, glow, rt, p.purple, p === Wn && te > (r.plain ? 1.2 : 1.8));
         tagC(p.name, x, y + 84, glow);
       }
       // students pop out of portals during the reveal
       if (D && te > .3 && te < (r.plain ? 1.6 : 2.4) && !done) { const o = r.final.get(D); charImg(D.av, !r.plain && te > .6 ? 'crown' : 'choose', o.x, o.y + 60, 150, { alpha: clamp((te - .3) / .3) }); }
-      if (te > (r.plain ? 1.2 : 1.8) && !done) { const o = r.final.get(Wn); charImg(Wn.av, 'dino', o.x, o.y + 60, 160, { alpha: clamp((te - 1.8) / .3 + .3) }); }
+      const reveal = r.plain ? 1.2 : 1.8;
+      if (te > reveal && !done) {
+        const o = r.final.get(Wn);
+        charImg(Wn.av, 'dino', o.x, o.y + 60, 160, { alpha: store.settings.calm ? 1 : clamp((te - reveal) / .3 + .3) });
+      }
       // the flying robot
       let rx = 800 + Math.sin(rt * .7) * 420, ry = 160 + Math.sin(rt * 2) * 10;
       if (!r.plain && te > 1.1 && !done) { const o = r.final.get(Wn), k = ease(clamp((te - 1.1) / .6)); rx = lerp(rx, o.x, k); ry = lerp(ry, o.y - 130, k); }
