@@ -331,7 +331,7 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
           <textarea id="namesBox" spellcheck="false" placeholder="Emma&#10;Liam&#10;Alex, F"></textarea>
           <div class="row" style="margin-top:8px">
             <button class="smallBtn" id="importBtn">📁 Import list</button>
-            <input type="file" id="fileIn" accept=".txt,.csv,text/plain,text/csv" class="hidden">
+            <input type="file" id="fileIn" accept=".txt,.csv,.tsv,text/plain,text/csv,text/tab-separated-values" class="hidden">
             <button class="smallBtn" id="sortBtn">↕ Sort A–Z</button>
             <button class="smallBtn" id="copyBtn">📋 Copy</button>
             <button class="smallBtn danger" id="clearBtn">Clear all</button>
@@ -355,6 +355,7 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
       <div class="note" id="backupNote"></div>
       <div class="note" id="backupHint">Save a file to keep your classes safe if the browser is cleared, or to move them to another computer.</div>
     </div>
+    <div class="note" id="classSaveError" role="alert"></div>
     <div class="sheetFoot">
       <button class="smallBtn danger" id="delClassBtn">Delete class</button>
       <button class="candy done" id="doneBtn">✓ Save &amp; Play</button>
@@ -380,6 +381,17 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
   </div>
 </div>
 
+  <dialog id="importDialog" aria-labelledby="importTitle">
+    <h2 id="importTitle"></h2>
+    <label id="importColumnLab" for="importColumn"></label>
+    <select id="importColumn" style="max-width:100%"></select>
+    <label style="display:block"><input type="checkbox" id="importHeader"> <span id="importHeaderLab"></span></label>
+    <pre id="importPreview" style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite"></pre>
+    <form method="dialog" class="row">
+      <button class="smallBtn" id="importCancel"></button>
+      <button class="smallBtn add" id="importApply" type="button"></button>
+    </form>
+  </dialog>
 <script>
 // Shared helpers for games 2-6 (each game registers itself in GAME_IMPL)
 window.GAME_IMPL = {};
@@ -439,10 +451,15 @@ function loadStore() {
 }
 let store = loadStore();
 function save(skipBroadcast) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {}
+  try { localStorage.setItem(LS_KEY, JSON.stringify(store)); }
+  catch {
+    toast(curLang() === 'vi' ? 'Không lưu được vào trình duyệt. Bạn có thể tải file sao lưu trong mục Lớp.' : 'Could not save to this browser. You can download a backup from Classes.');
+    return false;
+  }
   if (!skipBroadcast && syncChannel) {
     try { syncChannel.postMessage({ type: 'sync', store }); } catch (e) {}
   }
+  return true;
 }
 if (syncChannel) {
   syncChannel.onmessage = e => {
@@ -806,15 +823,17 @@ function pickRandomGame() {
   return pool[randInt(pool.length)].id;
 }
 
-function startRace(fromRandom) {
+function startRace(fromRandom, classId = store.activeId) {
   if (race && race.phase !== 'done') return;
-  const cls = activeClass(), all = roster(cls), pool = eligible(cls);
+  const cls = store.classes.find(c => c.id === classId);
+  if (!cls) return;
+  const all = roster(cls), pool = eligible(cls);
   if (!pool.length) return;
   if (store.settings.randomGame && !fromRandom) {
     const pick = pickRandomGame();
     if (pick !== curGame()) activateGame(pick, true);
     const impl = curImpl();
-    if (impl && !impl.ready) { impl.loading.then(() => startRace(true)); return; }
+    if (impl && !impl.ready) { impl.loading.then(() => startRace(true, classId)); return; }
   }
   hideResult();
   const T = store.settings.duration;
@@ -866,8 +885,8 @@ function finishRace() {
   FX.ring(wp.x, wp.y + 40, '#ffd84a', 280); FX.ring(wp.x, wp.y + 40, '#ffffff', 180); FX.sparkle(wp.x, wp.y, 60);
   CAM.follow(r, wp, 1.3); CAM.shake(r, 9);
   if (r.game && r.game.onFinish) r.game.onFinish(r);
-  const cls = activeClass(), list = calledOf(cls);
-  list.push(r.winner.name); save();
+  const cls = store.classes.find(c => c.id === r.classId);
+  if (cls) { calledOf(cls).push(r.winner.name); save(); }
   document.body.classList.remove('running');
   setTimeout(() => { if (race === r) showResult(r.winner); }, 900);
   setTimeout(() => { if (race === r) speak(r.winner.name); }, 450);
@@ -1011,7 +1030,7 @@ function startGeneric(cls, T, winnerStu, racers) {
   players.forEach(p => { p.av = pickAv(p.gender); });
   const winner = players.find(p => p.isWinner), decoys = shuffle(players.filter(p => !p.isWinner));
   // a quarter of rounds have no twist: the winner is simply revealed after a near-miss
-  const r = race = { game: g, T, TW: T - 3.2, players, winner, decoys, decoy: decoys[0] || null, plain: !decoys.length || (window.FORCE_PLAIN ?? Math.random() < .25),
+  const r = race = { classId: cls.id, game: g, T, TW: T - 3.2, players, winner, decoys, decoy: decoys[0] || null, plain: !decoys.length || (window.FORCE_PLAIN ?? Math.random() < .25),
     t0: performance.now(), now: 0, phase: 'run', banner: g.startBanner, confetti: [], cues: {}, lastTick: -1, fx: [] };
   g.setup(r);
   document.body.classList.add('running');
@@ -1161,12 +1180,15 @@ document.getElementById('timerBtn').onclick = () => {
 };
 document.getElementById('absentBtn').onclick = () => {
   if (!race || !race.winner) return;
-  const skipped = race.winner.name, cls = activeClass(), list = calledOf(cls);
+  const skipped = race.winner.name, cls = store.classes.find(c => c.id === race.classId);
+  const list = cls ? calledOf(cls) : [];
   const idx = list.lastIndexOf(skipped);
   if (idx >= 0) { list.splice(idx, 1); save(); }
   hideResult(); race = null; updateUI();
-  toast(L().toastAbsentFmt(skipped));
-  if (eligible(cls).length) startRace(); else continueGame();
+  if (cls && cls.id === store.activeId && eligible(cls).length) {
+    toast(L().toastAbsentFmt(skipped));
+    startRace();
+  } else continueGame();
 };
 cv.onclick = () => {
   if (!resultEl.classList.contains('hidden')) continueGame();
@@ -1323,14 +1345,23 @@ function toast(msg) { const t = document.createElement('div'); t.className = 'to
 
 /* ================= Class page ================= */
 const page = document.getElementById('classPage');
-let draft = null, editId = null;
-function openClasses() { if (race && race.phase === 'run') return; SFX.whoosh(); draft = JSON.parse(JSON.stringify(store.classes)); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); setTimeout(() => document.getElementById('className').focus(), 40); }
+let draft = null, editId = null, importedCalled = {};
+function openClasses() { if (race && race.phase === 'run') return; SFX.whoosh(); document.getElementById('classSaveError').textContent = ''; importedCalled = {}; draft = JSON.parse(JSON.stringify(store.classes)); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); setTimeout(() => document.getElementById('className').focus(), 40); }
 function closeClasses() {
   if (!draft) return;
   SFX.pop();
-  store.classes = draft; store.activeId = editId;
-  for (const k of Object.keys(store.called)) if (!draft.find(c => c.id === k)) delete store.called[k];
-  draft = null; save(); page.classList.add('hidden');
+  const previous = store;
+  const called = { ...store.called, ...importedCalled };
+  for (const k of Object.keys(called)) if (!draft.find(c => c.id === k)) delete called[k];
+  store = { ...store, classes: draft, activeId: editId, called };
+  if (!save()) {
+    store = previous;
+    document.getElementById('classSaveError').textContent = curLang() === 'vi'
+      ? 'Danh sách chưa được lưu. Hãy thử lại hoặc chọn Lưu file sao lưu.'
+      : 'Your list has not been saved. Try again or choose Save backup file.';
+    return;
+  }
+  draft = null; page.classList.add('hidden');
   if (race && race.phase === 'done') continueGame();
   updateUI();
   document.getElementById('classBtn').focus();
@@ -1345,25 +1376,37 @@ function backupNote() {
   el.textContent = store.lastBackup ? L().lastBackupFmt(new Date(store.lastBackup).toLocaleString(curLang() === 'vi' ? 'vi-VN' : 'en-GB')) : L().noBackupYet;
 }
 document.getElementById('exportBtn').onclick = () => {
-  const data = { app: BACKUP_APP, version: 1, savedAt: new Date().toISOString(), classes: draft, called: store.called, activeId: editId };
+  const data = { app: BACKUP_APP, version: 1, savedAt: new Date().toISOString(), classes: draft, called: { ...store.called, ...importedCalled }, activeId: editId };
   const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'name-picker-backup-' + new Date().toISOString().slice(0, 10) + '.json';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  store.lastBackup = Date.now(); save(); backupNote(); toast(L().toastBackupSaved);
+  const previous = store.lastBackup;
+  store.lastBackup = Date.now();
+  if (!save()) store.lastBackup = previous;
+  backupNote(); toast(L().toastBackupSaved);
 };
 document.getElementById('importBackupBtn').onclick = () => document.getElementById('backupIn').click();
 document.getElementById('backupIn').onchange = e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  const targetDraft = draft;
   const rd = new FileReader();
+  rd.onerror = () => toast(L().toastBadBackup);
   rd.onload = () => {
     let data; try { data = JSON.parse(rd.result); } catch (err) { data = null; }
-    if (!data || data.app !== BACKUP_APP || !Array.isArray(data.classes)) { toast(L().toastBadBackup); return; }
+    if (!draft || draft !== targetDraft) return;
+    if (!data || data.app !== BACKUP_APP || !Array.isArray(data.classes)
+      || data.classes.some(c => !c || typeof c.id !== 'string' || !/^[a-zA-Z0-9_-]{1,20}$/.test(c.id)
+        || Object.hasOwn(Object.prototype, c.id))
+      || new Set(data.classes.map(c => c.id)).size !== data.classes.length) {
+      toast(L().toastBadBackup); return;
+    }
     // keep only the fields we know, with safe types
     const clean = data.classes.filter(c => c && typeof c === 'object').map(c => ({
-      id: typeof c.id === 'string' && c.id ? c.id.slice(0, 20) : uid(),
-      name: String(c.name || 'Class').slice(0, 40), mode: c.mode === 'numbers' ? 'numbers' : 'names',
-      count: clamp(parseInt(c.count) || 30, 2, 50), text: String(c.text || '').slice(0, 20000),
+      id: c.id,
+      name: typeof c.name === 'string' && c.name ? c.name.slice(0, 40) : 'Class', mode: c.mode === 'numbers' ? 'numbers' : 'names',
+      count: clamp((typeof c.count === 'number' || typeof c.count === 'string') ? parseInt(c.count) || 30 : 30, 2, 50),
+      text: typeof c.text === 'string' ? c.text.slice(0, 20000) : '',
       gender: Object.fromEntries(Object.entries(c.gender && typeof c.gender === 'object' ? c.gender : {}).filter(([, v]) => v === 'm' || v === 'f'))
     }));
     if (!clean.length) { toast(L().toastEmptyBackup); return; }
@@ -1371,14 +1414,12 @@ document.getElementById('backupIn').onchange = e => {
     for (const c of clean) {
       const i = draft.findIndex(x => x.id === c.id);
       if (i >= 0) draft[i] = c; else draft.push(c);
-      const called = data.called && Array.isArray(data.called[c.id]) ? data.called[c.id].map(String) : [];
-      store.called[c.id] = called;
+      const called = data.called && Array.isArray(data.called[c.id]) ? data.called[c.id].filter(name => typeof name === 'string') : [];
+      importedCalled[c.id] = called;
     }
     editId = clean[0].id;
-    store.classes = JSON.parse(JSON.stringify(draft));
-    store.activeId = editId;
-    save(); renderClassPage(); updateUI();
-    toast(L().toastImportedBackup(clean.length));
+    renderClassPage();
+    toast(curLang() === 'vi' ? 'Đã nạp bản sao lưu. Bấm Lưu để áp dụng.' : 'Backup loaded. Select Save to apply it.');
   };
   rd.readAsText(f, 'utf-8');
 };
@@ -1405,8 +1446,17 @@ function renderClassPage(keepText) {
   document.getElementById('doneBtn').textContent = t.doneSave;
 
   const tabs = document.getElementById('classTabs');
-  tabs.innerHTML = draft.map(x => `<button class="smallBtn ${x.id === editId ? 'on' : ''}" data-id="${x.id}">${esc(x.name || t.untitledClass)}</button>`).join('') + `<button class="smallBtn add" id="newClass">${t.newClass}</button>`;
-  tabs.querySelectorAll('[data-id]').forEach(b => b.onclick = () => { editId = b.dataset.id; renderClassPage(); });
+  tabs.innerHTML = '<button class="smallBtn add" id="newClass"></button>';
+  tabs.firstElementChild.textContent = t.newClass;
+  const add = tabs.firstElementChild;
+  for (const x of draft) {
+    const b = document.createElement('button');
+    b.className = 'smallBtn' + (x.id === editId ? ' on' : '');
+    b.dataset.id = x.id;
+    b.textContent = x.name || t.untitledClass;
+    b.onclick = () => { editId = x.id; renderClassPage(); };
+    tabs.insertBefore(b, add);
+  }
   document.getElementById('newClass').onclick = () => { const id = uid(); draft.push({ id, name: (curLang() === 'vi' ? 'Lớp ' : 'Class ') + (draft.length + 1), mode: 'names', count: 30, text: '', gender: {} }); editId = id; renderClassPage(); };
   document.getElementById('className').value = c.name;
   document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === c.mode));
@@ -1425,7 +1475,7 @@ function renderGender() {
   box.innerHTML = list.length ? list.map((s, i) => `<button class="gchip ${s.gender === 'f' ? 'f' : ''}" data-i="${i}">${s.gender === 'f' ? '🎀' : '🧢'} ${esc(s.name)}${s.manual ? ' ✓' : ''}</button>`).join('') : `<span class="note">${L().noNamesYet}</span>`;
   box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const s = list[+b.dataset.i]; c.gender[s.name] = s.gender === 'f' ? 'm' : 'f'; renderGender(); });
 }
-document.getElementById('className').oninput = e => { ed().name = e.target.value; const b = document.querySelector(`#classTabs [data-id="${editId}"]`); if (b) b.textContent = e.target.value || L().untitledClass; };
+document.getElementById('className').oninput = e => { ed().name = e.target.value; const b = document.querySelector(`#classTabs [data-id="${CSS.escape(editId)}"]`); if (b) b.textContent = e.target.value || L().untitledClass; };
 document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { ed().mode = b.dataset.mode; renderClassPage(true); });
 const setCount = v => { ed().count = clamp(v, 2, 50); document.getElementById('numRange').value = ed().count; document.getElementById('numVal').textContent = ed().count; };
 document.getElementById('numRange').oninput = e => setCount(+e.target.value);
@@ -1433,16 +1483,85 @@ document.getElementById('numMinus').onclick = () => setCount(ed().count - 1);
 document.getElementById('numPlus').onclick = () => setCount(ed().count + 1);
 const namesBox = document.getElementById('namesBox');
 namesBox.oninput = () => { ed().text = namesBox.value; renderGender(); };
+function parseTable(text, separator) {
+  const rows = [];
+  let row = [], cell = '', quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (quoted) {
+      if (ch !== '"') cell += ch;
+      else if (text[i + 1] === '"') { cell += '"'; i++; }
+      else quoted = false;
+    } else if (ch === '"' && !cell) {
+      quoted = true;
+    } else if (ch === separator) {
+      row.push(cell); cell = '';
+    } else if (ch === '\n') {
+      row.push(cell); rows.push(row); row = []; cell = '';
+    } else cell += ch;
+  }
+  if (quoted) throw new Error('Unclosed quoted cell');
+  row.push(cell); rows.push(row);
+  return rows.filter(row => row.some(cell => cell.trim()));
+}
+const importDialog = document.getElementById('importDialog');
+const importColumn = document.getElementById('importColumn');
+const importHeader = document.getElementById('importHeader');
+const importApply = document.getElementById('importApply');
 document.getElementById('importBtn').onclick = () => document.getElementById('fileIn').click();
-document.getElementById('fileIn').onchange = e => {
-  const f = e.target.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = () => {
-    let rows = String(rd.result).replace(/^﻿/, '').split(/\r?\n/).map(l => l.split(/[,;\t]/)[0].replace(/^"|"$/g, '').trim()).filter(Boolean);
-    if (rows.length && /^(stt|tên|ten|họ\s*(và)?\s*tên|ho\s*ten|name|full\s*name)$/i.test(rows[0])) rows.shift();
-    ed().text = rows.join('\n'); namesBox.value = ed().text; renderGender(); toast(L().toastImportedNames(rows.length));
-  };
-  rd.readAsText(f, 'utf-8'); e.target.value = '';
+document.getElementById('fileIn').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  const target = ed(), vi = curLang() === 'vi';
+  try {
+    const text = (await f.text()).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+    const header = text.replace(/"(?:[^"]|"")*"/g, '').trimStart().split('\n', 1)[0];
+    const separator = [',', ';', '\t'].reduce((best, next) =>
+      header.split(next).length > header.split(best).length ? next : best);
+    const rows = /\.csv$/i.test(f.name)
+      ? parseTable(text, separator)
+      : /\.tsv$/i.test(f.name) || text.includes('\t')
+        ? parseTable(text, '\t')
+        : text.split('\n').filter(line => line.trim()).map(line => [line]);
+    if (!rows.length) throw new Error('Empty list');
+    if (!draft || ed() !== target) return;
+    const nameHeader = /^(tên|ten|họ\s*(và\s*)?tên|ho\s*(va\s*)?ten|name|full\s*name)$/i;
+    const first = rows[0].map(cell => cell.trim().normalize('NFC'));
+    const nameColumn = first.findIndex(cell => nameHeader.test(cell));
+    const width = rows.reduce((max, row) => Math.max(max, row.length), 0);
+    importColumn.replaceChildren();
+    for (let i = 0; i < width; i++) {
+      const label = (vi ? 'Cột ' : 'Column ') + (i + 1);
+      importColumn.add(new Option(first[i] ? label + ' — ' + first[i].slice(0, 80) : label, i));
+    }
+    importColumn.value = String(Math.max(nameColumn, 0));
+    importHeader.checked = nameColumn >= 0 || /^(stt|no\.?)$/i.test(first[0]);
+    document.getElementById('importTitle').textContent = vi ? 'Xem trước danh sách tên' : 'Preview names';
+    document.getElementById('importColumnLab').textContent = vi ? 'Cột chứa tên' : 'Name column';
+    document.getElementById('importHeaderLab').textContent = vi ? 'Bỏ qua dòng tiêu đề' : 'Skip header row';
+    document.getElementById('importCancel').textContent = vi ? 'Hủy' : 'Cancel';
+    importApply.textContent = vi ? 'Thay danh sách' : 'Replace list';
+    const names = () => rows.slice(importHeader.checked ? 1 : 0)
+      .map(row => (row[+importColumn.value] || '').trim().replace(/\s*\n\s*/g, ' ')).filter(Boolean);
+    const preview = () => {
+      const list = names();
+      document.getElementById('importPreview').textContent = (vi ? 'Số tên: ' : 'Names: ') + list.length + '\n' + list.slice(0, 8).join('\n');
+      importApply.disabled = !list.length;
+    };
+    importColumn.onchange = importHeader.onchange = preview;
+    importApply.onclick = () => {
+      if (!draft || ed() !== target) return;
+      const list = names();
+      if (!list.length) return;
+      target.text = namesBox.value = list.join('\n');
+      renderGender();
+      importDialog.close();
+      toast(L().toastImportedNames(list.length));
+    };
+    preview();
+    importDialog.showModal();
+  } catch {
+    toast(vi ? 'Không đọc được danh sách. Hãy dùng CSV, TSV hoặc TXT.' : 'Could not read the list. Use CSV, TSV or TXT.');
+  }
 };
 document.getElementById('sortBtn').onclick = () => {
   const lines = namesBox.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
@@ -1559,6 +1678,7 @@ drawerSearch.oninput = e => { drawerQuery = e.target.value; renderDrawer(); };
 
 /* ================= Keyboard & Remote Clicker Shortcuts ================= */
 document.addEventListener('keydown', e => {
+  if (importDialog.open) return;
   if (!drawerModal.classList.contains('hidden')) {
     if (e.key === 'Escape' || e.code === 'KeyB' || e.code === 'Period' || e.code === 'KeyG') {
       e.preventDefault(); closeDrawer(); return;
