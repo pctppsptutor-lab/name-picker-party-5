@@ -17,7 +17,7 @@
 
   GAME_IMPL.g25 = {
     id: 'g25', title: 'Weather Machine Cold', base: 'assets/g25/', titleY: 380, paintedOk: false,
-    assets: gAssets(['idle', 'ready', 'action', 'almost', 'fake', 'twist', 'win'], ['p0', 'p1', 'p2', 'p6', 'p10', 'p12', 'p13', 'p14', 'p16', 'p22', 'p26', 'p33', 'p39']),
+    assets: gAssets(['idle', 'ready', 'action', 'almost', 'fake', 'twist', 'win'], ['p0', 'p1', 'p2', 'p10', 'p12', 'p13', 'p14', 'p16', 'p22', 'p26', 'p33', 'p39']),
     startBanner: '🌦️ The weather machine sputters to life…', mote: '#eaf6ff', rayColor: '#fff2a8',
 
     setup(r) {
@@ -52,7 +52,7 @@
       const mx = MACH[0] + Math.sin(rt * 3) * 18, my = MACH[1] - Math.abs(Math.sin(rt * 8)) * 10;
       drawImg(mp, mx, my, 220, { rot: Math.sin(rt * 10) * .025 });
       let cp = 'p1';
-      if (!r.plain && te > .3 && te < 1.2) cp = te < .6 ? 'p6' : 'p2';
+      if (!r.plain && te > .3 && te < 1.2) cp = 'p2';
       if (done) cp = 'p10'; else if (te < 0 && w === 'snow') cp = 'p0';
       drawImg(cp, MACH[0] - 80 + Math.sin(rt * 1.5) * 140, MACH[1] - 190 + Math.sin(rt * 3.5) * 18, 150, { flip: Math.cos(rt * 1.5) > 0 });
       drawImg('p39', ...MIRROR, 70, { alpha: !r.plain && te > 1.2 && te < 2.4 ? 1 : .5 });
