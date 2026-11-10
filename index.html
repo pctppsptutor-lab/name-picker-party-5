@@ -1093,8 +1093,7 @@ const gameAssets = id => GAME_IMPL[id];
 function prepareGame(g) {
   if (!g.loading) {
     g.previewPose = g.assets.find(n => n.startsWith('c0_'))?.slice(3);
-    const later = n => n.startsWith('vfx_') || (/^c\d+_/.test(n)
-      && !n.endsWith('_' + g.previewPose) && !n.endsWith('_win'));
+    const later = n => n.startsWith('vfx_') || (/^c\d+_/.test(n) && !n.endsWith('_' + g.previewPose));
     g.deferredAssets = g.assets.filter(later);
     g.loading = loadImages(g.id, g.base, g.assets.filter(n => !later(n))).then(() => {
       g.ready = true;
