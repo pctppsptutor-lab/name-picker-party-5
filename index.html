@@ -905,16 +905,16 @@ const TWIST_END = 1.35;
 function roundRemaining(r) {
   if (r.plain) return Math.max(0, r.T - r.now);
   const te = r.now - r.TW;
-  if (te < 0) return r.T * (.65 - .35 * te / r.TW);
-  if (te < TWIST_END) return r.T * (.65 - .5 * te / TWIST_END);
+  if (te < 0) return r.T * (.5 - .5 * te / r.TW);
+  if (te < TWIST_END) return r.T * (.5 - .35 * te / TWIST_END);
   return r.T * .15 * clamp((r.T - r.now) / (r.T - r.TW - TWIST_END));
 }
 function tickRace(dt) {
   const r = race, scale = !r.plain && r.slowUntil && performance.now() < r.slowUntil ? r.slowF : 1;
   const fraction = clamp((roundRemaining(r) - dt * scale) / r.T);
   const t = r.now = r.plain ? Math.min(r.T, r.now + dt)
-    : fraction > .65 ? r.TW * (1 - fraction) / .35
-    : fraction > .15 ? r.TW + TWIST_END * (.65 - fraction) / .5
+    : fraction > .5 ? r.TW * (1 - fraction) / .5
+    : fraction > .15 ? r.TW + TWIST_END * (.5 - fraction) / .35
     : fraction > 0 ? r.T - (r.T - r.TW - TWIST_END) * fraction / .15 : r.T;
   const te = t - r.TW;
   if (r.game) { r.game.tick(r, t, te); countdown(r, t); }
