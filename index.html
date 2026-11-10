@@ -847,6 +847,7 @@ function startRace(fromRandom, classId = store.activeId) {
       return;
     }
   }
+  loadGameDetails(gameAssets(curGame()), true);
   hideResult();
   const T = store.settings.duration;
   const winnerStu = pool[randInt(pool.length)];
@@ -1095,16 +1096,31 @@ function prepareGame(g) {
     g.previewPose = g.assets.find(n => n.startsWith('c0_'))?.slice(3);
     const later = n => n.startsWith('vfx_') || (/^c\d+_/.test(n) && !n.endsWith('_' + g.previewPose));
     g.deferredAssets = g.assets.filter(later);
-    g.loading = loadImages(g.id, g.base, g.assets.filter(n => !later(n))).then(() => {
+    g.loading = loadImages(g.id, g.base, g.assets.filter(n => !later(n)), 'high').then(() => {
       g.ready = true;
       updateUI();
     });
   }
   g.loading.then(() => {
-    if (curGame() === g.id && !g.detailsLoading) {
-      g.detailsLoading = loadImages(g.id, g.base, g.deferredAssets, 'low');
-    }
+    // Give a quick tab switch time to happen before queuing background requests.
+    setTimeout(() => {
+      if (curGame() === g.id) loadGameDetails(g);
+    }, 900);
   });
+}
+function loadGameDetails(g, starting = false) {
+  if (g.detailsLoading) return g.detailsLoading;
+  const remaining = g.deferredAssets.filter(n => !IMGSETS[g.id][n]);
+  g.detailsLoading = (async () => {
+    while (remaining.length && curGame() === g.id) {
+      const playing = starting || race?.phase === 'run';
+      await loadImages(g.id, g.base, remaining.splice(0, playing ? remaining.length : 4), playing ? 'auto' : 'low');
+    }
+    return !remaining.length;
+  })().then(complete => {
+    if (!complete) g.detailsLoading = null;
+  });
+  return g.detailsLoading;
 }
 function activateGame(id, keepRandom = false) {
   if (race && race.phase === 'run') return;
