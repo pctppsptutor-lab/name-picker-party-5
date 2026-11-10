@@ -1,4 +1,4 @@
-// Game 26 — Time Machine Mix-Up (matching paths & puzzles)
+// Game 26 — Oops, Wrong Year! (matching paths & puzzles)
 // Ten time portals each show a colour and an era symbol, then swap places. Matching the right portal pair brings
 // the picked student back to class.
 // Twist: the first portal pair sends someone home with a cooking pot on their head instead of a crown;
@@ -38,7 +38,7 @@
   }
 
   GAME_IMPL.g26 = {
-    id: 'g26', title: 'Time Machine Mix-Up', base: 'assets/g26/', titleY: 820, paintedOk: false,
+    id: 'g26', title: 'Oops, Wrong Year!', base: 'assets/g26/', titleY: 820, paintedOk: false,
     assets: gAssets(['choose', 'crown', 'dino', 'win'], [...ICONS, 'q1', 'q20', 'q21']),
     startBanner: '⏳ Remember each portal\'s symbol!', mote: '#d6f4ff', rayColor: '#d6f4ff',
 

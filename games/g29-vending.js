@@ -1,4 +1,4 @@
-// Game 29 — Stubborn Vending Machine (chain reaction)
+// Game 29 — Give Me My Snack! (chain reaction)
 // Students set off a cut-away vending machine: a coin turns a coil, pushes a capsule down a chute, over a seesaw and a lever,
 // and it drops into one of ten trays.
 // Twist: the first capsule gets stuck on the seesaw and sends a false signal; a can with legs kicks a spare lever and the real capsule drops.
@@ -32,7 +32,7 @@
   }
 
   GAME_IMPL.g29 = {
-    id: 'g29', title: 'Stubborn Vending Machine', base: 'assets/g29/', titleY: 640, paintedOk: false,
+    id: 'g29', title: 'Give Me My Snack!', base: 'assets/g29/', titleY: 640, paintedOk: false,
     assets: gAssets(['coin', 'coil', 'slide', 'lever', 'stuck', 'kick', 'win'], [...CAPS, 'p0', 'p1', 'p12', 'p27']),
     startBanner: '🪙 Coin in — let\'s see what drops!', mote: '#f0e6ff', rayColor: '#fff2a8',
 

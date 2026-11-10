@@ -1,4 +1,4 @@
-// Game 30 — Golden Carrot Bunny Dash
+// Game 30 — Bunny Carrot Race
 // Ten bunnies race through a vegetable-garden maze to find the golden carrot; the bunny that brings it back to the basket is picked.
 // Twist: the first golden carrot is a balloon and floats out of the garden; a mole pushes the real golden carrot up in front of another bunny.
 (() => {
@@ -19,7 +19,7 @@
   }
 
   GAME_IMPL.g30 = {
-    id: 'g30', title: 'Golden Carrot Bunny Dash', base: 'assets/g30/', titleY: 230, animals: true, paintedOk: false,
+    id: 'g30', title: 'Bunny Carrot Race', base: 'assets/g30/', titleY: 230, animals: true, paintedOk: false,
     assets: gAssets(['idle', 'ready', 'bound', 'patch', 'balloon', 'mole', 'win'], ['p0', 'p3', 'p5', 'p6', 'p8', 'p9', 'p10', 'p11', 'p16', 'p17', 'p25', 'p26', 'p48']),
     startBanner: '🐰 Ready, set — hop for the golden carrot!', mote: '#fff6c8', rayColor: '#fff2a8',
 

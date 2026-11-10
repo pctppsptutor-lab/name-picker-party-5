@@ -1,4 +1,4 @@
-// Game 27 — Puppy Pool Float Race
+// Game 27 — Puppy Pool Race
 // Ten puppies paddle along a soft obstacle course of rings, floating bridges and water balls;
 // the puppy that reaches the golden bone platform is picked.
 // Twist: the leading puppy gets busy chasing its tail on a ring float; a float gate swings open and carries another puppy to the platform.
@@ -16,7 +16,7 @@
   }
 
   GAME_IMPL.g27 = {
-    id: 'g27', title: 'Puppy Pool Float Race', base: 'assets/g27/', titleY: 230, animals: true, paintedOk: false,
+    id: 'g27', title: 'Puppy Pool Race', base: 'assets/g27/', titleY: 230, animals: true, paintedOk: false,
     assets: gAssets(['idle', 'ready', 'swim', 'bridge', 'tail', 'win'], ['p7', 'p8', 'p9', 'p10', 'p13', 'p22', 'p27', 'p30', ...FLOATS]),
     startBanner: '🐶 Splash! The puppies dive in!', mote: '#e8fbff', rayColor: '#fff2a8',
 

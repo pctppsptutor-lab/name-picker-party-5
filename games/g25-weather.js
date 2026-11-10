@@ -16,7 +16,7 @@
   }
 
   GAME_IMPL.g25 = {
-    id: 'g25', title: 'Weather Machine Cold', base: 'assets/g25/', titleY: 380, paintedOk: false,
+    id: 'g25', title: 'Cloud Goes Achoo!', base: 'assets/g25/', titleY: 380, paintedOk: false,
     assets: gAssets(['idle', 'ready', 'action', 'almost', 'fake', 'twist', 'win'], ['p0', 'p1', 'p2', 'p10', 'p12', 'p13', 'p14', 'p16', 'p22', 'p26', 'p33', 'p39']),
     startBanner: '🌦️ The weather machine sputters to life…', mote: '#eaf6ff', rayColor: '#fff2a8',
 

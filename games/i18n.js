@@ -1,101 +1,101 @@
 /* ================= Bilingual Localization (EN / VI) — All 30 Games ================= */
 const GAME_TITLES_VI = {
-  'Duck Slide Race': 'Đua Vịt Cầu Trượt',
-  'Mischievous Dino Eggs': 'Trứng Khủng Long Tinh Nghịch',
-  'Rebellious Cauldron': 'Vạc Phép Nổi Loạn',
-  'Dragon Treasure Guard': 'Rồng Giữ Kho Báu',
-  'Faulty Robot Factory': 'Nhà Máy Robot Lỗi Nhịp',
-  'Haunted Hotel Lift': 'Khách Sạn Bí Ẩn',
-  'Sneezing Flower Bee': 'Ong Mật & Hoa Hắt Xì',
-  'Candy Tornado': 'Cơn Lốc Kẹo Ngọt',
-  'Hamster Turbo Wheels': 'Bánh Xe Hamster Siêu Tốc',
-  'The Shape-Shifting Book': 'Cuốn Sách Biến Hình',
-  'Capybara Melon Delivery': 'Capybara Giao Dưa Hấu',
-  'Popcorn Cinema': 'Rạp Phim Bắp Rang Bơ',
-  'Penguin Overslide': 'Chim Cánh Cụt Trượt Băng',
-  'Secret Shell Swap': 'Vỏ Ốc Tráo Chỗ',
-  'Alien Costume Party': 'Tiệc Hóa Trang Vũ Trụ',
-  'Oversleeping Monsters': 'Quái Vật Ngủ Nướng',
-  'Cat Cafe Mix-Up': 'Tiệm Cà Phê Mèo Nhộn Nhịp',
-  'Recycling Truck Mix-Up': 'Xe Tái Chế Vui Nhộn',
-  'Sock-Eating Washer': 'Máy Giặt Nuốt Tất',
-  'Mystery Box Cats': 'Mèo Trốn Trong Hộp',
-  'Toilet Paper Mummy': 'Xác Ướp Giấy Vệ Sinh',
-  'Off-Beat Disco Chickens': 'Gà Nhảy Disco Lệch Nhịp',
-  'Frog Lily Pad Jump': 'Ếch Nhảy Lá Sen Vàng',
-  'Pirate Parcel Mix-Up': 'Kiện Hàng Hải Tặc',
-  'Weather Machine Cold': 'Cỗ Máy Thời Tiết Cảm Lạnh',
-  'Time Machine Mix-Up': 'Cỗ Máy Thời Gian Tinh Nghịch',
-  'Puppy Pool Float Race': 'Cún Con Đua Phao Bơi',
-  'Broken Invisibility Cloak': 'Áo Choàng Tàng Hình Hỏng',
-  'Stubborn Vending Machine': 'Máy Bán Hàng Bướng Bỉnh',
-  'Golden Carrot Bunny Dash': 'Thỏ Đua Cà Rốt Vàng'
+  'Duck Splash': 'Vịt Trượt Ùm',
+  'Dino Egg Pop': 'Trứng Khủng Long Nổ Bốp',
+  'Magic Pot Goes Pop': 'Nồi Phép Nổ Bùm',
+  'Dragon Wants Gold': 'Rồng Ham Vàng',
+  'Oops, Robot!': 'Robot Ơ Kìa!',
+  'Ghost in the Lift': 'Ma Trong Thang Máy',
+  'Achoo, Bee!': 'Ong Hắt Xì!',
+  'Candy Storm': 'Bão Kẹo',
+  'Hamster Wheels': 'Hamster Chạy Bánh Xe',
+  'Magic Book': 'Sách Phép',
+  'Capybara Wants Melon': 'Capybara Mê Dưa',
+  'Popcorn Goes Pop': 'Bắp Rang Nổ Bốp',
+  'Penguins on Ice': 'Cánh Cụt Trượt Băng',
+  'Where’s My Shell?': 'Ốc Ơi, Vỏ Đâu?',
+  'Alien Dance Party': 'Người Ngoài Hành Tinh Nhảy Nhót',
+  'Wake Up, Monsters!': 'Quái Vật Ơi, Dậy Đi!',
+  'Oops, Wrong Cake!': 'Ối, Nhầm Bánh!',
+  'Beep Beep, Trash Truck!': 'Bíp Bíp, Xe Rác!',
+  'The Sock Monster': 'Quái Vật Ăn Tất',
+  'Cat in a Box': 'Mèo Trong Hộp',
+  'Toilet Paper Mummy': 'Xác Ướp Cuộn Giấy',
+  'Chicken Dance': 'Gà Quẩy',
+  'Hop, Frog, Hop!': 'Ếch Ơi, Nhảy Đi!',
+  'Pirate Gift Boom': 'Hải Tặc Bắn Quà',
+  'Cloud Goes Achoo!': 'Mây Hắt Xì!',
+  'Oops, Wrong Year!': 'Ối, Nhầm Năm!',
+  'Puppy Pool Race': 'Cún Đua Phao',
+  'Peekaboo, Wizard!': 'Ú Òa, Phù Thủy!',
+  'Give Me My Snack!': 'Trả Bánh Cho Tớ!',
+  'Bunny Carrot Race': 'Thỏ Đua Giành Cà Rốt'
 };
 
 const GAME_RULES = {
   en: {
-    'Duck Slide Race': 'Ducks race to the GOLD buoy — watch out for whirlpools, waves & fake red buoys!',
-    'Mischievous Dino Eggs': '10 dino eggs wobble & swap — the first hatch is a rubber chicken, then Mama Dino picks the real egg!',
-    'Rebellious Cauldron': '10 magic orbs swirl around the cauldron — the frog zaps the real orb onto the winner\'s podium!',
-    'Dragon Treasure Guard': 'Chests shuffle while the dragon patrols — the first chest has a rubber duck, then the dragon sneezes out the real treasure!',
-    'Faulty Robot Factory': 'Robots roll down the conveyor — after a wrong stamp, the belt reverses to charge the real winner!',
-    'Haunted Hotel Lift': 'Remember each room\'s symbol! Follow the footprints past the ghost\'s trick to the real door!',
-    'Sneezing Flower Bee': 'The bee visits flowers in the garden — a sneeze blows it right onto the winning gardener\'s flower!',
-    'Candy Tornado': 'Golden candy rolls down the chutes — the cat pulls the switch so it lands in the winner\'s jar!',
-    'Hamster Turbo Wheels': 'Hamsters spin to power up 3 lights — a sunflower seed flips the switch to boost the real winner!',
-    'The Shape-Shifting Book': 'Memorize each student\'s symbol before the pages shuffle — the glowing bookmark reveals the winner!',
-    'Capybara Melon Delivery': 'Capybaras swim their melons to the gold ring — the current shifts to carry the real winner in!',
-    'Popcorn Cinema': 'Shake popcorn on the beat & FREEZE when music stops — the bonus beat spotlights the true winner!',
-    'Penguin Overslide': 'Penguins belly-slide toward the icy target — the one who stops closest without sliding off wins!',
-    'Secret Shell Swap': 'Spot the pearl before the 10 shells shuffle — the hermit crab points out the real pearl\'s owner!',
-    'Alien Costume Party': 'The UFO beam scans the dancers — after a shrink-ray mix-up, the disco ball picks the real winner!',
-    'Oversleeping Monsters': '3 alarm clocks ring! Sleepy pillows fool the first check, then the real wide-awake student wins!',
-    'Cat Cafe Mix-Up': 'Match each cake under its dome — the cat manager catches the runaway tray to reveal the winner!',
-    'Recycling Truck Mix-Up': 'Match paper, plastic & metal to the right bin — the truck scanner locks onto the real recycler!',
-    'Sock-Eating Washer': 'Socks spin inside the washer — the first match is a puppet, then the washer coughs up the winning pair!',
-    'Mystery Box Cats': 'Cats zoom around and dive into boxes when the bell rings — follow the laser dot to the winning box!',
+    'Duck Splash': 'Ducks race to the GOLD buoy — watch out for whirlpools, waves & fake red buoys!',
+    'Dino Egg Pop': '10 dino eggs wobble & swap — the first hatch is a rubber chicken, then Mama Dino picks the real egg!',
+    'Magic Pot Goes Pop': '10 magic orbs swirl around the cauldron — the frog zaps the real orb onto the winner\'s podium!',
+    'Dragon Wants Gold': 'Chests shuffle while the dragon patrols — the first chest has a rubber duck, then the dragon sneezes out the real treasure!',
+    'Oops, Robot!': 'Robots roll down the conveyor — after a wrong stamp, the belt reverses to charge the real winner!',
+    'Ghost in the Lift': 'Remember each room\'s symbol! Follow the footprints past the ghost\'s trick to the real door!',
+    'Achoo, Bee!': 'The bee visits flowers in the garden — a sneeze blows it right onto the winning gardener\'s flower!',
+    'Candy Storm': 'Golden candy rolls down the chutes — the cat pulls the switch so it lands in the winner\'s jar!',
+    'Hamster Wheels': 'Hamsters spin to power up 3 lights — a sunflower seed flips the switch to boost the real winner!',
+    'Magic Book': 'Memorize each student\'s symbol before the pages shuffle — the glowing bookmark reveals the winner!',
+    'Capybara Wants Melon': 'Capybaras swim their melons to the gold ring — the current shifts to carry the real winner in!',
+    'Popcorn Goes Pop': 'Shake popcorn on the beat & FREEZE when music stops — the bonus beat spotlights the true winner!',
+    'Penguins on Ice': 'Penguins belly-slide toward the icy target — the one who stops closest without sliding off wins!',
+    'Where’s My Shell?': 'Spot the pearl before the 10 shells shuffle — the hermit crab points out the real pearl\'s owner!',
+    'Alien Dance Party': 'The UFO beam scans the dancers — after a shrink-ray mix-up, the disco ball picks the real winner!',
+    'Wake Up, Monsters!': '3 alarm clocks ring! Sleepy pillows fool the first check, then the real wide-awake student wins!',
+    'Oops, Wrong Cake!': 'Match each cake under its dome — the cat manager catches the runaway tray to reveal the winner!',
+    'Beep Beep, Trash Truck!': 'Match paper, plastic & metal to the right bin — the truck scanner locks onto the real recycler!',
+    'The Sock Monster': 'Socks spin inside the washer — the first match is a puppet, then the washer coughs up the winning pair!',
+    'Cat in a Box': 'Cats zoom around and dive into boxes when the bell rings — follow the laser dot to the winning box!',
     'Toilet Paper Mummy': '3 fan levels unwrap the paper mummies — the rolling mascot pulls the last strip to reveal the winner!',
-    'Off-Beat Disco Chickens': 'Copy the DJ chicken\'s moves and FREEZE — the replay spotlight lands on the student with the perfect pose!',
-    'Frog Lily Pad Jump': 'Frogs hop across lily pads toward the golden pad — the dragonfly shows the real pad after the turtle swims off!',
-    'Pirate Parcel Mix-Up': 'The foam cannon fires through barrels, bridge & wheel — the parrot swings the bridge to open the winning parcel!',
-    'Weather Machine Cold': 'Clouds cycle through sun, rain & snow — a sunbeam bounces off the mirror to crown the winner with a rainbow!',
-    'Time Machine Mix-Up': 'Memorize the era symbols before portals swap — the dino robot opens the portal that brings the winner back!',
-    'Puppy Pool Float Race': 'Puppies paddle past hurdles toward the golden bone — the float gate swings open for the winning puppy!',
-    'Broken Invisibility Cloak': 'Students vanish under cloaks — follow the footprints, hiccup & shadow to spot the real winner!',
-    'Stubborn Vending Machine': 'A golden capsule rolls down the coil & seesaw — the walking can kicks the lever into the winner\'s tray!',
-    'Golden Carrot Bunny Dash': 'Bunnies race through the garden — the first carrot is a balloon, then the mole pops up the real golden carrot!'
+    'Chicken Dance': 'Copy the DJ chicken\'s moves and FREEZE — the replay spotlight lands on the student with the perfect pose!',
+    'Hop, Frog, Hop!': 'Frogs hop across lily pads toward the golden pad — the dragonfly shows the real pad after the turtle swims off!',
+    'Pirate Gift Boom': 'The foam cannon fires through barrels, bridge & wheel — the parrot swings the bridge to open the winning parcel!',
+    'Cloud Goes Achoo!': 'Clouds cycle through sun, rain & snow — a sunbeam bounces off the mirror to crown the winner with a rainbow!',
+    'Oops, Wrong Year!': 'Memorize the era symbols before portals swap — the dino robot opens the portal that brings the winner back!',
+    'Puppy Pool Race': 'Puppies paddle past hurdles toward the golden bone — the float gate swings open for the winning puppy!',
+    'Peekaboo, Wizard!': 'Students vanish under cloaks — follow the footprints, hiccup & shadow to spot the real winner!',
+    'Give Me My Snack!': 'A golden capsule rolls down the coil & seesaw — the walking can kicks the lever into the winner\'s tray!',
+    'Bunny Carrot Race': 'Bunnies race through the garden — the first carrot is a balloon, then the mole pops up the real golden carrot!'
   },
   vi: {
-    'Duck Slide Race': 'Vịt đua tới PHAO VÀNG — coi chừng xoáy nước, sóng lớn và phao đỏ giả đánh lừa!',
-    'Mischievous Dino Eggs': '10 quả trứng lắc lư đổi chỗ — quả nở đầu là gà cao su, khủng long mẹ sẽ lăn quả trứng thật ra!',
-    'Rebellious Cauldron': '10 quả cầu phép xoay quanh vạc — chú ếch vung đũa phép chỉ đúng quả cầu thật bay lên bục!',
-    'Dragon Treasure Guard': 'Rương kho báu nhảy đổi chỗ khi rồng tuần tra — rương đầu là vịt cao su, rồng hắt xì lộ ra rương thật!',
-    'Faulty Robot Factory': 'Robot chạy trên băng chuyền — sau pha đóng dấu nhầm, băng chuyền đảo chiều sạc điện cho người thắng!',
-    'Haunted Hotel Lift': 'Nhớ kỹ biểu tượng từng phòng! Theo dấu chân vượt qua cú lừa của bóng ma để mở đúng cửa thật!',
-    'Sneezing Flower Bee': 'Ong bay tìm hoa trong vườn — bông hoa đầu hắt xì thổi chú ong đậu trúng hoa của người chiến thắng!',
-    'Candy Tornado': 'Kẹo vàng lăn qua máng trượt — mèo thần tài gạt cần đổi ray đưa kẹo vào đúng lọ của người thắng!',
-    'Hamster Turbo Wheels': 'Hamster chạy thắp sáng 3 đèn — hạt hướng dương bật công tắc giúp chú hamster chiến thắng bứt tốc!',
-    'The Shape-Shifting Book': 'Ghi nhớ biểu tượng trước khi trang sách tráo đổi — dây đánh dấu phát sáng chỉ đúng người thắng!',
-    'Capybara Melon Delivery': 'Capybara đẩy dưa hấu về vòng đích vàng — dòng nước đổi chiều đưa quả dưa thật sự vào đích!',
-    'Popcorn Cinema': 'Lắc bắp rang đúng nhịp và ĐỨNG YÊN khi nhạc tắt — nhịp nhạc phụ sẽ chiếu đèn vào người thắng!',
-    'Penguin Overslide': 'Chim cánh cụt trượt bụng vào tâm bảng điểm — ai phanh chuẩn nhất không bị trượt lố sẽ thắng!',
-    'Secret Shell Swap': 'Nhớ vị trí ngọc trai trước khi 10 vỏ ốc tráo chỗ — cua ẩn sĩ sẽ gõ càng chỉ ra vỏ ốc thật!',
-    'Alien Costume Party': 'Tia UFO quét qua sàn nhảy — sau pha bắn nhầm tia thu nhỏ, quả cầu disco sẽ chọn người thắng thật!',
-    'Oversleeping Monsters': '3 hồi chuông báo thức vang lên! Bỏ qua chiếc gối giả, ai tỉnh giấc thật sự sẽ được gọi tên!',
-    'Cat Cafe Mix-Up': 'Nhớ loại bánh dưới nắp đậy trước khi đổi khay — mèo quản lý sẽ giữ lại đúng chiếc bánh chiến thắng!',
-    'Recycling Truck Mix-Up': 'Phân loại đúng rác tái chế vào thùng — máy quét của xe tải sẽ phát hiện đúng bạn phân loại chuẩn!',
-    'Sock-Eating Washer': '10 chiếc tất quay trong máy giặt — bỏ qua rối tất giả, máy giặt sẽ nhả ra đôi tất của người thắng!',
-    'Mystery Box Cats': 'Mèo chạy quanh rồi chui vào hộp khi chuông reo — chấm laser đỏ dẫn tới hộp nào thì người đó thắng!',
+    'Duck Splash': 'Vịt đua tới PHAO VÀNG — coi chừng xoáy nước, sóng lớn và phao đỏ giả đánh lừa!',
+    'Dino Egg Pop': '10 quả trứng lắc lư đổi chỗ — quả nở đầu là gà cao su, khủng long mẹ sẽ lăn quả trứng thật ra!',
+    'Magic Pot Goes Pop': '10 quả cầu phép xoay quanh vạc — chú ếch vung đũa phép chỉ đúng quả cầu thật bay lên bục!',
+    'Dragon Wants Gold': 'Rương kho báu nhảy đổi chỗ khi rồng tuần tra — rương đầu là vịt cao su, rồng hắt xì lộ ra rương thật!',
+    'Oops, Robot!': 'Robot chạy trên băng chuyền — sau pha đóng dấu nhầm, băng chuyền đảo chiều sạc điện cho người thắng!',
+    'Ghost in the Lift': 'Nhớ kỹ biểu tượng từng phòng! Theo dấu chân vượt qua cú lừa của bóng ma để mở đúng cửa thật!',
+    'Achoo, Bee!': 'Ong bay tìm hoa trong vườn — bông hoa đầu hắt xì thổi chú ong đậu trúng hoa của người chiến thắng!',
+    'Candy Storm': 'Kẹo vàng lăn qua máng trượt — mèo thần tài gạt cần đổi ray đưa kẹo vào đúng lọ của người thắng!',
+    'Hamster Wheels': 'Hamster chạy thắp sáng 3 đèn — hạt hướng dương bật công tắc giúp chú hamster chiến thắng bứt tốc!',
+    'Magic Book': 'Ghi nhớ biểu tượng trước khi trang sách tráo đổi — dây đánh dấu phát sáng chỉ đúng người thắng!',
+    'Capybara Wants Melon': 'Capybara đẩy dưa hấu về vòng đích vàng — dòng nước đổi chiều đưa quả dưa thật sự vào đích!',
+    'Popcorn Goes Pop': 'Lắc bắp rang đúng nhịp và ĐỨNG YÊN khi nhạc tắt — nhịp nhạc phụ sẽ chiếu đèn vào người thắng!',
+    'Penguins on Ice': 'Chim cánh cụt trượt bụng vào tâm bảng điểm — ai phanh chuẩn nhất không bị trượt lố sẽ thắng!',
+    'Where’s My Shell?': 'Nhớ vị trí ngọc trai trước khi 10 vỏ ốc tráo chỗ — cua ẩn sĩ sẽ gõ càng chỉ ra vỏ ốc thật!',
+    'Alien Dance Party': 'Tia UFO quét qua sàn nhảy — sau pha bắn nhầm tia thu nhỏ, quả cầu disco sẽ chọn người thắng thật!',
+    'Wake Up, Monsters!': '3 hồi chuông báo thức vang lên! Bỏ qua chiếc gối giả, ai tỉnh giấc thật sự sẽ được gọi tên!',
+    'Oops, Wrong Cake!': 'Nhớ loại bánh dưới nắp đậy trước khi đổi khay — mèo quản lý sẽ giữ lại đúng chiếc bánh chiến thắng!',
+    'Beep Beep, Trash Truck!': 'Phân loại đúng rác tái chế vào thùng — máy quét của xe tải sẽ phát hiện đúng bạn phân loại chuẩn!',
+    'The Sock Monster': '10 chiếc tất quay trong máy giặt — bỏ qua rối tất giả, máy giặt sẽ nhả ra đôi tất của người thắng!',
+    'Cat in a Box': 'Mèo chạy quanh rồi chui vào hộp khi chuông reo — chấm laser đỏ dẫn tới hộp nào thì người đó thắng!',
     'Toilet Paper Mummy': 'Quạt thổi 3 cấp độ mở dần giấy cuốn — cuộn giấy mascot kéo dải cuối lộ diện học sinh chiến thắng!',
-    'Off-Beat Disco Chickens': 'Nhảy theo gà DJ rồi ĐỨNG YÊN — đèn sân khấu phát lại nhịp cuối để tìm người giữ tư thế chuẩn nhất!',
-    'Frog Lily Pad Jump': 'Ếch nhảy qua các lá sen tới lá sen vàng — chuồn chuồn đậu xuống chỉ ra lá sen vàng thật sự!',
-    'Pirate Parcel Mix-Up': 'Đại bác bắn bóng qua thùng gỗ, cầu treo & bánh lái — vẹt xoay bánh lái mở đúng kiện hàng kho báu!',
-    'Weather Machine Cold': 'Mây đổi qua nắng, mưa, tuyết — tia nắng phản chiếu gương tạo cầu vồng rực rỡ trên đầu người thắng!',
-    'Time Machine Mix-Up': 'Nhớ biểu tượng trước khi cổng thời gian đổi chỗ — robot khủng long mở đúng cổng đưa người thắng về!',
-    'Puppy Pool Float Race': 'Cún bơi vượt chướng ngại vật tới xương vàng — cổng phao mở lối cho chú cún chiến thắng băng qua!',
-    'Broken Invisibility Cloak': 'Cả lớp trùm áo tàng hình — lần theo dấu chân, tiếng nấc và cái bóng để tìm ra người chiến thắng!',
-    'Stubborn Vending Machine': 'Viên nang vàng lăn qua lò xo và bập bênh — lon nước có chân đá cần gạt thả quà vào khay người thắng!',
-    'Golden Carrot Bunny Dash': 'Thỏ đua tìm cà rốt vàng — củ đầu tiên là bóng bay, chuột chũi sẽ đẩy củ cà rốt vàng thật lên!'
+    'Chicken Dance': 'Nhảy theo gà DJ rồi ĐỨNG YÊN — đèn sân khấu phát lại nhịp cuối để tìm người giữ tư thế chuẩn nhất!',
+    'Hop, Frog, Hop!': 'Ếch nhảy qua các lá sen tới lá sen vàng — chuồn chuồn đậu xuống chỉ ra lá sen vàng thật sự!',
+    'Pirate Gift Boom': 'Đại bác bắn bóng qua thùng gỗ, cầu treo & bánh lái — vẹt xoay bánh lái mở đúng kiện hàng kho báu!',
+    'Cloud Goes Achoo!': 'Mây đổi qua nắng, mưa, tuyết — tia nắng phản chiếu gương tạo cầu vồng rực rỡ trên đầu người thắng!',
+    'Oops, Wrong Year!': 'Nhớ biểu tượng trước khi cổng thời gian đổi chỗ — robot khủng long mở đúng cổng đưa người thắng về!',
+    'Puppy Pool Race': 'Cún bơi vượt chướng ngại vật tới xương vàng — cổng phao mở lối cho chú cún chiến thắng băng qua!',
+    'Peekaboo, Wizard!': 'Cả lớp trùm áo tàng hình — lần theo dấu chân, tiếng nấc và cái bóng để tìm ra người chiến thắng!',
+    'Give Me My Snack!': 'Viên nang vàng lăn qua lò xo và bập bênh — lon nước có chân đá cần gạt thả quà vào khay người thắng!',
+    'Bunny Carrot Race': 'Thỏ đua tìm cà rốt vàng — củ đầu tiên là bóng bay, chuột chũi sẽ đẩy củ cà rốt vàng thật lên!'
   }
 };
 
@@ -103,7 +103,7 @@ const BANNER_EXACT_VI = {
   // Shared idle banners
   'Press ▶ Pick a name! or Space': 'Bấm ▶ Gọi tên ngay! hoặc phím Space',
   'Everyone has been picked! Press ↺ Start over': 'Đã gọi hết cả lớp! Bấm ↺ Chơi lại từ đầu',
-  // Game 01: Duck Slide Race
+  // Game 01: Duck Splash
   'The ducks whoosh down the water slide!': 'Đàn vịt lao vút xuống cầu trượt nước!',
   '✨ Ooh! Something shiny in the water…': '✨ Ô kìa! Có thứ gì lấp lánh dưới nước…',
   '🌀 A sudden whirlpool!!': '🌀 Bỗng nhiên xuất hiện xoáy nước!!',
@@ -115,12 +115,12 @@ const BANNER_EXACT_VI = {
   '❌ Oops! That was the RED buoy, not the GOLD one!': '❌ Nhầm rồi! Đó là phao ĐỎ chứ không phải phao VÀNG!',
   '🔥 Final sprint — it is neck and neck!!': '🔥 Nước rút cuối cùng — bám đuổi sát nút!!',
   '😱 Who will touch the buoy first?': '😱 Ai sẽ chạm phao vàng đầu tiên đây?',
-  // Game 02: Mischievous Dino Eggs
+  // Game 02: Dino Egg Pop
   '🥚 The eggs start to wobble!': '🥚 Những quả trứng bắt đầu lắc lư!',
   '🐔 Huh?! It is just a rubber chicken!': '🐔 Ủa?! Bên trong chỉ là chú gà cao su!',
   '🦖 Mama dino rolls another egg with her tail…': '🦖 Khủng long mẹ dùng đuôi lăn một quả trứng khác…',
   '🦖 Mama dino picks this egg!': '🦖 Khủng long mẹ chọn quả trứng này!',
-  // Game 03: Rebellious Cauldron
+  // Game 03: Magic Pot Goes Pop
   '🔮 The magic orbs start circling the cauldron!': '🔮 Các quả cầu phép bắt đầu xoay quanh vạc!',
   '✨ A golden orb blasts onto the podium!': '✨ Một quả cầu vàng bay vút lên bục vinh quang!',
   '🫧 Oh! The golden orb turns into soap bubbles!': '🫧 Ôi! Quả cầu vàng hóa thành bong bóng xà phòng!',
@@ -128,43 +128,43 @@ const BANNER_EXACT_VI = {
   '🪄 …and points at the real orb!': '🪄 …và chỉ thẳng vào quả cầu thật sự!',
   '😮 …and drops back down!': '😮 …rồi lại rơi tọt xuống!',
   '🐸 The frog points the wand at this orb!': '🐸 Chú ếch chỉ đũa phép vào quả cầu này!',
-  // Game 04: Dragon Treasure Guard
+  // Game 04: Dragon Wants Gold
   '💰 The treasure chests hop and swap places!': '💰 Các rương kho báu nhảy lên đổi chỗ cho nhau!',
   '🦆 Huh! Only a rubber duck inside!': '🦆 Ủa! Bên trong chỉ có một chú vịt cao su!',
   '🤧 Ah… ah… CHOO!': '🤧 Hắt… hắt… XÌ!',
   '✨ A chest slides out of the gold pile!': '✨ Một chiếc rương trượt ra từ đống vàng!',
   '🙅 …not this one!': '🙅 …không phải chiếc rương này!',
   '🐉 The dragon has chosen a chest!': '🐉 Chú rồng đã chọn được chiếc rương!',
-  // Game 05: Faulty Robot Factory
+  // Game 05: Oops, Robot!
   '🤖 The conveyor belt starts up!': '🤖 Băng chuyền nhà máy bắt đầu chạy!',
   '🚨 ERROR! Wrong robot stamped!': '🚨 BÁO LỖI! Đóng dấu nhầm robot rồi!',
   '⏪ The belt runs backwards!': '⏪ Băng chuyền đột ngột chạy ngược lại!',
   '🔋 The last robot rolls onto the charger!': '🔋 Chú robot cuối cùng lăn vào trạm sạc!',
-  // Game 06: Haunted Hotel Lift
+  // Game 06: Ghost in the Lift
   '🛎️ Remember each room\'s symbol!': '🛎️ Hãy ghi nhớ biểu tượng của từng phòng nhé!',
   '👣 Follow the ghostly footprints…': '👣 Hãy dõi theo những dấu chân bí ẩn…',
   '👻 BOO! A ghost holding a fake symbol!': '👻 HÙ! Một chú ma đang cầm biểu tượng giả!',
   '💀 The skeleton janitor spins the signpost!': '💀 Bác lao công bộ xương xoay biển chỉ đường!',
   '👣 The footprints change direction…': '👣 Những dấu chân đổi hướng đi…',
   '🙅 …no! The footprints keep going…': '🙅 …không phải! Dấu chân vẫn đi tiếp…',
-  // Game 07: Sneezing Flower Bee
+  // Game 07: Achoo, Bee!
   '🐝 The bee buzzes out of the hive!': '🐝 Chú ong bay vù ra khỏi tổ!',
   '🤧 Ah-CHOO! The flower sneezes pollen!': '🤧 Hắt-XÌ! Bông hoa hắt xì tung phấn hoa!',
   '💨 The bee is blown across the garden…': '💨 Chú ong bị thổi bay qua khu vườn…',
   '🙅 Not quite — off it buzzes again…': '🙅 Chưa phải bông này — ong lại bay tiếp…',
-  // Game 08: Candy Tornado
+  // Game 08: Candy Storm
   '🍬 The candy machine whirs to life!': '🍬 Cỗ máy kẹo ngọt bắt đầu quay tít!',
   '✨ Here comes the golden candy!': '✨ Viên kẹo vàng lấp lánh xuất hiện rồi!',
   '🍭 Oops! A fake lollipop — the candy is stuck!': '🍭 Ôi! Kẹo mút giả — viên kẹo bị kẹt rồi!',
   '🐱 The candy cat pulls the spare lever!': '🐱 Chú mèo kẹo ngọt kéo cần gạt phụ!',
   '🔀 Every rail swaps!': '🔀 Tất cả đường trượt đảo chiều!',
   '🍬 …bounces off the jelly and changes course!': '🍬 …nảy khỏi thạch rau câu và đổi hướng!',
-  // Game 09: Hamster Turbo Wheels
+  // Game 09: Hamster Wheels
   '🐹 Ready… set… RUN!': '🐹 Chuẩn bị… sẵn sàng… CHẠY THÔI!',
   '😵 Whoa! It slips backwards!': '😵 Ái chà! Bánh xe bị trượt ngược lại!',
   '🌻 A sunflower seed rolls onto the switch…': '🌻 Một hạt hướng dương lăn trúng công tắc…',
   '🐹 …but another hamster puts on a burst of speed!': '🐹 …nhưng một chú hamster khác bứt tốc vượt lên!',
-  // Game 10: The Shape-Shifting Book
+  // Game 10: Magic Book
   '📖 Remember which symbol belongs to whom!': '📖 Hãy nhớ xem biểu tượng nào của ai nhé!',
   '📖 The pages flip open — remember the symbols!': '📖 Trang sách mở ra — hãy nhớ kỹ các biểu tượng!',
   '🌀 The book shuffles its pages…': '🌀 Cuốn sách bắt đầu tráo đổi các trang…',
@@ -172,28 +172,28 @@ const BANNER_EXACT_VI = {
   '🔖 The bookmark starts to glow…': '🔖 Dây đánh dấu sách bắt đầu phát sáng…',
   '✨ …and slides to the real page!': '✨ …và trượt sang trang sách thật sự!',
   '🔖 The bookmark changes its mind!': '🔖 Dây đánh dấu sách đổi ý rồi!',
-  // Game 11: Capybara Melon Delivery
+  // Game 11: Capybara Wants Melon
   '🍉 The capybaras push off with their melons!': '🍉 Đàn capybara đẩy dưa hấu xuất phát!',
   '🐥 It splits open — a duckling is having a bath!': '🐥 Quả dưa tách đôi — một chú vịt con đang tắm bên trong!',
   '🌊 The current changes direction…': '🌊 Dòng nước bất ngờ đổi chiều…',
   '💨 …but a melon slips past into the ring!': '💨 …nhưng một quả dưa khác kịp lách vào vòng đích!',
-  // Game 12: Popcorn Cinema
+  // Game 12: Popcorn Goes Pop
   '🎬 Shake your popcorn to the beat!': '🎬 Lắc hộp bắp rang theo nhịp nhạc nào!',
   '⏸️ The music stops — FREEZE!': '⏸️ Nhạc dừng rồi — ĐỨNG YÊN!',
   '🎉 A fake celebration…': '🎉 Màn ăn mừng hụt rồi…',
   '🎞️ The projector plays one bonus beat!': '🎞️ Máy chiếu phát thêm một nhịp nhạc phụ!',
   '🔦 …then slides to the one who kept the beat!': '🔦 …rồi trượt sang người giữ đúng nhịp!',
-  // Game 13: Penguin Overslide
+  // Game 13: Penguins on Ice
   '🐧 Belly slide — GO!': '🐧 Trượt băng bằng bụng — XUẤT PHÁT!',
   '❄️ WHOOPS! Right over the line into the snow!': '❄️ ÔI THÔI! Trượt quá đà văng vào đống tuyết rồi!',
   '🦭 A seal pops out of the ice…': '🦭 Một chú hải cẩu nhô lên từ hố băng…',
   '🐧 …but someone glides even closer!': '🐧 …nhưng có người còn lướt tới sát cờ hơn!',
-  // Game 14: Secret Shell Swap
+  // Game 14: Where’s My Shell?
   '🦀 Scuttle sideways to the sandcastle!': '🦀 Bò ngang về phía lâu đài cát nào!',
   '❓ Wait… the shell is EMPTY!': '❓ Khoan đã… chiếc vỏ ốc này TRỐNG RỖNG!',
   '🫧 A sea bubble floats over another shell…': '🫧 Một bong bóng biển bay tới chiếc vỏ ốc khác…',
   '💨 …but another shell zooms past!': '💨 …nhưng một chiếc vỏ ốc khác lao vút qua!',
-  // Game 15: Alien Costume Party
+  // Game 15: Alien Dance Party
   '👽 Watch the move… then copy it!': '👽 Quan sát động tác… rồi làm theo nhé!',
   '🕺 Now copy the move!': '🕺 Bây giờ hãy làm theo động tác!',
   '👀 Watch the host…': '👀 Hãy nhìn kỹ chủ tiệc…',
@@ -201,24 +201,24 @@ const BANNER_EXACT_VI = {
   '👽👽 The costume pops open — two tiny aliens in the wrong pose!': '👽👽 Bộ đồ bung ra — hai người ngoài hành tinh tí hon tạo sai dáng!',
   '🪩 The disco ball replays the last beat…': '🪩 Quả cầu disco phát lại nhịp cuối cùng…',
   '🔦 …no! The scanner moves on!': '🔦 …không phải! Đèn quét di chuyển tiếp!',
-  // Game 16: Oversleeping Monsters
+  // Game 16: Wake Up, Monsters!
   '🔔 Listen to each monster\'s bell!': '🔔 Hãy lắng nghe tiếng chuông của từng quái vật!',
   '👂 Listen to each monster\'s bell…': '👂 Lắng nghe tiếng chuông của từng bạn…',
   '🔔 Which bell is ringing now?': '🔔 Tiếng chuông của ai đang reo vậy nhỉ?',
   '💤 …but it\'s sleepwalking after a FAKE bell!': '💤 …nhưng lại mộng du đi theo tiếng chuông GIẢ!',
   '🛏️ A pillow flies across the room…': '🛏️ Một chiếc gối bay vèo qua căn phòng…',
   '🔔 BONG! It hits the real bell!': '🔔 BOONG! Gối ném trúng chiếc chuông thật rồi!',
-  // Game 17: Cat Cafe Mix-Up
+  // Game 17: Oops, Wrong Cake!
   '🍰 Pass the cake down the line — carefully!': '🍰 Chuyền bánh kem dọc hàng — thật khéo nhé!',
   '🦵 The cake grows legs and RUNS AWAY!': '🦵 Chiếc bánh kem mọc chân rồi CHẠY MẤT!',
   '🐱 The cat manager blocks the way…': '🐱 Mèo quản lý chặn đường lại…',
   '☕ Delivered to the table!': '☕ Bánh đã được phục vụ tận bàn!',
-  // Game 18: Recycling Truck Mix-Up
+  // Game 18: Beep Beep, Trash Truck!
   '♻️ The recycling truck starts its rounds!': '♻️ Xe tải tái chế bắt đầu đi thu gom!',
   '⚠️ BOING! A toy spring — wrong sort!': '⚠️ TƯNG! Một chiếc lò xo đồ chơi — phân loại nhầm rồi!',
   '🥫 A metal can rolls past the sensor…': '🥫 Một vỏ lon lăn ngang qua cảm biến…',
   '🚚 The truck rolls on to the right bin!': '🚚 Xe tải lăn tiếp tới đúng thùng tái chế!',
-  // Game 19: Sock-Eating Washer
+  // Game 19: The Sock Monster
   '🧦 Remember your socks!': '🧦 Hãy ghi nhớ đôi tất của mình nhé!',
   '👀 Look at everyone\'s socks…': '👀 Nhìn kỹ tất của mọi người nào…',
   '🌀 One sock each goes into the washer!': '🌀 Mỗi người cho một chiếc tất vào máy giặt!',
@@ -228,7 +228,7 @@ const BANNER_EXACT_VI = {
   '🧦 The lost sock shoots out of the sleeve!': '🧦 Chiếc tất thất lạc bắn vọt ra từ ống tay áo!',
   '🧦 …no, it bounces on to its real owner!': '🧦 …không phải, chiếc tất nảy tiếp tới chủ nhân thật sự!',
   '✨ A perfect match!': '✨ Ghép đôi chuẩn xác tuyệt đối!',
-  // Game 20: Mystery Box Cats
+  // Game 20: Cat in a Box
   '🐱 The cats are zooming around!': '🐱 Đàn mèo đang chạy nhảy khắp phòng!',
   '🔔 Ding! Everyone into a box!': '🔔 Kính coong! Tất cả chui vào hộp nào!',
   '🧦 Only a sock puppet inside!': '🧦 Bên trong chỉ là một con rối tất!',
@@ -241,53 +241,53 @@ const BANNER_EXACT_VI = {
   '🌪️ Fan level 3 — FULL POWER!': '🌪️ Quạt gió cấp 3 — HẾT CÔNG SUẤT!',
   '🧹 It\'s just a costume broom!': '🧹 Hóa ra chỉ là cây chổi hóa trang!',
   '🧻 The toilet roll mascot rolls across the stage…': '🧻 Cuộn giấy khổng lồ lăn ngang sân khấu…',
-  // Game 22: Off-Beat Disco Chickens
+  // Game 22: Chicken Dance
   '🐔 Watch the moves… wing, side, FREEZE!': '🐔 Nhìn kỹ động tác… vỗ cánh, nghiêng người, ĐỨNG YÊN!',
   '🕺 Copy it: wing… side… wing!': '🕺 Làm theo nào: vỗ cánh… nghiêng… vỗ cánh!',
   '👀 Watch the DJ chicken…': '👀 Hãy nhìn kỹ DJ Gà…',
   '🧹 It\'s a feathery MOP doing it all wrong!': '🧹 Hóa ra là cây chổi lông gà nhảy sai hết nhịp!',
   '🎵 The music replays the last beat…': '🎵 Nhạc phát lại nhịp cuối cùng…',
   '🔦 …no! The light slides on!': '🔦 …không phải! Ánh đèn trượt sang chỗ khác!',
-  // Game 23: Frog Lily Pad Jump
+  // Game 23: Hop, Frog, Hop!
   '🐸 Hop, hop, hop!': '🐸 Nhảy, nhảy, nhảy qua lá sen nào!',
   '🐢 It\'s a turtle shell — and it swims away!': '🐢 Đó là mai rùa — và chú rùa bơi đi mất!',
   '🪰 A dragonfly lands on the real golden pad…': '🪰 Chuồn chuồn đậu xuống lá sen vàng thật sự…',
-  // Game 24: Pirate Parcel Mix-Up
+  // Game 24: Pirate Gift Boom
   '🏴‍☠️ Load the foam cannon!': '🏴‍☠️ Nạp bóng xốp vào đại bác hải tặc!',
   '💥 BOOM! The big foam ball is away!': '💥 BÙM! Quả bóng xốp lớn bắn đi rồi!',
   '🌀 A FAKE spring pops out!': '🌀 Một chiếc lò xo GIẢ bật tung ra!',
   '🦜 The parrot spins the spare wheel!': '🦜 Chú vẹt xoay bánh lái phụ!',
   '🌉 The bridge swings — the real chain rolls!': '🌉 Cây cầu xoay chuyển — dây chuyền thật bắt đầu lăn!',
   '⚙️ The wheel turns it another way!': '⚙️ Bánh răng xoay chuyển hướng khác!',
-  // Game 25: Weather Machine Cold
+  // Game 25: Cloud Goes Achoo!
   '🌦️ The weather machine sputters to life…': '🌦️ Cỗ máy thời tiết bắt đầu khởi động…',
   '☀️ Sunshine for everyone!': '☀️ Nắng ấm áp cho tất cả mọi người!',
   '🌧️ Uh-oh, here comes the rain…': '🌧️ Ái chà, mưa kéo tới rồi…',
   '❄️ Brrr — snow!': '❄️ Brrr — tuyết rơi lạnh quá!',
   '🤧 ACHOO! The rainbow turns into a scarf!': '🤧 HẮT XÌ! Cầu vồng biến thành chiếc khăn quàng cổ!',
   '☀️ A sunbeam bounces off the mirror…': '☀️ Một tia nắng phản chiếu qua tấm gương…',
-  // Game 26: Time Machine Mix-Up
+  // Game 26: Oops, Wrong Year!
   '⏳ Remember each portal\'s symbol!': '⏳ Hãy ghi nhớ biểu tượng của từng cổng thời gian!',
   '🌀 The portals open — remember the eras!': '🌀 Cổng thời gian mở ra — hãy nhớ kỹ các thời đại!',
   '⏳ The portals swap places…': '⏳ Các cổng thời gian đang tráo đổi vị trí…',
   '🍲 Back with a cooking POT instead of a crown!': '🍲 Bước ra với chiếc NỒI nấu ăn thay vì vương miện!',
   '🦖 The dino robot spins the time ring…': '🦖 Robot khủng long xoay vòng tròn thời gian…',
-  // Game 27: Puppy Pool Float Race
+  // Game 27: Puppy Pool Race
   '🐶 Splash! The puppies dive in!': '🐶 Tõm! Đàn cún con nhảy ùm xuống hồ bơi!',
   '🌀 …but stops to chase its own tail!': '🌀 …nhưng lại dừng lại đuổi theo cái đuôi của mình!',
   '🚪 A float gate swings open…': '🚪 Cổng phao bất ngờ mở tung…',
-  // Game 28: Broken Invisibility Cloak
+  // Game 28: Peekaboo, Wizard!
   '🫥 Everyone vanishes under their cloaks…': '🫥 Mọi người biến mất dưới tấm áo choàng…',
   '✨ Poof! Everyone is invisible…': '✨ Bùm! Tất cả đã tàng hình…',
   '🪴 It\'s a potted plant wearing shoes!': '🪴 Hóa ra là chậu cây đi giày!',
   '😮 *HIC!* A cloak shimmers…': '😮 *ẤC!* Một tấm áo choàng khẽ lấp lánh…',
-  // Game 29: Stubborn Vending Machine
+  // Game 29: Give Me My Snack!
   '🪙 Coin in — let\'s see what drops!': '🪙 Bỏ xu vào máy — xem bóng nào rơi xuống nhé!',
   '✨ The golden capsule starts rolling!': '✨ Quả bóng vàng bắt đầu lăn!',
   '😤 Stuck on the seesaw! False signal!': '😤 Kẹt trên bập bênh rồi! Tín hiệu giả!',
   '🥫 A can with legs kicks the spare lever!': '🥫 Một lon nước mọc chân đá vào cần gạt phụ!',
   '⚙️ The lever flips it another way!': '⚙️ Cần gạt đẩy bóng sang hướng khác!',
-  // Game 30: Golden Carrot Bunny Dash
+  // Game 30: Bunny Carrot Race
   '🐰 Ready, set — hop for the golden carrot!': '🐰 Chuẩn bị, sẵn sàng — nhảy đi tìm cà rốt vàng!',
   '🎈 It\'s a BALLOON — and it floats away!': '🎈 Đó chỉ là BÓNG BAY — và nó bay lên trời mất rồi!',
   '🕳️ A mole pops up…': '🕳️ Một chú chuột chũi nhô lên từ lòng đất…'
@@ -674,40 +674,40 @@ const UI_STRINGS = {
 };
 
 const ALL_GAMES_30 = [
-  { id: 'g1', vol: 1, n: '01', name: 'Duck Slide Race', vi: 'Đua Vịt Cầu Trượt', icon: '🦆', path: 'goi-ten-vui-nhon' },
-  { id: 'g2', vol: 1, n: '02', name: 'Mischievous Dino Eggs', vi: 'Trứng Khủng Long Tinh Nghịch', icon: '🥚', path: 'goi-ten-vui-nhon' },
-  { id: 'g3', vol: 1, n: '03', name: 'Rebellious Cauldron', vi: 'Vạc Phép Nổi Loạn', icon: '🔮', path: 'goi-ten-vui-nhon' },
-  { id: 'g4', vol: 1, n: '04', name: 'Dragon Treasure Guard', vi: 'Rồng Giữ Kho Báu', icon: '🐉', path: 'goi-ten-vui-nhon' },
-  { id: 'g5', vol: 1, n: '05', name: 'Faulty Robot Factory', vi: 'Nhà Máy Robot Lỗi Nhịp', icon: '🤖', path: 'goi-ten-vui-nhon' },
-  { id: 'g6', vol: 1, n: '06', name: 'Haunted Hotel Lift', vi: 'Khách Sạn Bí Ẩn', icon: '👻', path: 'goi-ten-vui-nhon' },
+  { id: 'g1', vol: 1, n: '01', name: 'Duck Splash', vi: 'Vịt Trượt Ùm', icon: '🦆', path: 'goi-ten-vui-nhon' },
+  { id: 'g2', vol: 1, n: '02', name: 'Dino Egg Pop', vi: 'Trứng Khủng Long Nổ Bốp', icon: '🥚', path: 'goi-ten-vui-nhon' },
+  { id: 'g3', vol: 1, n: '03', name: 'Magic Pot Goes Pop', vi: 'Nồi Phép Nổ Bùm', icon: '🔮', path: 'goi-ten-vui-nhon' },
+  { id: 'g4', vol: 1, n: '04', name: 'Dragon Wants Gold', vi: 'Rồng Ham Vàng', icon: '🐉', path: 'goi-ten-vui-nhon' },
+  { id: 'g5', vol: 1, n: '05', name: 'Oops, Robot!', vi: 'Robot Ơ Kìa!', icon: '🤖', path: 'goi-ten-vui-nhon' },
+  { id: 'g6', vol: 1, n: '06', name: 'Ghost in the Lift', vi: 'Ma Trong Thang Máy', icon: '👻', path: 'goi-ten-vui-nhon' },
 
-  { id: 'g7', vol: 2, n: '07', name: 'Sneezing Flower Bee', vi: 'Ong Mật & Hoa Hắt Xì', icon: '🐝', path: 'name-picker-party-2' },
-  { id: 'g8', vol: 2, n: '08', name: 'Candy Tornado', vi: 'Cơn Lốc Kẹo Ngọt', icon: '🍬', path: 'name-picker-party-2' },
-  { id: 'g9', vol: 2, n: '09', name: 'Hamster Turbo Wheels', vi: 'Bánh Xe Hamster Siêu Tốc', icon: '🐹', path: 'name-picker-party-2' },
-  { id: 'g10', vol: 2, n: '10', name: 'The Shape-Shifting Book', vi: 'Cuốn Sách Biến Hình', icon: '📖', path: 'name-picker-party-2' },
-  { id: 'g11', vol: 2, n: '11', name: 'Capybara Melon Delivery', vi: 'Capybara Giao Dưa Hấu', icon: '🍉', path: 'name-picker-party-2' },
-  { id: 'g12', vol: 2, n: '12', name: 'Popcorn Cinema', vi: 'Rạp Phim Bắp Rang Bơ', icon: '🍿', path: 'name-picker-party-2' },
+  { id: 'g7', vol: 2, n: '07', name: 'Achoo, Bee!', vi: 'Ong Hắt Xì!', icon: '🐝', path: 'name-picker-party-2' },
+  { id: 'g8', vol: 2, n: '08', name: 'Candy Storm', vi: 'Bão Kẹo', icon: '🍬', path: 'name-picker-party-2' },
+  { id: 'g9', vol: 2, n: '09', name: 'Hamster Wheels', vi: 'Hamster Chạy Bánh Xe', icon: '🐹', path: 'name-picker-party-2' },
+  { id: 'g10', vol: 2, n: '10', name: 'Magic Book', vi: 'Sách Phép', icon: '📖', path: 'name-picker-party-2' },
+  { id: 'g11', vol: 2, n: '11', name: 'Capybara Wants Melon', vi: 'Capybara Mê Dưa', icon: '🍉', path: 'name-picker-party-2' },
+  { id: 'g12', vol: 2, n: '12', name: 'Popcorn Goes Pop', vi: 'Bắp Rang Nổ Bốp', icon: '🍿', path: 'name-picker-party-2' },
 
-  { id: 'g13', vol: 3, n: '13', name: 'Penguin Overslide', vi: 'Chim Cánh Cụt Trượt Băng', icon: '🐧', path: 'name-picker-party-3' },
-  { id: 'g14', vol: 3, n: '14', name: 'Secret Shell Swap', vi: 'Vỏ Ốc Tráo Chỗ', icon: '🐚', path: 'name-picker-party-3' },
-  { id: 'g15', vol: 3, n: '15', name: 'Alien Costume Party', vi: 'Tiệc Hóa Trang Vũ Trụ', icon: '👽', path: 'name-picker-party-3' },
-  { id: 'g16', vol: 3, n: '16', name: 'Oversleeping Monsters', vi: 'Quái Vật Ngủ Nướng', icon: '😴', path: 'name-picker-party-3' },
-  { id: 'g17', vol: 3, n: '17', name: 'Cat Cafe Mix-Up', vi: 'Tiệm Cà Phê Mèo Nhộn Nhịp', icon: '🐱', path: 'name-picker-party-3' },
-  { id: 'g18', vol: 3, n: '18', name: 'Recycling Truck Mix-Up', vi: 'Xe Tái Chế Vui Nhộn', icon: '♻️', path: 'name-picker-party-3' },
+  { id: 'g13', vol: 3, n: '13', name: 'Penguins on Ice', vi: 'Cánh Cụt Trượt Băng', icon: '🐧', path: 'name-picker-party-3' },
+  { id: 'g14', vol: 3, n: '14', name: 'Where’s My Shell?', vi: 'Ốc Ơi, Vỏ Đâu?', icon: '🐚', path: 'name-picker-party-3' },
+  { id: 'g15', vol: 3, n: '15', name: 'Alien Dance Party', vi: 'Người Ngoài Hành Tinh Nhảy Nhót', icon: '👽', path: 'name-picker-party-3' },
+  { id: 'g16', vol: 3, n: '16', name: 'Wake Up, Monsters!', vi: 'Quái Vật Ơi, Dậy Đi!', icon: '😴', path: 'name-picker-party-3' },
+  { id: 'g17', vol: 3, n: '17', name: 'Oops, Wrong Cake!', vi: 'Ối, Nhầm Bánh!', icon: '🐱', path: 'name-picker-party-3' },
+  { id: 'g18', vol: 3, n: '18', name: 'Beep Beep, Trash Truck!', vi: 'Bíp Bíp, Xe Rác!', icon: '♻️', path: 'name-picker-party-3' },
 
-  { id: 'g19', vol: 4, n: '19', name: 'Sock-Eating Washer', vi: 'Máy Giặt Nuốt Tất', icon: '🧦', path: 'name-picker-party-4' },
-  { id: 'g20', vol: 4, n: '20', name: 'Mystery Box Cats', vi: 'Mèo Trốn Trong Hộp', icon: '📦', path: 'name-picker-party-4' },
-  { id: 'g21', vol: 4, n: '21', name: 'Toilet Paper Mummy', vi: 'Xác Ướp Giấy Vệ Sinh', icon: '🧻', path: 'name-picker-party-4' },
-  { id: 'g22', vol: 4, n: '22', name: 'Off-Beat Disco Chickens', vi: 'Gà Nhảy Disco Lệch Nhịp', icon: '🐔', path: 'name-picker-party-4' },
-  { id: 'g23', vol: 4, n: '23', name: 'Frog Lily Pad Jump', vi: 'Ếch Nhảy Lá Sen Vàng', icon: '🐸', path: 'name-picker-party-4' },
-  { id: 'g24', vol: 4, n: '24', name: 'Pirate Parcel Mix-Up', vi: 'Kiện Hàng Hải Tặc', icon: '🏴‍☠️', path: 'name-picker-party-4' },
+  { id: 'g19', vol: 4, n: '19', name: 'The Sock Monster', vi: 'Quái Vật Ăn Tất', icon: '🧦', path: 'name-picker-party-4' },
+  { id: 'g20', vol: 4, n: '20', name: 'Cat in a Box', vi: 'Mèo Trong Hộp', icon: '📦', path: 'name-picker-party-4' },
+  { id: 'g21', vol: 4, n: '21', name: 'Toilet Paper Mummy', vi: 'Xác Ướp Cuộn Giấy', icon: '🧻', path: 'name-picker-party-4' },
+  { id: 'g22', vol: 4, n: '22', name: 'Chicken Dance', vi: 'Gà Quẩy', icon: '🐔', path: 'name-picker-party-4' },
+  { id: 'g23', vol: 4, n: '23', name: 'Hop, Frog, Hop!', vi: 'Ếch Ơi, Nhảy Đi!', icon: '🐸', path: 'name-picker-party-4' },
+  { id: 'g24', vol: 4, n: '24', name: 'Pirate Gift Boom', vi: 'Hải Tặc Bắn Quà', icon: '🏴‍☠️', path: 'name-picker-party-4' },
 
-  { id: 'g25', vol: 5, n: '25', name: 'Weather Machine Cold', vi: 'Cỗ Máy Thời Tiết Cảm Lạnh', icon: '🌦️', path: 'name-picker-party-5' },
-  { id: 'g26', vol: 5, n: '26', name: 'Time Machine Mix-Up', vi: 'Cỗ Máy Thời Gian Tinh Nghịch', icon: '⏳', path: 'name-picker-party-5' },
-  { id: 'g27', vol: 5, n: '27', name: 'Puppy Pool Float Race', vi: 'Cún Con Đua Phao Bơi', icon: '🐶', path: 'name-picker-party-5' },
-  { id: 'g28', vol: 5, n: '28', name: 'Broken Invisibility Cloak', vi: 'Áo Choàng Tàng Hình Hỏng', icon: '🫥', path: 'name-picker-party-5' },
-  { id: 'g29', vol: 5, n: '29', name: 'Stubborn Vending Machine', vi: 'Máy Bán Hàng Bướng Bỉnh', icon: '🥤', path: 'name-picker-party-5' },
-  { id: 'g30', vol: 5, n: '30', name: 'Golden Carrot Bunny Dash', vi: 'Thỏ Đua Cà Rốt Vàng', icon: '🥕', path: 'name-picker-party-5' }
+  { id: 'g25', vol: 5, n: '25', name: 'Cloud Goes Achoo!', vi: 'Mây Hắt Xì!', icon: '🌦️', path: 'name-picker-party-5' },
+  { id: 'g26', vol: 5, n: '26', name: 'Oops, Wrong Year!', vi: 'Ối, Nhầm Năm!', icon: '⏳', path: 'name-picker-party-5' },
+  { id: 'g27', vol: 5, n: '27', name: 'Puppy Pool Race', vi: 'Cún Đua Phao', icon: '🐶', path: 'name-picker-party-5' },
+  { id: 'g28', vol: 5, n: '28', name: 'Peekaboo, Wizard!', vi: 'Ú Òa, Phù Thủy!', icon: '🫥', path: 'name-picker-party-5' },
+  { id: 'g29', vol: 5, n: '29', name: 'Give Me My Snack!', vi: 'Trả Bánh Cho Tớ!', icon: '🥤', path: 'name-picker-party-5' },
+  { id: 'g30', vol: 5, n: '30', name: 'Bunny Carrot Race', vi: 'Thỏ Đua Giành Cà Rốt', icon: '🥕', path: 'name-picker-party-5' }
 ];
 
 function curLang() {

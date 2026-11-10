@@ -1,4 +1,4 @@
-// Game 28 — Broken Invisibility Cloak (following clues)
+// Game 28 — Peekaboo, Wizard! (following clues)
 // Ten students hide under invisibility cloaks. A scanner shows footprints, then a shadow, then something moving;
 // follow the chain of clues to find the one who is picked.
 // Twist: the first footprints lead to a potted plant wearing shoes; a hiccup makes the real cloak shimmer and its shadow points to the winner.
@@ -30,7 +30,7 @@
   }
 
   GAME_IMPL.g28 = {
-    id: 'g28', title: 'Broken Invisibility Cloak', base: 'assets/g28/', titleY: 260, paintedOk: false,
+    id: 'g28', title: 'Peekaboo, Wizard!', base: 'assets/g28/', titleY: 260, paintedOk: false,
     assets: gAssets(['ready', 'gone', 'foot', 'shadow', 'hiccup', 'win'], ['p0', 'p10', 'p19']),
     startBanner: '🫥 Everyone vanishes under their cloaks…', mote: '#e6d6ff', rayColor: '#e6ccff',
 
