@@ -72,14 +72,23 @@ body.running #stage{cursor:default}
 .brand{cursor:pointer;user-select:none}
 
 /* smartboard touch & fullscreen */
-.stageWrap:fullscreen{background:#090f1d;display:flex;align-items:center;justify-content:center;aspect-ratio:auto}
-.stageWrap:fullscreen #stage,.stageWrap:fullscreen .result{width:min(100vw,177.78vh);height:auto;aspect-ratio:16/9;border-radius:0;box-shadow:none}
-.stageWrap:fullscreen .result{inset:auto}
-.stageWrap:fullscreen .card{padding:clamp(20px,4vh,46px) clamp(24px,5vw,68px) clamp(16px,3vh,36px);max-width:min(85vw,148vh)}
-.stageWrap:fullscreen .card .name{font-size:clamp(28px,min(7vw,13vh),110px)}
-.stageWrap:fullscreen .card img{width:min(38vw,58vh,100%);height:min(17vw,26vh)}
-.stageWrap:fullscreen .btns .candy{min-height:44px;padding:8px 18px;font-size:clamp(14px,2.8vh,24px)}
-.stageWrap:fullscreen .btns .btnGo{min-width:14ch}
+.stageWrap:is(:fullscreen,.stage-expanded){background:#090f1d;display:flex;align-items:center;justify-content:center;aspect-ratio:auto}
+.stageWrap:is(:fullscreen,.stage-expanded) #stage,.stageWrap:is(:fullscreen,.stage-expanded) .result{width:min(100vw,177.78vh);height:auto;aspect-ratio:16/9;border-radius:0;box-shadow:none}
+.stageWrap:is(:fullscreen,.stage-expanded) .result{inset:auto}
+.stageWrap:is(:fullscreen,.stage-expanded) .card{padding:clamp(20px,4vh,46px) clamp(24px,5vw,68px) clamp(16px,3vh,36px);max-width:min(85vw,148vh)}
+.stageWrap:is(:fullscreen,.stage-expanded) .card .name{font-size:clamp(28px,min(7vw,13vh),110px)}
+.stageWrap:is(:fullscreen,.stage-expanded) .card img{width:min(38vw,58vh,100%);height:min(17vw,26vh)}
+.stageWrap:is(:fullscreen,.stage-expanded) .btns .candy{min-height:44px;padding:8px 18px;font-size:clamp(14px,2.8vh,24px)}
+.stageWrap:is(:fullscreen,.stage-expanded) .btns .btnGo{min-width:14ch}
+/* Fill the available viewport when element fullscreen is unavailable. */
+.stageWrap.stage-expanded{position:fixed;inset:0;z-index:1000}
+body:has(.stage-expanded){overflow:hidden}
+.stageExit{display:none;position:absolute;top:max(8px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));z-index:10}
+.stageWrap:is(:fullscreen,.stage-expanded) .stageExit{display:block}
+@supports (height:100dvh){
+  .stageWrap.stage-expanded{height:100dvh}
+  .stageWrap.stage-expanded #stage,.stageWrap.stage-expanded .result{width:min(100vw,177.78dvh)}
+}
 @media (pointer:coarse){
   .candy,.smallBtn,.vol,.toolBtn,.tab{min-height:48px}
   .btns .candy{min-height:54px}
@@ -188,6 +197,7 @@ select{font-family:inherit;font-size:14.5px;font-weight:700;padding:6px 10px;min
 .startBtn{--c:linear-gradient(180deg,#22c55e,#16a34a);--cd:#15803d;width:100%;font-family:var(--title);font-size:27px;padding:13px 10px;border-radius:20px;animation:breathe 2.4s ease-in-out infinite;display:flex;align-items:center;justify-content:center;gap:8px}
 .startBtn .cnt{background:rgba(0,0,0,.2);border-radius:999px;padding:1px 10px;font-size:18px;line-height:1.3}
 .startBtn:disabled{animation:none}
+@media(prefers-reduced-motion:reduce){.startBtn{animation:none}}
 @keyframes breathe{50%{transform:scale(1.02)}}
 .hint{text-align:center;font-size:13.5px;color:#cbd5e1;margin-top:6px}
 .hint kbd{background:#fff;color:var(--ink);border-radius:6px;padding:1px 7px;box-shadow:0 2px 0 #94a3b8;font-family:inherit;font-weight:800}
@@ -257,6 +267,7 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
 
 <main class="layout">
   <section class="stageWrap" id="stageWrap" aria-label="Game stage">
+    <button type="button" class="toolBtn stageExit" id="stageExitBtn">Exit full screen</button>
     <canvas id="stage" width="1920" height="1080" title="Click or press Space to pick a name"></canvas>
     <div id="result" class="result hidden" role="dialog" aria-modal="true" aria-labelledby="resName">
       <div class="card">
@@ -750,7 +761,18 @@ function loadImages(set, base, names, priority = 'auto') {
 /* ================= Stage / shared canvas helpers ================= */
 const W = 1600, H = 900;
 const cv = document.getElementById('stage'), ctx = cv.getContext('2d');
-const SCALE = cv.width / W;
+let SCALE = cv.width / W;
+if ('ResizeObserver' in window) {
+  const maxWidth = cv.width;
+  new ResizeObserver(([entry]) => {
+    const pixels = entry.contentRect.width * (window.devicePixelRatio || 1);
+    const width = Math.min(maxWidth, Math.max(16, Math.ceil(pixels / 16) * 16));
+    if (width === cv.width || pixels === 0) return;
+    cv.width = width;
+    cv.height = width * 9 / 16;
+    SCALE = width / W;
+  }).observe(cv);
+}
 function clamp(v, a = 0, b = 1) { return Math.max(a, Math.min(b, v)); }
 const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -935,6 +957,8 @@ cv.addEventListener('pointerdown', e => {
   addRipple(x, y);
 });
 function frame(now) {
+  // Save canvas work on the animated menu while leaving rounds at the display refresh rate.
+  if (!race && now - lastNow < 30) { requestAnimationFrame(frame); return; }
   const dt = Math.min(.05, (now - lastNow) / 1000); lastNow = now;
   const t = now / 1000;
   ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
@@ -1275,9 +1299,28 @@ const musicVol = document.getElementById('musicVol'), sfxVol = document.getEleme
 musicVol.oninput = e => { store.settings.musicVol = +e.target.value; document.getElementById('musicVolVal').textContent = store.settings.musicVol + '%'; save(); AUD.applyVol(); };
 sfxVol.oninput = e => { store.settings.sfxVol = +e.target.value; document.getElementById('sfxVolVal').textContent = store.settings.sfxVol + '%'; save(); AUD.applyVol(); };
 document.addEventListener('click', e => { const b = e.target.closest('button'); if (b && b !== startBtn) SFX.click(); });
-document.getElementById('fsBtn').onclick = () => {
-  const el = document.getElementById('stageWrap');
-  if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen && el.requestFullscreen();
+const fsBtn = document.getElementById('fsBtn');
+const stageView = document.getElementById('stageWrap');
+const stageExitBtn = document.getElementById('stageExitBtn');
+fsBtn.onclick = async () => {
+  if (document.fullscreenElement === stageView || stageView.classList.contains('stage-expanded')) {
+    stageExitBtn.click();
+    return;
+  }
+  if (document.fullscreenEnabled && stageView.requestFullscreen) {
+    try {
+      await stageView.requestFullscreen();
+      stageExitBtn.focus();
+      return;
+    } catch { /* Fall back to the available viewport. */ }
+  }
+  stageView.classList.add('stage-expanded');
+  stageExitBtn.focus();
+};
+stageExitBtn.onclick = async () => {
+  if (document.fullscreenElement === stageView) await document.exitFullscreen().catch(() => {});
+  else stageView.classList.remove('stage-expanded');
+  fsBtn.focus();
 };
 const startBtn = document.getElementById('startBtn');
 startBtn.onclick = () => startRace();
@@ -1308,7 +1351,8 @@ function updateUI() {
   document.getElementById('musicVolLab').textContent = t.musicVolLab;
   document.getElementById('sfxVolLab').textContent = t.sfxVolLab;
   langBtn.textContent = t.langToggle; langBtn.title = t.langTitle;
-  document.getElementById('fsBtn').textContent = t.fullscreen;
+  fsBtn.textContent = t.fullscreen;
+  stageExitBtn.textContent = curLang() === 'vi' ? 'Thoát toàn màn hình' : 'Exit full screen';
   document.getElementById('ribbonTxt').textContent = t.ribbon;
   document.getElementById('contBtn').textContent = t.nextRound;
   document.getElementById('absentBtn').textContent = t.absentRespin;
@@ -1701,6 +1745,9 @@ drawerSearch.oninput = e => { drawerQuery = e.target.value; renderDrawer(); };
 
 /* ================= Keyboard & Remote Clicker Shortcuts ================= */
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && stageView.classList.contains('stage-expanded')) {
+    e.preventDefault(); stageExitBtn.click(); return;
+  }
   if (importDialog.open) return;
   if (!drawerModal.classList.contains('hidden')) {
     if (e.key === 'Escape' || e.code === 'KeyB' || e.code === 'Period' || e.code === 'KeyG') {
