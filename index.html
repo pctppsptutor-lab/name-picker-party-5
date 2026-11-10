@@ -183,7 +183,7 @@ details.settingsPanel[open] summary::after{transform:rotate(180deg)}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .lab{font-size:14px;line-height:1.35;font-weight:800;letter-spacing:.2px;color:var(--ink);margin:10px 0 5px}
 /* segmented control for the durations */
-#durChips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#durChips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .chip{border:2px solid var(--line);background:var(--soft);border-radius:10px;padding:5px 0;min-height:36px;font-size:15px;font-weight:800;color:var(--muted)}
 .chip.on{background:#fff;border-color:var(--violet);color:var(--violet);box-shadow:0 2px 0 #bae6fd}
 /* switches */
@@ -290,10 +290,11 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
     </div>
 
     <details class="panel settingsPanel lockable" id="settingsDetails" aria-label="Settings">
-      <summary><span id="settingsHdr">⚙️ Settings</span><span class="badge" id="settingsSumBadge">15s</span></summary>
+      <summary><span id="settingsHdr">⚙️ Settings</span><span class="badge" id="settingsSumBadge">7s</span></summary>
       <button id="classBtn" class="candy classBtn lockable">👩‍🏫 <span id="classLabel">Sample class · 10</span></button>
       <div class="lab" id="roundLenLab">Round length</div>
       <div id="durChips" role="group" aria-label="Round length"></div>
+      <label class="check"><input type="checkbox" id="twistChk"><span id="twistTxt">Plot Twist</span></label>
       <label class="check"><input type="checkbox" id="restChk"><span id="restTxt">Skip students already picked</span></label>
       <label class="check"><input type="checkbox" id="calmChk"><span><span id="calmTxt">Reduce motion</span><small id="calmSub">No screen shake or zoom</small></span></label>
       <label class="check" id="paintedWrap" style="display:none"><input type="checkbox" id="paintedChk"><span><span id="paintedTxt">Painted backgrounds</span><small id="paintedSub">Games 2–6, about 150 KB each</small></span></label>
@@ -452,7 +453,7 @@ function defaultStore() {
   return {
     classes: [{ id, name: 'Sample class', mode: 'names', count: 30, text: SAMPLE.join('\n'), gender: {} }],
     activeId: id,
-    settings: { duration: 15, rest: true, sound: true, music: true, musicVol: 70, sfxVol: 90, calm: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) },
+    settings: { duration: 7, plotTwist: false, rest: true, sound: true, music: true, musicVol: 70, sfxVol: 90, calm: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) },
     called: {}
   };
 }
@@ -462,6 +463,8 @@ function loadStore() {
     if (s && Array.isArray(s.classes) && s.classes.length) {
       const d = defaultStore();
       s.settings = Object.assign(d.settings, s.settings || {});
+      if (![7, 10, 15].includes(s.settings.duration)) s.settings.duration = 7;
+      s.settings.plotTwist = s.settings.plotTwist === true;
       const musicVol = parseInt(s.settings.musicVol, 10), sfxVol = parseInt(s.settings.sfxVol, 10);
       s.settings.musicVol = clamp(Number.isFinite(musicVol) ? musicVol : 70, 0, 100);
       s.settings.sfxVol = clamp(Number.isFinite(sfxVol) ? sfxVol : 90, 0, 100);
@@ -900,15 +903,17 @@ function addFx(img, x, y, w, dur, opt = {}) { race.fx = race.fx || []; race.fx.p
 
 const TWIST_END = 1.35;
 function roundRemaining(r) {
+  if (r.plain) return Math.max(0, r.T - r.now);
   const te = r.now - r.TW;
   if (te < 0) return r.T * (.65 - .35 * te / r.TW);
   if (te < TWIST_END) return r.T * (.65 - .5 * te / TWIST_END);
   return r.T * .15 * clamp((r.T - r.now) / (r.T - r.TW - TWIST_END));
 }
 function tickRace(dt) {
-  const r = race, scale = r.slowUntil && performance.now() < r.slowUntil ? r.slowF : 1;
+  const r = race, scale = !r.plain && r.slowUntil && performance.now() < r.slowUntil ? r.slowF : 1;
   const fraction = clamp((roundRemaining(r) - dt * scale) / r.T);
-  const t = r.now = fraction > .65 ? r.TW * (1 - fraction) / .35
+  const t = r.now = r.plain ? Math.min(r.T, r.now + dt)
+    : fraction > .65 ? r.TW * (1 - fraction) / .35
     : fraction > .15 ? r.TW + TWIST_END * (.65 - fraction) / .5
     : fraction > 0 ? r.T - (r.T - r.TW - TWIST_END) * fraction / .15 : r.T;
   const te = t - r.TW;
@@ -1015,13 +1020,16 @@ function drawFx(r) {
   if (r.fx) r.fx = r.fx.filter(f => rt - f.t0 < f.dur);
 }
 function phaseHud(r) {
-  const phs = L().phases; if (!phs) return;
-  const te = r.now - r.TW, step = r.phase === 'done' || te >= TWIST_END ? 2 : te >= 0 ? 1 : 0;
-  const cols = ['#38bdf8', '#fbbf24', '#34d399'];
+  const phases = L().phases; if (!phases) return;
+  const phs = r.plain ? [phases[0], phases[2].replace(/^③/, '②')] : phases;
+  const te = r.now - r.TW;
+  const step = r.plain ? Number(r.phase === 'done' || te >= 0)
+    : r.phase === 'done' || te >= TWIST_END ? 2 : te >= 0 ? 1 : 0;
+  const cols = r.plain ? ['#38bdf8', '#34d399'] : ['#38bdf8', '#fbbf24', '#34d399'];
   ctx.save(); ctx.font = '700 18px "Baloo 2","Segoe UI",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  const ws = phs.map(s => ctx.measureText(s).width + 28), gap = 10, total = ws.reduce((a, b) => a + b, 0) + gap * 2;
+  const ws = phs.map(s => ctx.measureText(s).width + 28), gap = 10, total = ws.reduce((a, b) => a + b, 0) + gap * (phs.length - 1);
   let x = 790 - total / 2; const y = 102, h = 32;
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < phs.length; i++) {
     const on = i === step, done = i < step, w = ws[i];
     ctx.fillStyle = on ? cols[i] : done ? 'rgba(15,23,42,.82)' : 'rgba(15,23,42,.62)';
     ctx.strokeStyle = on ? '#ffffff' : done ? cols[i] : 'rgba(255,255,255,.25)';
@@ -1073,7 +1081,7 @@ function startGeneric(cls, T, winnerStu, racers) {
   players.forEach(p => { p.av = pickAv(p.gender); });
   const winner = players.find(p => p.isWinner), decoys = shuffle(players.filter(p => !p.isWinner));
   // a quarter of rounds have no twist: the winner is simply revealed after a near-miss
-  const r = race = { classId: cls.id, game: g, T, TW: T - 3.2, players, winner, decoys, decoy: decoys[0] || null, plain: !decoys.length || (window.FORCE_PLAIN ?? Math.random() < .25),
+  const r = race = { classId: cls.id, game: g, T, TW: T - 3.2, players, winner, decoys, decoy: decoys[0] || null, plain: !decoys.length || (window.FORCE_PLAIN ?? !store.settings.plotTwist),
     t0: performance.now(), now: 0, phase: 'run', banner: g.startBanner, confetti: [], cues: {}, lastTick: -1, fx: [] };
   g.setup(r);
   document.body.classList.add('running');
@@ -1289,11 +1297,13 @@ document.getElementById('randTab').onclick = () => {
 };
 
 const durChips = document.getElementById('durChips');
-[10, 15, 20, 30].forEach(s => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = s + 's'; b.dataset.s = s; b.onclick = () => { store.settings.duration = s; save(); updateUI(); }; durChips.appendChild(b); });
+[7, 10, 15].forEach(s => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = s + 's'; b.dataset.s = s; b.onclick = () => { store.settings.duration = s; save(); updateUI(); }; durChips.appendChild(b); });
 const paintedChk = document.getElementById('paintedChk');
 paintedChk.onchange = () => { store.settings.paintedBg = paintedChk.checked; save(); };
 const calmChk = document.getElementById('calmChk');
 calmChk.onchange = () => { store.settings.calm = calmChk.checked; save(); };
+const twistChk = document.getElementById('twistChk');
+twistChk.onchange = () => { store.settings.plotTwist = twistChk.checked; save(); updateUI(); };
 const restChk = document.getElementById('restChk');
 restChk.onchange = () => { store.settings.rest = restChk.checked; save(); updateUI(); };
 const langBtn = document.getElementById('langBtn');
@@ -1399,6 +1409,8 @@ function updateUI() {
   paintedChk.disabled = !canPaint;
   document.getElementById('paintedWrap').style.opacity = canPaint ? '1' : '.55';
   document.getElementById('paintedSub').textContent = canPaint ? t.paintedSubCode : t.paintedSubCode;
+  twistChk.checked = store.settings.plotTwist;
+  document.getElementById('twistTxt').textContent = curLang() === 'vi' ? 'Tình huống bất ngờ' : 'Plot Twist';
   restChk.checked = store.settings.rest; calmChk.checked = !!store.settings.calm;
   soundBtn.textContent = store.settings.sound ? t.soundOn : t.soundOff; soundBtn.classList.toggle('off', !store.settings.sound);
   musicBtn.textContent = store.settings.music ? t.musicOn : t.musicOff; musicBtn.classList.toggle('off', !store.settings.music);
