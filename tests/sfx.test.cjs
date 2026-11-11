@@ -8,13 +8,23 @@ const nodes = [];
 const audio = {
   currentTime: 1,
   decodeAudioData: async () => ({ duration: .5 }),
-  createGain: () => ({ gain: { value: 0 }, connect(destination) { return destination; }, disconnect() {} }),
+  createGain: () => ({ gain: { value: 0, setTargetAtTime() {} }, connect(destination) { return destination; }, disconnect() {} }),
   createBufferSource: () => {
-    const n = { connect(destination) { return destination; }, disconnect() {}, start() { starts++; }, stop() { this.onended?.(); } };
+    const n = { connect(destination) { return destination; }, disconnect() {}, start() { starts++; }, stop() { this.stopped = true; this.onended?.(); } };
     nodes.push(n); return n;
   }
 };
+const scoreRows = [...fs.readFileSync(path.join(app, 'index.html'), 'utf8').matchAll(/g(\d+): theme\((\d+), (\d+), '(major|minor)', '([^']+)', '([^']+)'/g)];
+const gameAudio = Object.fromEntries(scoreRows.map(m => ['g'+m[1], { instrument: m[5] }]));
+for (const m of scoreRows) {
+  const notes=m[6].split(' '), phrase=Number(m[1])===24?6:8;
+  assert.equal(notes.length,phrase*4,'four phrases per hook');
+  assert.deepEqual(notes.slice(0,phrase),notes.slice(phrase*2,phrase*3),'return to the same hook');
+  const scale=m[4]==='major'?[0,2,4,7,9,12]:[0,3,5,7,10,12];
+  assert.ok(notes.every(n=>n==='-'||scale.includes(Number(n))),'pentatonic melody');
+}
 const sandbox = {
+  GAME_AUDIO: gameAudio,
   fetch: async url => { requests++; return { ok: !fail, status: fail ? 404 : 200, arrayBuffer: async () => new ArrayBuffer(8) }; },
   document: { get hidden() { return hidden; }, addEventListener() {} },
   store: { settings: { sound: true } }, AUD: { ctx: audio, sfx: {}, get: () => audio }, curGame: () => id
@@ -38,6 +48,13 @@ const sound = sandbox.sound, id = Object.keys(sandbox.profiles)[0];
   const before = starts;
   names.slice(0, 8).forEach(n => sound.play(n));
   assert.ok(starts - before <= 4, 'at most four overlapping sample voices');
+  const next=names.find(n=>!sound.last.has(n));
+  if(next){
+    const beforePriority=starts; sound.play(next,{priority:true});
+    assert.equal(starts,beforePriority+1,'foreground action must not be dropped');
+    assert.ok(sound.playing.size<=4,'foreground eviction preserves the voice cap');
+    assert.ok(nodes.some(n=>n.stopped),'ambient take was stopped');
+  }
   sound.stop(); assert.equal(sound.playing.size, 0);
   const mutedStarts = starts;
   sandbox.store.settings.sound = false;
@@ -60,6 +77,6 @@ const sound = sandbox.sound, id = Object.keys(sandbox.profiles)[0];
   }
   assert.equal(events(.01), events(.02), 'texture count must not depend on frame rate');
   sound.play = realPlay;
-  console.log('PASS: assets, cache, repeat limit, voice cap, stop, mute, hidden tab, failed request retry, frame-rate independent timing');
+  console.log('PASS: hooks, pentatonic scores, foreground priority, assets, cache, repeat limit, voice cap, stop, mute, hidden tab, failed request retry, frame-rate independent timing');
 })().catch(e => { console.error(e); process.exitCode = 1; });
 

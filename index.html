@@ -536,7 +536,7 @@ function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = randInt
 /* ================= Sound ================= */
 // One AudioContext, two buses (sfx / music) into a compressor so loud moments don't clip.
 const AUD = {
-  ctx: null, sfx: null, music: null, noiseBuf: null,
+  ctx: null, sfx: null, music: null, duck: null, noiseBuf: null,
   get() {
     if (!this.ctx) {
       try {
@@ -544,7 +544,8 @@ const AUD = {
         const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(c.destination);
         const warm = c.createBiquadFilter(); warm.type = 'lowpass'; warm.frequency.value = 5200; warm.Q.value = .7; warm.connect(comp);
         this.sfx = c.createGain(); this.sfx.gain.value = ((store.settings.sfxVol ?? 90) / 100) * .9; this.sfx.connect(warm);
-        this.music = c.createGain(); this.music.gain.value = ((store.settings.musicVol ?? 70) / 100) * .34; this.music.connect(warm);
+        this.duck = c.createGain(); this.duck.connect(warm);
+        this.music = c.createGain(); this.music.gain.value = ((store.settings.musicVol ?? 70) / 100) * .34; this.music.connect(this.duck);
         const b = c.createBuffer(1, c.sampleRate, c.sampleRate), d = b.getChannelData(0);
         for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
         this.noiseBuf = b; this.ctx = c;
@@ -552,6 +553,12 @@ const AUD = {
     }
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
+  },
+  duckMusic(duration = .3, depth = .6) {
+    if (!this.ctx || !this.duck) return;
+    const now = this.ctx.currentTime, gain = this.duck.gain;
+    gain.cancelScheduledValues(now); gain.setTargetAtTime(depth, now, .012);
+    gain.setTargetAtTime(1, now + duration, .09);
   },
   applyVol() {
     if (!this.ctx) return;
@@ -589,7 +596,7 @@ const DRUM = {
 };
 
 const SFX = {
-  sting(kind) { this.run((c, bus, now) => playGameCue(c, bus, now, kind, audioTheme())); },
+  sting(kind) { this.run((c, bus, now) => { AUD.duckMusic(kind === 'win' ? .6 : .25, .65); playGameCue(c, bus, now, kind, audioTheme()); }); },
   ok() { return store.settings.sound ? AUD.get() : null; },
   run(fn) { const c = this.ok(); if (c) fn(c, AUD.sfx, c.currentTime); },
   tone(f, dur, o = {}) { this.run((c, b, now) => voice(c, b, { f, dur, t: now + (o.delay || 0), ...o })); },
@@ -610,17 +617,17 @@ const SFX = {
     o.frequency.setValueAtTime(520, t); o.frequency.linearRampToValueAtTime(1250, t + .22); o.frequency.exponentialRampToValueAtTime(420, t + .7);
     g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.04, t + .03); g.gain.exponentialRampToValueAtTime(.0001, t + .7);
     const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200; o.connect(lp).connect(g).connect(b); o.start(t); o.stop(t + .75); }); },
-  splash(d = 0) { if (GameSound.play("splash1 splash2", { delay: d, gain: .38, gap: .2 })) return; this.noise(.4, { vol: .26, f: 1100, to: 280, q: .8, delay: d }); this.noise(.12, { vol: .12, f: 4000, type: 'highpass', delay: d }); },
-  paddle() { if (GameSound.play("paddle", { gain: .18, gap: .7 })) return; this.noise(.07, { vol: .05 + Math.random() * .04, f: 700 + Math.random() * 600, q: 1.5 }); },
+  splash(d = 0) { if (GameSound.play("splash1 splash2 splash3", { delay: d, gain: .38, gap: .2 })) return; this.noise(.4, { vol: .26, f: 1100, to: 280, q: .8, delay: d }); this.noise(.12, { vol: .12, f: 4000, type: 'highpass', delay: d }); },
+  paddle() { if (GameSound.play("paddle paddle2", { gain: .18, gap: .7 })) return; this.noise(.07, { vol: .05 + Math.random() * .04, f: 700 + Math.random() * 600, q: 1.5 }); },
   quack(d = 0, p = 1) { this.tone(420 * p, .16, { type: 'sawtooth', vol: .08, to: 260 * p, delay: d, lp: 1600 }); this.tone(430 * p, .12, { type: 'square', vol: .03, to: 300 * p, delay: d + .03, lp: 1400 }); },
   leader() { this.tone(1319, .18, { type: 'triangle', vol: .12 }); this.tone(1976, .3, { type: 'triangle', vol: .12, delay: .08 }); this.noise(.25, { vol: .06, f: 600, to: 3000, q: 2 }); },
   sparkle() { [0, .07, .14, .21, .28].forEach((d, i) => this.tone(1760 + i * 330, .3, { vol: .06, delay: d })); },
   bloop() { this.tone(700, .3, { vol: .16, to: 160 }); },
-  bubbles() { if (GameSound.play("bubble1 bubble2", { gain: .3 })) return; for (let i = 0; i < 9; i++) this.tone(380 + Math.random() * 600, .09, { vol: .07, to: 900 + Math.random() * 500, delay: i * .1 + Math.random() * .05 }); },
+  bubbles() { if (GameSound.play("bubble1 bubble2 bubble3", { gain: .3 })) return; for (let i = 0; i < 9; i++) this.tone(380 + Math.random() * 600, .09, { vol: .07, to: 900 + Math.random() * 500, delay: i * .1 + Math.random() * .05 }); },
   sadTrombone() { [67, 66, 65].forEach((m, i) => this.tone(mtof(m - 12), .3, { type: 'sawtooth', vol: .1, lp: 1100, delay: .15 + i * .32 })); this.tone(mtof(64 - 12), 1.0, { type: 'sawtooth', vol: .1, lp: 1100, vib: 4, vibRate: 6, delay: 1.11 }); },
   swoosh() { this.noise(1.6, { vol: .3, f: 250, to: 2600, q: 2.2 }); this.noise(1.2, { vol: .12, f: 3000, to: 400, q: 3, delay: .4 }); },
   boing() { this.tone(180, .5, { type: 'triangle', vol: .2, to: 520, vib: 30, vibRate: 18 }); },
-  heartbeat() { this.run((c, b, now) => { DRUM.kick(c, b, now, .7); DRUM.kick(c, b, now + .16, .45); }); this.tone(1000, .06, { type: 'square', vol: .04 }); },
+  heartbeat() { this.run((c, b, now) => { DRUM.kick(c, b, now, .28); DRUM.kick(c, b, now + .16, .16); });  },
   ding() { this.tone(1320, .5, { vol: .12 }); this.tone(1980, .4, { vol: .06 }); },
   drawerPop() { this.tone(660, .05, { type: 'triangle', vol: .08, to: 990 }); },
   whoosh() { this.noise(.18, { vol: .08, f: 800, to: 2400, q: 1.2 }); },
@@ -637,19 +644,20 @@ const INSTRUMENTS = {
   brass: { type: 'sawtooth', lp: 850, attack: .035, length: .24 },
   chip: { type: 'square', lp: 1800, attack: .004, length: .12 },
   glass: { type: 'sine', lp: 3800, attack: .018, length: .26 },
-  reed: { type: 'triangle', lp: 2400, attack: .012, length: .2 }
+  reed: { type: 'triangle', lp: 2400, attack: .012, length: .2 },
+  piano: { type: 'triangle', lp: 2600, attack: .004, length: .25 }
 };
 const theme = (bpm, key, mode, instrument, melody, drums, cueFrom, cueTo, cueLength, swing = 0) => ({
   bpm, key, swing, minor: mode === 'minor', instrument, drums, cueFrom, cueTo, cueLength,
   melody: melody.split(' ').map(note => note === '-' ? null : Number(note))
 });
 const GAME_AUDIO = {
-  g25: theme(109, 62, 'major', 'glass', '0 4 11 - 9 7 14 12 4 - 7 11 12 9 7 -', 'k-hhs-h-k-h-s-hh', 480, 2900, 0.3, 0.04), // Cloud Goes Achoo!
-  g26: theme(122, 61, 'minor', 'chip', '0 7 12 10 15 12 7 - 3 10 15 19 17 15 12 -', 'kh-hshshkhshk-hs', 1920, 330, 0.23, 0), // Oops, Wrong Year!
-  g27: theme(124, 65, 'major', 'mallet', '0 4 9 7 2 7 - 12 9 7 4 2 0 4 7 -', 'k-hskh-hk-hhs-hs', 730, 320, 0.23, 0.08), // Puppy Pool Race
-  g28: theme(85, 60, 'minor', 'bell', '0 - 7 - 3 14 - 10 0 3 7 - 14 12 10 -', 'k---s--hk--hs-h-', 820, 2100, 0.31, 0.02), // Peekaboo, Wizard!
-  g29: theme(116, 59, 'major', 'chip', '0 7 4 12 9 - 7 2 0 4 9 - 12 9 7 -', 'ksh-hsk-khshk-hs', 2350, 480, 0.11, 0), // Give Me My Snack!
-  g30: theme(132, 63, 'major', 'pluck', '0 4 7 12 9 - 7 4 2 7 9 14 12 9 7 -', 'khshk-hhkhshk-hs', 330, 1200, 0.14, 0.06), // Bunny Carrot Race
+  g25: theme(128, 62, 'major', 'glass', '0 4 7 9 7 - 4 - 0 2 4 - 7 4 2 - 0 4 7 9 7 - 4 - 7 4 2 0 2 - 0 -', 'k-h-s-h-k-h-s-hh', 480, 2900, 0.3, 0.1), // Cloud Goes Achoo!
+  g26: theme(138, 61, 'minor', 'chip', '0 3 7 - 10 7 3 - 0 3 7 12 10 - 7 - 0 3 7 - 10 7 3 - 7 5 3 0 3 - 0 -', 'k-h-s-h-k-h-s-hh', 1920, 330, 0.23, 0.04), // Oops, Wrong Year!
+  g27: theme(138, 65, 'major', 'mallet', '0 4 7 7 4 - 2 - 0 4 7 9 7 - 0 - 0 4 7 7 4 - 2 - 7 4 2 0 2 - 0 -', 'k-h-s-h-k-h-s-hh', 730, 320, 0.23, 0.14), // Puppy Pool Race
+  g28: theme(118, 60, 'major', 'bell', '0 7 4 - 0 - 2 - 4 7 9 - 7 4 2 - 0 7 4 - 0 - 2 - 7 4 2 - 0 - 0 -', 'k-h-s-h-k-h-s-hh', 820, 2100, 0.31, 0.13), // Peekaboo, Wizard!
+  g29: theme(138, 59, 'major', 'piano', '0 0 7 4 2 - 0 - 4 7 9 - 7 4 2 - 0 0 7 4 2 - 0 - 7 4 2 4 0 - 0 -', 'k-h-s-h-k-h-s-hh', 2350, 480, 0.11, 0.07), // Give Me My Snack!
+  g30: theme(148, 63, 'major', 'pluck', '0 4 7 - 0 4 9 - 7 9 12 - 9 7 4 - 0 4 7 - 0 4 9 - 7 4 2 0 2 - 0 -', 'k-h-s-h-k-h-s-hh', 330, 1200, 0.14, 0.1), // Bunny Carrot Race
 };
 const audioTheme = () => GAME_AUDIO[curGame()] || Object.values(GAME_AUDIO)[0];
 
@@ -669,11 +677,13 @@ function playGameCue(c, bus, now, kind, game) {
   const direction = kind === 'wrong_turn' ? [game.cueTo, game.cueFrom] : [game.cueFrom, game.cueTo];
   const [f, to] = direction;
   noiseVoice(c, bus, { t: now, dur: game.cueLength, vol: .075, f, to, q: game.instrument === 'reed' ? 3 : 1.2 });
-  notes.forEach((note, i) => voice(c, bus, {
-    ...instrument, f: mtof(game.key + note + (win ? 12 : 7)), t: now + i * gap,
-    dur: win && i === notes.length - 1 ? .65 : instrument.length + .035,
-    vol: win ? .16 : .11
-  }));
+  notes.forEach((note, i) => {
+    const recording = MUSIC_SAMPLES[game.instrument], pitch = game.key + note + (win ? 12 : 7);
+    const t = now + i * gap, duration = win && i === notes.length - 1 ? .65 : .22;
+    if (!sampleVoice(c, bus, recording.file, t, win ? .32 : .23, 2 ** ((pitch - recording.note) / 12), duration)) {
+      voice(c, bus, { ...instrument, f: mtof(pitch), t, dur: duration, vol: win ? .16 : .11 });
+    }
+  });
   if (win) [0, 4, 7].forEach((note, i) => voice(c, bus, {
     f: mtof(game.key + note), t: now + .42 + i * .022, dur: .6,
     type: 'triangle', vol: .085, attack: .025
@@ -716,7 +726,7 @@ const Music = {
     const c = AUD.ctx;
     if (!c || !this.mode || c.state !== 'running' || document.hidden) return;
     const energy = this.intensity();
-    const lift = this.mode === 'idle' ? -8 : this.mode === 'tension' ? 18 + energy * 22 : 8 + energy * 24;
+    const lift = this.mode === 'idle' ? -12 : this.mode === 'tension' ? 6 + energy * 4 : energy * 4;
     const beat = 60 / (this.game.bpm + lift) / 2;
     if (this.next < c.currentTime - .05) this.next = c.currentTime + .02;
     while (this.next < c.currentTime + .12) {
@@ -726,48 +736,47 @@ const Music = {
   },
   note(step, t, beat, energy = 0) {
     const c = AUD.ctx, bus = AUD.music, g = this.game;
-    const length = g.melody.length, i = step % length, bar = Math.floor(step / length) % 4;
-    const idle = this.mode === 'idle';
-    const lift = idle ? 0 : energy;
-    const root = g.key + (g.minor ? [0, 5, 8, 7] : [0, 9, 5, 7])[bar];
-    const third = g.minor ? (bar < 2 ? 3 : 4) : (bar === 1 ? 3 : 4);
-    const rhythm = g.drums[i % g.drums.length];
+    const i = step % g.melody.length, meter = g.melody.length === 24 ? 6 : 8;
+    const bar = Math.floor(step / meter) % 4, slot = step % meter;
+    const idle = this.mode === 'idle', lift = idle ? 0 : energy;
+    const root = g.key + [0, 0, 5, 7][bar], third = g.minor && bar !== 3 ? 3 : 4;
+    const rhythm = g.drums[step % g.drums.length];
     t += (step % 2) * beat * g.swing;
-    const strength = idle ? .36 : .58 + lift * .28;
-    if (rhythm === 'k') DRUM.kick(c, bus, t, .5 * strength);
-    if (rhythm === 'h') DRUM.hat(c, bus, t, .075 * strength);
-    if (rhythm === 's') DRUM.snare(c, bus, t, .17 * strength);
-    if (lift > .6 && i % 2 === 1) DRUM.hat(c, bus, t, .035 + lift * .02);
-    if (lift > .8 && i % 4 === 0) DRUM.kick(c, bus, t, .16);
-    const bassStep = length === 12 ? 3 : 4;
-    if (i % bassStep === 0 || (!idle && i % bassStep === bassStep - 1)) voice(c, bus, {
-      f: mtof(root - 24 + (i % (bassStep * 2) >= bassStep ? 7 : 0)), t,
-      dur: beat * (idle ? 2 : 1.25), type: 'triangle', hold: .28, lp: 650, vol: idle ? .16 : .25
+    const strength = idle ? .32 : .6 + lift * .18;
+    if (rhythm === 'k') DRUM.kick(c, bus, t, .4 * strength);
+    if (rhythm === 's') DRUM.clap(c, bus, t, .12 * strength);
+    if (!idle && step % 2 === 1) {
+      if (!sampleVoice(c, bus, 'music-shaker', t, .12 * strength)) DRUM.hat(c, bus, t, .05 * strength);
+    }
+    if (!idle && (slot === 3 || slot === meter - 1)) sampleVoice(c, bus, 'music-bongo', t, .2 * strength);
+    if (slot % 2 === 0) voice(c, bus, {
+      f: mtof(root - 24 + (slot % 4 === 2 ? 7 : 0)), t,
+      dur: beat * 1.1, type: 'triangle', hold: .15, lp: 650, vol: idle ? .12 : .22
     });
-    if (i === 0 || i === length / 2) [0, third, 7].forEach(note => voice(c, bus, {
-      f: mtof(root - 12 + note), t, dur: beat * 3.2, type: 'triangle',
-      lp: idle ? 1100 : 1600 + lift * 1000, attack: .07, hold: .55, vol: idle ? .035 : .055
+    if (slot % 4 === 1) [0, third, 7].forEach((note, j) => voice(c, bus, {
+      f: mtof(root - 12 + note), t: t + j * .012, dur: beat * 1.3,
+      type: 'triangle', lp: 1800, attack: .008, vol: idle ? .025 : .043
     }));
     const note = g.melody[i];
     if (note !== null) {
-      const instrument = INSTRUMENTS[g.instrument], pitch = mtof(root + note);
-      voice(c, bus, { ...instrument, f: pitch, t, hold: .25, dur: Math.min(beat * 1.8, instrument.length * 1.4), vol: idle ? .09 : .14 });
-      if (g.instrument === 'bell' || g.instrument === 'glass' || g.instrument === 'mallet') {
-        voice(c, bus, { f: pitch * 2.003, t, dur: instrument.length * .65, type: 'sine', vol: .02 });
+      const instrument = INSTRUMENTS[g.instrument], recording = MUSIC_SAMPLES[g.instrument];
+      const accent = slot === 0 ? 1 : slot % 2 === 0 ? .88 : .76;
+      const volume = (idle ? .13 : .27) * accent;
+      const duration = Math.min(beat * 1.8, recording.length);
+      if (!sampleVoice(c, bus, recording.file, t, volume, 2 ** ((g.key + note - recording.note) / 12), duration)) {
+        voice(c, bus, { ...instrument, f: mtof(g.key + note), t, dur: duration, vol: idle ? .075 : .13 });
       }
-      if (lift > .45 && i % 4 === 2) voice(c, bus, {
-        f: pitch / 2, t: t + beat * .52, dur: beat * .7, type: 'triangle', lp: 2400, vol: .05
-      });
     }
-    if (lift > .65 && i % 2 === 0) voice(c, bus, {
-      f: mtof(root + 12 + [0, third, 7, 12][Math.floor(i / 2) % 4]), t,
-      dur: beat * .65, type: 'sine', vol: .04 + lift * .025
-    });
+    // A short drum pickup answers the hook at the end of each four-bar phrase.
+    if (!idle && bar === 3 && slot === meter - 1) {
+      sampleVoice(c, bus, 'music-bongo', t + beat * .45, .12);
+      sampleVoice(c, bus, 'music-shaker', t + beat * .7, .09);
+    }
   }
 };
 // browsers only allow audio after a user gesture
 ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, function unlock() {
-  if (AUD.get()) { if (!Music.mode) Music.play(race && race.phase === 'run' ? 'race' : 'idle'); else Music.next = AUD.ctx.currentTime + .05; }
+  if (AUD.get()) { GameSound.prepare(curGame(), true); if (!Music.mode) Music.play(race && race.phase === 'run' ? 'race' : 'idle'); else Music.next = AUD.ctx.currentTime + .05; }
 }, { once: true }));
 
 /* ================= Assets ================= */
@@ -1327,7 +1336,7 @@ langBtn.onclick = () => {
 const soundBtn = document.getElementById('soundBtn');
 soundBtn.onclick = () => { store.settings.sound = !store.settings.sound; save(); AUD.applyVol(); if (!store.settings.sound) GameSound.stop(); else GameSound.prepare(curGame(), true); updateUI(); };
 const musicBtn = document.getElementById('musicBtn');
-musicBtn.onclick = () => { store.settings.music = !store.settings.music; save(); AUD.applyVol(); if (store.settings.music && AUD.get() && !Music.mode) Music.play('idle'); updateUI(); };
+musicBtn.onclick = () => { store.settings.music = !store.settings.music; save(); AUD.applyVol(); if (store.settings.music && AUD.get()) { GameSound.prepare(curGame(), true); if (!Music.mode) Music.play('idle'); } updateUI(); };
 const musicVol = document.getElementById('musicVol'), sfxVol = document.getElementById('sfxVol');
 musicVol.oninput = e => { store.settings.musicVol = +e.target.value; document.getElementById('musicVolVal').textContent = store.settings.musicVol + '%'; save(); AUD.applyVol(); };
 sfxVol.oninput = e => { store.settings.sfxVol = +e.target.value; document.getElementById('sfxVolVal').textContent = store.settings.sfxVol + '%'; save(); AUD.applyVol(); };

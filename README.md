@@ -23,3 +23,5 @@ About one round in four has no twist. The winner is always chosen the moment you
 Game-specific MP3 effects load only for the selected game and use the existing Sound toggle and SFX volume. Credits and edit details are in `assets/sfx/credits.html` and `assets/sfx/sources.json`.
 
 Run the dependency-free audio lifecycle checks with `node tests/sfx.test.cjs`.
+
+Music uses original four-phrase pentatonic hooks, recorded VCSL lead instruments and percussion, with synthesized accompaniment as a loading fallback. Foreground effects briefly lower the music and take priority over ambient effects.

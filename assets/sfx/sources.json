@@ -153,5 +153,122 @@
     "maxDuration": 1.5,
     "duration": 0.929,
     "bytes": 7776
+  },
+  "music-piano": {
+    "source": "Chordophones/Zithers/Grand Piano, Kawai/Sustains/GPiano_sus_C4_v2_rr1_Player.wav",
+    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Chordophones/Zithers/Grand%20Piano%2C%20Kawai/Sustains/GPiano_sus_C4_v2_rr1_Player.wav",
+    "license": "CC0-1.0",
+    "author": "Versilian Studios LLC / VCSL contributors",
+    "baseMidi": 72,
+    "trimStart": 0.0,
+    "duration": 1.25,
+    "bytes": 15404,
+    "measuredMidi": 71.971
+  },
+  "music-harp": {
+    "source": "Chordophones/Composite Chordophones/Folk Harp/EWHarp_Normal_C4_v2_RR1.wav",
+    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Chordophones/Composite%20Chordophones/Folk%20Harp/EWHarp_Normal_C4_v2_RR1.wav",
+    "license": "CC0-1.0",
+    "author": "Versilian Studios LLC / VCSL contributors",
+    "baseMidi": 72,
+    "trimStart": 0.0,
+    "duration": 1.25,
+    "bytes": 15404,
+    "measuredMidi": 72.016
+  },
+  "music-xylo": {
+    "source": "Idiophones/Struck Idiophones/Xylophone/Medium Mallets/Xylo_Medium_C4_pp_01_far.wav",
+    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Idiophones/Struck%20Idiophones/Xylophone/Medium%20Mallets/Xylo_Medium_C4_pp_01_far.wav",
+    "license": "CC0-1.0",
+    "author": "Versilian Studios LLC / VCSL contributors",
+    "baseMidi": 72,
+    "trimStart": 0.0,
+    "duration": 0.8,
+    "bytes": 10075,
+    "measuredMidi": 72.129
+  },
+  "bubble3": {
+    "source": "water/bubble_03.ogg",
+    "start": 0,
+    "duration": 0.6,
+    "bytes": 4641
+  },
+  "dog4": {
+    "source": "dog.wav",
+    "start": 1.67,
+    "duration": 0.35,
+    "bytes": 3178
+  },
+  "dog3": {
+    "source": "dog.wav",
+    "start": 0.5,
+    "duration": 0.3,
+    "bytes": 2760
+  },
+  "music-bongo": {
+    "source": "Membranophones/Struck Membranophones/Bongos/BongoL_Hit1_v2_rr1_Mid.wav",
+    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Membranophones/Struck%20Membranophones/Bongos/BongoL_Hit1_v2_rr1_Mid.wav",
+    "license": "CC0-1.0",
+    "author": "Versilian Studios LLC / VCSL contributors",
+    "baseMidi": null,
+    "trimStart": 0.0039229024943310655,
+    "duration": 0.6,
+    "bytes": 7567
+  },
+  "splash3": {
+    "source": "water/splash_07.ogg",
+    "start": 0,
+    "duration": 1.2,
+    "bytes": 9866
+  },
+  "music-glock": {
+    "source": "Idiophones/Struck Idiophones/Glockenspiel/glock_medium_G4_01.wav",
+    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Idiophones/Struck%20Idiophones/Glockenspiel/glock_medium_G4_01.wav",
+    "license": "CC0-1.0",
+    "author": "Versilian Studios LLC / VCSL contributors",
+    "baseMidi": 79,
+    "trimStart": 0.0,
+    "duration": 1.25,
+    "bytes": 15404,
+    "measuredMidi": 79.08,
+    "pitchVerification": "FFT fundamental 787.6Hz; inharmonic overtones cause YIN to report a subharmonic."
+  },
+  "music-marimba": {
+    "source": "Idiophones/Struck Idiophones/Marimba/Marimba_hit_Outrigger_C4_med_01.wav",
+    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Idiophones/Struck%20Idiophones/Marimba/Marimba_hit_Outrigger_C4_med_01.wav",
+    "license": "CC0-1.0",
+    "author": "Versilian Studios LLC / VCSL contributors",
+    "baseMidi": 72,
+    "trimStart": 0.0034467120181405895,
+    "duration": 1.25,
+    "bytes": 15404,
+    "measuredMidi": 72.062
+  },
+  "music-vibes": {
+    "source": "Idiophones/Struck Idiophones/Vibraphone/Soft Mallets/Vibes_soft_C3_v1_rr2_Main.wav",
+    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Idiophones/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_C3_v1_rr2_Main.wav",
+    "license": "CC0-1.0",
+    "author": "Versilian Studios LLC / VCSL contributors",
+    "baseMidi": 60,
+    "trimStart": 0.00024943310657596373,
+    "duration": 1.25,
+    "bytes": 15404,
+    "measuredMidi": 60.037
+  },
+  "music-shaker": {
+    "source": "Idiophones/Struck Idiophones/Shaker, Small/Mid_ShakerDouble_Down_rr1.wav",
+    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Idiophones/Struck%20Idiophones/Shaker%2C%20Small/Mid_ShakerDouble_Down_rr1.wav",
+    "license": "CC0-1.0",
+    "author": "Versilian Studios LLC / VCSL contributors",
+    "baseMidi": null,
+    "trimStart": 0.0,
+    "duration": 0.26528344671201814,
+    "bytes": 3806
+  },
+  "paddle2": {
+    "source": "water/splash_11.ogg",
+    "start": 0,
+    "duration": 0.5,
+    "bytes": 4432
   }
 }
