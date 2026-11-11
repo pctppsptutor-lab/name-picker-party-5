@@ -59,8 +59,6 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .tab .nm{display:block;font-size:14.5px;font-weight:800;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tab.active{background:linear-gradient(135deg,#fff,#f0f9ff);outline:3px solid var(--sun);box-shadow:0 4px 0 var(--sun-d),0 8px 18px rgba(0,0,0,.28)}
 .tab.active .ico{background:linear-gradient(135deg,#ffd84a,#ff9f43)}
-.tab.randTab.on{background:linear-gradient(135deg,#fffbeb,#e0f2fe);outline:3px solid #ff9f43;box-shadow:0 4px 0 #c46a00,0 8px 18px rgba(0,0,0,.28)}
-.tab.randTab.on .ico{background:linear-gradient(135deg,#0284c7,#0ea5e9);color:#fff}
 
 /* layout */
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;padding:0 22px 16px;align-items:start}
@@ -166,7 +164,6 @@ body:has(.stage-expanded){overflow:hidden}
 .card button{font-size:1.7cqw;padding:.75cqw 2cqw}
 .btnGo{--c:var(--green);--cd:var(--green-d)}
 .btnSoft{--c:#f1f5f9;--cd:#cbd5e1;color:var(--ink)!important}
-.btnTimer.on{--c:var(--sun);--cd:var(--sun-d);color:#3d2600!important}
 @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes fade{from{opacity:0}}
 
@@ -276,7 +273,6 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
         <div class="name" id="resName"></div>
         <div class="btns">
           <button class="candy btnGo" id="contBtn">Next round ▶</button>
-          <button class="candy btnSoft btnTimer" id="timerBtn">⏱ 30s Timer</button>
           <button class="candy btnSoft" id="absentBtn">↩ Absent · Re-spin</button>
         </div>
       </div>
@@ -463,6 +459,7 @@ function loadStore() {
     if (s && Array.isArray(s.classes) && s.classes.length) {
       const d = defaultStore();
       s.settings = Object.assign(d.settings, s.settings || {});
+      delete s.settings.randomGame;
       if (![7, 10, 15].includes(s.settings.duration)) s.settings.duration = 7;
       s.settings.plotTwist = s.settings.plotTwist === true;
       const musicVol = parseInt(s.settings.musicVol, 10), sfxVol = parseInt(s.settings.sfxVol, 10);
@@ -564,11 +561,13 @@ const AUD = {
 };
 const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 // low-level voices, all scheduled at absolute time t on the given bus
-function voice(c, bus, { f, t, dur, type = 'sine', vol = .2, to = null, toAt = null, attack = .005, lp = null, vib = 0, vibRate = 28 }) {
+function voice(c, bus, { f, t, dur, type = 'sine', vol = .2, to = null, toAt = null, attack = .005, lp = null, vib = 0, vibRate = 28, hold = 0 }) {
   const o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.setValueAtTime(f, t);
   if (to) o.frequency.exponentialRampToValueAtTime(to, t + (toAt || dur));
   if (vib) { const l = c.createOscillator(), lg = c.createGain(); l.frequency.value = vibRate; lg.gain.value = vib; l.connect(lg).connect(o.frequency); l.start(t); l.stop(t + dur + .05); }
-  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack);
+  if (hold) g.gain.setValueAtTime(vol, t + Math.max(attack, dur * hold));
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   let out = o;
   if (lp) { const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = lp; o.connect(fl); out = fl; }
   out.connect(g).connect(bus); o.start(t); o.stop(t + dur + .05);
@@ -621,7 +620,6 @@ const SFX = {
   boing() { this.tone(180, .5, { type: 'triangle', vol: .2, to: 520, vib: 30, vibRate: 18 }); },
   heartbeat() { this.run((c, b, now) => { DRUM.kick(c, b, now, .7); DRUM.kick(c, b, now + .16, .45); }); this.tone(1000, .06, { type: 'square', vol: .04 }); },
   ding() { this.tone(1320, .5, { vol: .12 }); this.tone(1980, .4, { vol: .06 }); },
-  tickTock(high = false) { this.tone(high ? 1320 : 880, .035, { type: 'sine', vol: .09, attack: .002 }); },
   drawerPop() { this.tone(660, .05, { type: 'triangle', vol: .08, to: 990 }); },
   whoosh() { this.noise(.18, { vol: .08, f: 800, to: 2400, q: 1.2 }); },
   steam() { this.noise(.28, { vol: .16, f: 2200, to: 600, q: .9 }); },
@@ -639,17 +637,17 @@ const INSTRUMENTS = {
   glass: { type: 'sine', lp: 3800, attack: .018, length: .26 },
   reed: { type: 'triangle', lp: 2400, attack: .012, length: .2 }
 };
-const theme = (bpm, key, mode, instrument, melody, drums, cueFrom, cueTo, cueLength) => ({
-  bpm, key, minor: mode === 'minor', instrument, drums, cueFrom, cueTo, cueLength,
+const theme = (bpm, key, mode, instrument, melody, drums, cueFrom, cueTo, cueLength, swing = 0) => ({
+  bpm, key, swing, minor: mode === 'minor', instrument, drums, cueFrom, cueTo, cueLength,
   melody: melody.split(' ').map(note => note === '-' ? null : Number(note))
 });
 const GAME_AUDIO = {
-  g25: theme(109, 62, 'major', 'glass', '0 4 11 - 9 7 14 12', 'k-hhs-h-', 480, 2900, 0.3), // Cloud Goes Achoo!
-  g26: theme(122, 61, 'minor', 'chip', '0 7 12 10 15 12 7 -', 'kh-hshsh', 1920, 330, 0.23), // Oops, Wrong Year!
-  g27: theme(124, 65, 'major', 'mallet', '0 4 9 7 2 7 - 12', 'k-hskh-h', 730, 320, 0.23), // Puppy Pool Race
-  g28: theme(85, 60, 'minor', 'bell', '0 - 7 - 3 14 - 10', 'k---s--h', 820, 2100, 0.31), // Peekaboo, Wizard!
-  g29: theme(116, 59, 'major', 'chip', '0 7 4 12 - 9 7 2', 'ksh-hsk-', 2350, 480, 0.11), // Give Me My Snack!
-  g30: theme(132, 63, 'major', 'pluck', '0 4 7 12 9 - 7 4', 'khshk-hh', 330, 1200, 0.14), // Bunny Carrot Race
+  g25: theme(109, 62, 'major', 'glass', '0 4 11 - 9 7 14 12 4 - 7 11 12 9 7 -', 'k-hhs-h-k-h-s-hh', 480, 2900, 0.3, 0.04), // Cloud Goes Achoo!
+  g26: theme(122, 61, 'minor', 'chip', '0 7 12 10 15 12 7 - 3 10 15 19 17 15 12 -', 'kh-hshshkhshk-hs', 1920, 330, 0.23, 0), // Oops, Wrong Year!
+  g27: theme(124, 65, 'major', 'mallet', '0 4 9 7 2 7 - 12 9 7 4 2 0 4 7 -', 'k-hskh-hk-hhs-hs', 730, 320, 0.23, 0.08), // Puppy Pool Race
+  g28: theme(85, 60, 'minor', 'bell', '0 - 7 - 3 14 - 10 0 3 7 - 14 12 10 -', 'k---s--hk--hs-h-', 820, 2100, 0.31, 0.02), // Peekaboo, Wizard!
+  g29: theme(116, 59, 'major', 'chip', '0 7 4 12 9 - 7 2 0 4 9 - 12 9 7 -', 'ksh-hsk-khshk-hs', 2350, 480, 0.11, 0), // Give Me My Snack!
+  g30: theme(132, 63, 'major', 'pluck', '0 4 7 12 9 - 7 4 2 7 9 14 12 9 7 -', 'khshk-hhkhshk-hs', 330, 1200, 0.14, 0.06), // Bunny Carrot Race
 };
 const audioTheme = () => GAME_AUDIO[curGame()] || Object.values(GAME_AUDIO)[0];
 
@@ -685,7 +683,9 @@ const Music = {
   play(mode) {
     const game = audioTheme();
     if (this.mode === mode && this.game === game) return;
-    this.mode = mode; this.game = game; this.step = 0;
+    const changedGame = this.game !== game, wasStopped = !this.mode;
+    this.mode = mode; this.game = game;
+    if (changedGame || wasStopped) this.step = 0;
     const c = AUD.ctx;
     if (c) {
       this.next = c.currentTime + .06;
@@ -706,45 +706,61 @@ const Music = {
       AUD.music.gain.setTargetAtTime(0, c.currentTime, .065);
     }
   },
+  intensity() {
+    if (!race || race.phase !== 'run') return 0;
+    return clamp(1 - roundRemaining(race) / race.T);
+  },
   pump() {
     const c = AUD.ctx;
-    if (!c || !this.mode || c.state !== 'running') return;
-    const lift = this.mode === 'tension' ? 28 : this.mode === 'race' ? 18 : 0;
+    if (!c || !this.mode || c.state !== 'running' || document.hidden) return;
+    const energy = this.intensity();
+    const lift = this.mode === 'idle' ? -8 : this.mode === 'tension' ? 18 + energy * 22 : 8 + energy * 24;
     const beat = 60 / (this.game.bpm + lift) / 2;
     if (this.next < c.currentTime - .05) this.next = c.currentTime + .02;
     while (this.next < c.currentTime + .12) {
-      if (store.settings.music) this.note(this.step, this.next, beat);
+      if (store.settings.music) this.note(this.step, this.next, beat, energy);
       this.next += beat; this.step++;
     }
   },
-  note(step, t, beat) {
+  note(step, t, beat, energy = 0) {
     const c = AUD.ctx, bus = AUD.music, g = this.game;
-    const i = step % 8, bar = Math.floor(step / 8) % 4;
-    const idle = this.mode === 'idle', tension = this.mode === 'tension';
-    const root = g.key + (g.minor ? [0, 8, 3, 7] : [0, 5, 9, 7])[bar];
-    const shift = [0, 2, 0, -2][bar];
-    const chordThird = (g.minor ? bar < 1 : bar === 2) ? 3 : 4;
-    const rhythm = g.drums[i], strength = idle ? .48 : .8;
-    if (rhythm === 'k') DRUM.kick(c, bus, t, .38 * strength);
-    if (rhythm === 'h') DRUM.hat(c, bus, t, .065 * strength);
-    if (rhythm === 's') DRUM.snare(c, bus, t, .13 * strength);
-    if (tension && i % 2 === 1) DRUM.hat(c, bus, t, .07);
-    if (i === 0 || i === 4 || (!idle && i === 6)) voice(c, bus, {
-      f: mtof(root - 24 + (i === 4 ? 7 : 0)), t, dur: beat * (idle ? 1.6 : 1.1),
-      type: 'triangle', vol: idle ? .16 : .22
+    const length = g.melody.length, i = step % length, bar = Math.floor(step / length) % 4;
+    const idle = this.mode === 'idle';
+    const lift = idle ? 0 : energy;
+    const root = g.key + (g.minor ? [0, 5, 8, 7] : [0, 9, 5, 7])[bar];
+    const third = g.minor ? (bar < 2 ? 3 : 4) : (bar === 1 ? 3 : 4);
+    const rhythm = g.drums[i % g.drums.length];
+    t += (step % 2) * beat * g.swing;
+    const strength = idle ? .36 : .58 + lift * .28;
+    if (rhythm === 'k') DRUM.kick(c, bus, t, .5 * strength);
+    if (rhythm === 'h') DRUM.hat(c, bus, t, .075 * strength);
+    if (rhythm === 's') DRUM.snare(c, bus, t, .17 * strength);
+    if (lift > .6 && i % 2 === 1) DRUM.hat(c, bus, t, .035 + lift * .02);
+    if (lift > .8 && i % 4 === 0) DRUM.kick(c, bus, t, .16);
+    const bassStep = length === 12 ? 3 : 4;
+    if (i % bassStep === 0 || (!idle && i % bassStep === bassStep - 1)) voice(c, bus, {
+      f: mtof(root - 24 + (i % (bassStep * 2) >= bassStep ? 7 : 0)), t,
+      dur: beat * (idle ? 2 : 1.25), type: 'triangle', hold: .28, lp: 650, vol: idle ? .16 : .25
     });
-    if (i === 0 || i === 4) [0, chordThird, 7].forEach(note => voice(c, bus, {
-      f: mtof(root - 12 + note), t, dur: beat * 1.6, type: 'sine', vol: idle ? .042 : .055
+    if (i === 0 || i === length / 2) [0, third, 7].forEach(note => voice(c, bus, {
+      f: mtof(root - 12 + note), t, dur: beat * 3.2, type: 'triangle',
+      lp: idle ? 1100 : 1600 + lift * 1000, attack: .07, hold: .55, vol: idle ? .035 : .055
     }));
     const note = g.melody[i];
     if (note !== null) {
-      const instrument = INSTRUMENTS[g.instrument];
-      const pitch = mtof(g.key + note + shift + (tension && i >= 4 ? 12 : 0));
-      voice(c, bus, { ...instrument, f: pitch, t, dur: Math.min(beat * 1.4, instrument.length), vol: idle ? .078 : .10 });
+      const instrument = INSTRUMENTS[g.instrument], pitch = mtof(root + note);
+      voice(c, bus, { ...instrument, f: pitch, t, hold: .25, dur: Math.min(beat * 1.8, instrument.length * 1.4), vol: idle ? .09 : .14 });
       if (g.instrument === 'bell' || g.instrument === 'glass' || g.instrument === 'mallet') {
-        voice(c, bus, { f: pitch * 2, t, dur: instrument.length * .55, type: 'sine', vol: .022 });
+        voice(c, bus, { f: pitch * 2.003, t, dur: instrument.length * .65, type: 'sine', vol: .02 });
       }
+      if (lift > .45 && i % 4 === 2) voice(c, bus, {
+        f: pitch / 2, t: t + beat * .52, dur: beat * .7, type: 'triangle', lp: 2400, vol: .05
+      });
     }
+    if (lift > .65 && i % 2 === 0) voice(c, bus, {
+      f: mtof(root + 12 + [0, third, 7, 12][Math.floor(i / 2) % 4]), t,
+      dur: beat * .65, type: 'sine', vol: .04 + lift * .025
+    });
   }
 };
 // browsers only allow audio after a user gesture
@@ -875,27 +891,16 @@ function winnerSpotlight(winner) {
 let race = null;
 
 function pickRandomGame() {
-  const pool = GAMES.filter(g => g.id !== curGame());
-  return pool[randInt(pool.length)].id;
+  const pool = ALL_GAMES_30.filter(g => g.id !== curGame());
+  return pool[randInt(pool.length)];
 }
 
-function startRace(fromRandom, classId = store.activeId) {
+function startRace(classId = store.activeId) {
   if ((race && race.phase !== 'done') || !gameAssets(curGame())?.ready) return;
   const cls = store.classes.find(c => c.id === classId);
   if (!cls) return;
   const all = roster(cls), pool = eligible(cls);
   if (!pool.length) return;
-  if (store.settings.randomGame && !fromRandom) {
-    const pick = pickRandomGame();
-    if (pick !== curGame()) activateGame(pick, true);
-    const assets = gameAssets(pick);
-    if (!assets.ready) {
-      assets.loading.then(() => {
-        if (curGame() === pick && store.settings.randomGame) startRace(true, classId);
-      });
-      return;
-    }
-  }
   loadGameDetails(gameAssets(curGame()), true);
   hideResult();
   const T = store.settings.duration;
@@ -1189,14 +1194,13 @@ function loadGameDetails(g, starting = false) {
   });
   return g.detailsLoading;
 }
-function activateGame(id, keepRandom = false) {
+function activateGame(id) {
   if (race && race.phase === 'run') return;
-  if (!keepRandom) store.settings.randomGame = false;
   store.settings.game5 = id; save();
   race = null; hideResult();
   IMG = IMGSETS[id] = IMGSETS[id] || {};
   prepareGame(gameAssets(id));
-  if (Music.mode) Music.play('idle');
+  if (AUD.ctx) Music.play('idle');
   updateUI();
 }
 
@@ -1240,15 +1244,7 @@ function timerChip(n) {
 
 /* ================= Result overlay ================= */
 const resultEl = document.getElementById('result');
-let ansTimer = null, ansLeft = 0;
-function stopAnsTimer() {
-  if (ansTimer) { clearInterval(ansTimer); ansTimer = null; }
-  ansLeft = 0;
-  const b = document.getElementById('timerBtn');
-  if (b) { b.classList.remove('on'); b.textContent = L().answerTimer; }
-}
 function showResult(d) {
-  stopAnsTimer();
   document.getElementById('resName').textContent = d.name;
   const image = document.getElementById('resImg'), r = race;
   const g = r?.game || gameAssets('g1'), key = winnerAsset(r, d), src = g.base + key + '.webp';
@@ -1271,27 +1267,9 @@ function showResult(d) {
   resultEl.classList.remove('hidden');
   setTimeout(() => document.getElementById('contBtn').focus(), 40);
 }
-function hideResult() { stopAnsTimer(); resultEl.classList.add('hidden'); }
+function hideResult() { resultEl.classList.add('hidden'); }
 function continueGame() { hideResult(); race = null; Music.play('idle'); updateUI(); }
 document.getElementById('contBtn').onclick = continueGame;
-document.getElementById('timerBtn').onclick = () => {
-  if (ansTimer) { stopAnsTimer(); return; }
-  const b = document.getElementById('timerBtn');
-  ansLeft = 30; b.classList.add('on'); b.textContent = '⏱ ' + ansLeft + 's';
-  SFX.ding();
-  ansTimer = setInterval(() => {
-    ansLeft--;
-    if (ansLeft > 0) {
-      b.textContent = '⏱ ' + ansLeft + 's';
-      if (ansLeft <= 3) SFX.heartbeat();
-      else SFX.tickTock(ansLeft % 2 === 0);
-    } else {
-      stopAnsTimer();
-      SFX.whistle(); SFX.ding();
-      toast(L().answerTimeUp);
-    }
-  }, 1000);
-};
 document.getElementById('absentBtn').onclick = () => {
   if (!race || !race.winner) return;
   const skipped = race.winner.name, cls = store.classes.find(c => c.id === race.classId);
@@ -1321,11 +1299,12 @@ const GAMES = [
 document.getElementById('gameTabs').innerHTML = GAMES.map(g =>
   `<button class="tab" data-game="${g.id}"><span class="ico">${g.icon}</span><span><b>GAME ${g.n}</b><span class="nm">${g.name}</span></span></button>`).join('') +
   `<button class="tab randTab" id="randTab"><span class="ico">🎲</span><span><b id="randTabHdr">RANDOM</b><span class="nm" id="randTabNm">Surprise Game</span></span></button>`;
-document.querySelectorAll('#gameTabs .tab[data-game]').forEach(b => b.onclick = () => activateGame(b.dataset.game, false));
+document.querySelectorAll('#gameTabs .tab[data-game]').forEach(b => b.onclick = () => activateGame(b.dataset.game));
 document.getElementById('randTab').onclick = () => {
   if (race && race.phase === 'run') return;
-  store.settings.randomGame = !store.settings.randomGame;
-  save(); updateUI();
+  const game = pickRandomGame();
+  if (game.vol === CURRENT_VOL) activateGame(game.id);
+  else { save(); location.href = getGameUrl(game); }
 };
 
 const durChips = document.getElementById('durChips');
@@ -1410,7 +1389,6 @@ function updateUI() {
   document.getElementById('ribbonTxt').textContent = t.ribbon;
   document.getElementById('contBtn').textContent = t.nextRound;
   document.getElementById('absentBtn').textContent = t.absentRespin;
-  if (!ansTimer) document.getElementById('timerBtn').textContent = t.answerTimer;
   document.getElementById('hintTxt').innerHTML = t.hintHtml;
   document.getElementById('settingsHdr').textContent = t.settingsHdr;
   document.getElementById('settingsSumBadge').textContent = store.settings.duration + 's';
@@ -1430,8 +1408,6 @@ function updateUI() {
     b.classList.toggle('active', b.dataset.game === curGame());
     b.querySelector('.nm').textContent = trTitle(GAMES[i].name);
   });
-  const rt = document.getElementById('randTab');
-  rt.classList.toggle('on', !!store.settings.randomGame);
   document.getElementById('randTabHdr').textContent = t.randomTabTitle;
   document.getElementById('randTabNm').textContent = t.randomTabName;
 
@@ -1835,9 +1811,6 @@ document.addEventListener('keydown', e => {
   if (e.code === 'KeyS' && !e.ctrlKey && !e.metaKey && !e.altKey) {
     e.preventDefault(); soundBtn.click(); return;
   }
-  if (e.code === 'KeyT' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-    if (!resultEl.classList.contains('hidden')) { e.preventDefault(); document.getElementById('timerBtn').click(); return; }
-  }
   if ((e.code === 'KeyR' || e.code === 'PageUp') && !e.ctrlKey && !e.metaKey && !e.altKey) {
     e.preventDefault();
     if (!resultEl.classList.contains('hidden')) document.getElementById('absentBtn').click();
@@ -1875,7 +1848,7 @@ try {
 
 updateUI();
 if (document.fonts) document.fonts.load('700 30px "Baloo 2"').then(() => { for (const k in tagCache) delete tagCache[k]; }).catch(() => {});
-activateGame(GAME_IMPL[curGame()] ? curGame() : 'g25', true);
+activateGame(GAME_IMPL[curGame()] ? curGame() : 'g25');
 requestAnimationFrame(frame);
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});

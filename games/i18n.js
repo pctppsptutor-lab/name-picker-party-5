@@ -495,8 +495,6 @@ const UI_STRINGS = {
     nextRound: 'Next round ▶',
 
     absentRespin: '↩ Absent · Re-spin',
-    answerTimer: '⏱ 30s Timer',
-    answerTimeUp: '⏰ Time is up!',
     canvasTapPlay: '▶ Tap stage or press Space',
     pickBtn: '▶ Pick a name!',
     pickingBtn: '⏳ Picking…',
@@ -591,8 +589,6 @@ const UI_STRINGS = {
     nextRound: 'Lượt tiếp theo ▶',
 
     absentRespin: '↩ Vắng · Quay lại',
-    answerTimer: '⏱ Đếm giờ 30s',
-    answerTimeUp: '⏰ Hết giờ trả lời!',
     canvasTapPlay: '▶ Chạm màn hình hoặc bấm Space',
     pickBtn: '▶ Gọi tên ngay!',
     pickingBtn: '⏳ Đang chọn…',
