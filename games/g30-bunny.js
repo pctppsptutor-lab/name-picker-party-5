@@ -19,7 +19,7 @@
   }
 
   GAME_IMPL.g30 = {
-    id: 'g30', title: 'Bunny Carrot Race', base: 'assets/g30/', titleY: 230, animals: true, paintedOk: false,
+    id: 'g30', title: 'Bunny Carrot Race', base: 'assets/g30/', titleY: 230, animals: true,
     assets: gAssets(['idle', 'ready', 'bound', 'patch', 'balloon', 'mole', 'win'], ['p0', 'p3', 'p5', 'p6', 'p8', 'p9', 'p10', 'p11', 'p16', 'p17', 'p25', 'p26', 'p48']),
     startBanner: '🐰 Ready, set — hop for the golden carrot!', mote: '#fff6c8', rayColor: '#fff2a8',
 
@@ -47,7 +47,7 @@
         const lead = r.players.reduce((a, b) => progress(r, b, t) > progress(r, a, t) ? b : a);
         if (lead !== r.leader && t - (r.leaderAt || 0) > .5) { r.leader = lead; r.leaderAt = t; r.banner = '🐰 Out in front: ' + lead.name; SFX.leader(); }
       }
-      if (te < 0 && Math.random() < .05) SFX.tone(600 + Math.random() * 300, .05, { type: 'triangle', vol: .03, to: 900 });
+
       if (!r.plain) {
         if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); SFX.sparkle(); r.banner = '🥕 ' + D.name + ' grabs a golden carrot!'; });
         if (te > .6) cue('b', () => { outcome('wrong_turn', D); SFX.wheee(); SFX.sadTrombone(); r.banner = '🎈 It\'s a BALLOON — and it floats away!'; });

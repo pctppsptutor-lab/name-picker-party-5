@@ -32,7 +32,7 @@
   }
 
   GAME_IMPL.g29 = {
-    id: 'g29', title: 'Give Me My Snack!', base: 'assets/g29/', titleY: 640, paintedOk: false,
+    id: 'g29', title: 'Give Me My Snack!', base: 'assets/g29/', titleY: 640,
     assets: gAssets(['coin', 'coil', 'slide', 'lever', 'stuck', 'kick', 'win'], [...CAPS, 'p0', 'p1', 'p12', 'p27']),
     startBanner: '🪙 Coin in — let\'s see what drops!', mote: '#f0e6ff', rayColor: '#fff2a8',
 
@@ -51,7 +51,7 @@
         if (t > run.at + run.dur) cue('in' + run.at, () => { SFX.boing(); r.banner = '🎁 A capsule lands in ' + run.p.name + "'s tray… and bounces out!"; });
       }
       if (t > r.goldAt) cue('gold', () => { SFX.sparkle(); r.banner = '✨ The golden capsule starts rolling!'; });
-      if (te < 0 && Math.random() < .03) SFX.tone(120, .1, { type: 'sawtooth', vol: .03, lp: 400 });
+
       if (!r.plain) {
         if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); r.banner = '🎁 Heading for ' + D.name + "'s tray…"; });
         if (te > .4) cue('b', () => { outcome('wrong_turn', D); SFX.sadTrombone(); [0, .25].forEach(d => SFX.tone(660, .2, { type: 'square', vol: .07, delay: d })); r.banner = '😤 Stuck on the seesaw! False signal!'; });

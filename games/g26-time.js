@@ -38,7 +38,7 @@
   }
 
   GAME_IMPL.g26 = {
-    id: 'g26', title: 'Oops, Wrong Year!', base: 'assets/g26/', titleY: 820, paintedOk: false,
+    id: 'g26', title: 'Oops, Wrong Year!', base: 'assets/g26/', titleY: 820,
     assets: gAssets(['choose', 'crown', 'dino', 'win'], [...ICONS, 'q1', 'q20', 'q21']),
     startBanner: '⏳ Remember each portal\'s symbol!', mote: '#d6f4ff', rayColor: '#d6f4ff',
 

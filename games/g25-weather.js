@@ -16,7 +16,7 @@
   }
 
   GAME_IMPL.g25 = {
-    id: 'g25', title: 'Cloud Goes Achoo!', base: 'assets/g25/', titleY: 380, paintedOk: false,
+    id: 'g25', title: 'Cloud Goes Achoo!', base: 'assets/g25/', titleY: 380,
     assets: gAssets(['idle', 'ready', 'action', 'almost', 'fake', 'twist', 'win'], ['p0', 'p1', 'p2', 'p10', 'p12', 'p13', 'p14', 'p16', 'p22', 'p26', 'p33', 'p39']),
     startBanner: '🌦️ The weather machine sputters to life…', mote: '#eaf6ff', rayColor: '#fff2a8',
 
@@ -34,7 +34,7 @@
       if (f && te < 0) cue('fk' + f.at, () => { SFX.leader(); r.banner = '🌈 A rainbow peeks over ' + f.p.name + '…'; });
       if (!r.plain) {
         if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); SFX.sparkle(); r.banner = '🌈 A rainbow over ' + D.name + '!'; });
-        if (te > .6) cue('b', () => { outcome('wrong_turn', D); CAM.shake(r, 10); SFX.noise(.25, { vol: .2, f: 500, to: 2000 }); SFX.noise(.5, { vol: .3, f: 2600, to: 400, delay: .25 }); r.banner = '🤧 ACHOO! The rainbow turns into a scarf!'; });
+        if (te > .6) cue('b', () => { outcome('wrong_turn', D); CAM.shake(r, 10); r.banner = '🤧 ACHOO! The rainbow turns into a scarf!'; });
         if (te > 1.2) cue('c', () => { SFX.tone(1400, .4, { vol: .08, to: 2000 }); r.banner = '☀️ A sunbeam bounces off the mirror…'; });
         if (te > 1.8) cue('d', () => { outcome('selected', Wn); SFX.sparkle(); r.banner = '🌈 …and lands on ' + Wn.name + '!'; });
       } else {

@@ -504,10 +504,6 @@ const UI_STRINGS = {
     skipPicked: 'Skip students already picked',
     reduceMotion: 'Reduce motion',
     reduceMotionSub: 'No screen shake or zoom',
-    paintedBg: 'Painted backgrounds',
-    paintedSubVol1: 'Games 2–6, about 150 KB each',
-    paintedSubVol2: 'Games 7, 8 & 12, about 150 KB each',
-    paintedSubCode: 'Code-drawn scene for this game',
 
 
 
@@ -598,10 +594,6 @@ const UI_STRINGS = {
     skipPicked: 'Bỏ qua học sinh đã được gọi',
     reduceMotion: 'Giảm chuyển động',
     reduceMotionSub: 'Tắt rung lắc và phóng to màn hình',
-    paintedBg: 'Ảnh nền vẽ chi tiết',
-    paintedSubVol1: 'Game 2–6, khoảng 150 KB mỗi cảnh',
-    paintedSubVol2: 'Game 7, 8 & 12, khoảng 150 KB mỗi cảnh',
-    paintedSubCode: 'Cảnh vẽ trực tiếp cho trò chơi này',
 
 
 

@@ -16,7 +16,7 @@
   }
 
   GAME_IMPL.g27 = {
-    id: 'g27', title: 'Puppy Pool Race', base: 'assets/g27/', titleY: 230, animals: true, paintedOk: false,
+    id: 'g27', title: 'Puppy Pool Race', base: 'assets/g27/', titleY: 230, animals: true,
     assets: gAssets(['idle', 'ready', 'swim', 'bridge', 'tail', 'win'], ['p7', 'p8', 'p9', 'p10', 'p13', 'p22', 'p27', 'p30', ...FLOATS]),
     startBanner: '🐶 Splash! The puppies dive in!', mote: '#e8fbff', rayColor: '#fff2a8',
 
@@ -41,8 +41,8 @@
         const lead = r.players.reduce((a, b) => progress(r, b, t) > progress(r, a, t) ? b : a);
         if (lead !== r.leader && t - (r.leaderAt || 0) > .5) { r.leader = lead; r.leaderAt = t; r.banner = '🐶 In the lead: ' + lead.name; SFX.leader(); }
       }
-      if (te < 0 && Math.random() < .05) SFX.paddle();
-      if (te < 0 && Math.random() < .01) SFX.tone(500 + Math.random() * 200, .1, { type: 'square', vol: .04, to: 350 });   // woof
+
+
       if (!r.plain) {
         if (te > 0) cue('a', () => { Music.play('tension'); outcome('almost_selected', D); r.banner = '🐶 ' + D.name + ' is nearly at the bone…'; });
         if (te > .5) cue('b', () => { outcome('wrong_turn', D); SFX.wheee(); SFX.sadTrombone(); r.banner = '🌀 …but stops to chase its own tail!'; });

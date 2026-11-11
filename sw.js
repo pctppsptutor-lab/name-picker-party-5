@@ -1,9 +1,10 @@
-const CACHE_NAME = 'name-picker-vol5-v29';
+const CACHE_NAME = 'name-picker-vol5-v31';
 const PRECACHE = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon.svg",
+  "./games/sfx.js",
   "./games/i18n.js",
   "./games/fx.js",
   "./games/decor.js",
@@ -34,7 +35,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
-  const asset = /\.(webp|wav|svg|woff2?)$/i.test(url.pathname) || url.hostname.endsWith('googleapis.com') || url.hostname.endsWith('gstatic.com');
+  const asset = /\.(webp|wav|mp3|svg|woff2?)$/i.test(url.pathname) || url.hostname.endsWith('googleapis.com') || url.hostname.endsWith('gstatic.com');
   const cache = caches.open(CACHE_NAME).catch(() => null);
   const cached = cache.then(c => c?.match(e.request)).catch(() => undefined);
   let write;

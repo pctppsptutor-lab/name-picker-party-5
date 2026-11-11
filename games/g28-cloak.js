@@ -30,7 +30,7 @@
   }
 
   GAME_IMPL.g28 = {
-    id: 'g28', title: 'Peekaboo, Wizard!', base: 'assets/g28/', titleY: 260, paintedOk: false,
+    id: 'g28', title: 'Peekaboo, Wizard!', base: 'assets/g28/', titleY: 260,
     assets: gAssets(['ready', 'gone', 'foot', 'shadow', 'hiccup', 'win'], ['p0', 'p10', 'p19']),
     startBanner: '🫥 Everyone vanishes under their cloaks…', mote: '#e6d6ff', rayColor: '#e6ccff',
 

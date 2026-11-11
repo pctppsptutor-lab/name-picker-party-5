@@ -16,3 +16,10 @@ From this folder run `python -m http.server 8769` and open http://localhost:8769
 | 30 Golden Carrot Bunny Dash | Bunnies race through the vegetable rows to bring the golden carrot to the basket. | The first golden carrot is a balloon and floats away; a mole pushes the real one to another bunny. |
 
 About one round in four has no twist. The winner is always chosen the moment you press Pick.
+
+
+## Sound effects
+
+Game-specific MP3 effects load only for the selected game and use the existing Sound toggle and SFX volume. Credits and edit details are in `assets/sfx/credits.html` and `assets/sfx/sources.json`.
+
+Run the dependency-free audio lifecycle checks with `node tests/sfx.test.cjs`.
