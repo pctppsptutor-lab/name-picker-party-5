@@ -309,7 +309,7 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
           </div>
         </div>
       </div>
-      <a href="assets/sfx/credits.html" target="_blank" rel="noopener" style="font-size:12px">SFX credits</a>
+      <a href="assets/bgm/credits.html" target="_blank" rel="noopener" style="font-size:12px">Music credits</a> · <a href="assets/sfx/credits.html" target="_blank" rel="noopener" style="font-size:12px">SFX credits</a>
     </details>
 
     <section class="panel" aria-label="Picked students">
@@ -424,6 +424,7 @@ function makeFakes(r, from) {
 }
 const activeFake = (r, t) => (r.fakes || []).find(f => t >= f.at && t < f.at + f.dur) || null;
 </script>
+<script src="games/bgm.js"></script>
 <script src="games/sfx.js"></script>
 <script src="games/i18n.js"></script>
 <script src="games/fx.js"></script>
@@ -647,17 +648,16 @@ const INSTRUMENTS = {
   reed: { type: 'triangle', lp: 2400, attack: .012, length: .2 },
   piano: { type: 'triangle', lp: 2600, attack: .004, length: .25 }
 };
-const theme = (bpm, key, mode, instrument, melody, drums, cueFrom, cueTo, cueLength, swing = 0) => ({
-  bpm, key, swing, minor: mode === 'minor', instrument, drums, cueFrom, cueTo, cueLength,
-  melody: melody.split(' ').map(note => note === '-' ? null : Number(note))
+const theme = (key, mode, instrument, cueFrom, cueTo, cueLength) => ({
+  key, minor: mode === 'minor', instrument, cueFrom, cueTo, cueLength
 });
 const GAME_AUDIO = {
-  g25: theme(128, 62, 'major', 'glass', '0 4 7 9 7 - 4 - 0 2 4 - 7 4 2 - 0 4 7 9 7 - 4 - 7 4 2 0 2 - 0 -', 'k-h-s-h-k-h-s-hh', 480, 2900, 0.3, 0.1), // Cloud Goes Achoo!
-  g26: theme(138, 61, 'minor', 'chip', '0 3 7 - 10 7 3 - 0 3 7 12 10 - 7 - 0 3 7 - 10 7 3 - 7 5 3 0 3 - 0 -', 'k-h-s-h-k-h-s-hh', 1920, 330, 0.23, 0.04), // Oops, Wrong Year!
-  g27: theme(138, 65, 'major', 'mallet', '0 4 7 7 4 - 2 - 0 4 7 9 7 - 0 - 0 4 7 7 4 - 2 - 7 4 2 0 2 - 0 -', 'k-h-s-h-k-h-s-hh', 730, 320, 0.23, 0.14), // Puppy Pool Race
-  g28: theme(118, 60, 'major', 'bell', '0 7 4 - 0 - 2 - 4 7 9 - 7 4 2 - 0 7 4 - 0 - 2 - 7 4 2 - 0 - 0 -', 'k-h-s-h-k-h-s-hh', 820, 2100, 0.31, 0.13), // Peekaboo, Wizard!
-  g29: theme(138, 59, 'major', 'piano', '0 0 7 4 2 - 0 - 4 7 9 - 7 4 2 - 0 0 7 4 2 - 0 - 7 4 2 4 0 - 0 -', 'k-h-s-h-k-h-s-hh', 2350, 480, 0.11, 0.07), // Give Me My Snack!
-  g30: theme(148, 63, 'major', 'pluck', '0 4 7 - 0 4 9 - 7 9 12 - 9 7 4 - 0 4 7 - 0 4 9 - 7 4 2 0 2 - 0 -', 'k-h-s-h-k-h-s-hh', 330, 1200, 0.14, 0.1), // Bunny Carrot Race
+  g25: theme(62, 'major', 'glass', 480, 2900, 0.3), // Cloud Goes Achoo!
+  g26: theme(61, 'minor', 'chip', 1920, 330, 0.23), // Oops, Wrong Year!
+  g27: theme(65, 'major', 'mallet', 730, 320, 0.23), // Puppy Pool Race
+  g28: theme(60, 'major', 'bell', 820, 2100, 0.31), // Peekaboo, Wizard!
+  g29: theme(59, 'major', 'piano', 2350, 480, 0.11), // Give Me My Snack!
+  g30: theme(63, 'major', 'pluck', 330, 1200, 0.14), // Bunny Carrot Race
 };
 const audioTheme = () => GAME_AUDIO[curGame()] || Object.values(GAME_AUDIO)[0];
 
@@ -690,93 +690,45 @@ function playGameCue(c, bus, now, kind, game) {
   }));
 }
 
+// One media element streams the selected game's soundtrack; it never preloads other games.
 const Music = {
-  mode: null, game: null, step: 0, next: 0, timer: null,
+  mode: null, game: null, audio: null, source: null,
   play(mode) {
-    const game = audioTheme();
-    if (this.mode === mode && this.game === game) return;
-    const changedGame = this.game !== game, wasStopped = !this.mode;
-    this.mode = mode; this.game = game;
-    if (changedGame || wasStopped) this.step = 0;
-    const c = AUD.ctx;
-    if (c) {
-      this.next = c.currentTime + .06;
-      const gain = AUD.music.gain;
-      const volume = store.settings.music ? ((store.settings.musicVol ?? 70) / 100) * .34 : 0;
-      gain.cancelScheduledValues(c.currentTime);
-      gain.setTargetAtTime(volume, c.currentTime, .06);
+    this.mode = mode;
+    const id = curGame(), track = BGM_TRACKS[id];
+    if (!track) return;
+    this.game = id;
+    if (!store.settings.music || document.hidden) { this.audio?.pause(); return; }
+    const c = AUD.get(); if (!c) return;
+    if (!this.audio) {
+      this.audio = new Audio(); this.audio.preload = 'none'; this.audio.loop = true;
+      this.source = c.createMediaElementSource(this.audio); this.source.connect(AUD.music);
     }
-    if (!this.timer) this.timer = setInterval(() => this.pump(), 25);
+    const url = new URL(track.src, document.baseURI).href;
+    if (this.audio.src !== url || this.audio.error) {
+      this.audio.pause(); this.audio.src = url;
+    }
+    const gain = AUD.music.gain;
+    gain.cancelScheduledValues(c.currentTime);
+    gain.setTargetAtTime(((store.settings.musicVol ?? 70) / 100) * .34, c.currentTime, .06);
+    if (this.audio.paused) {
+      // Another gesture can retry a rejected autoplay or a failed request.
+      const pending = this.audio.play(); if (pending) pending.catch(() => {});
+    }
   },
   stop() {
-    if (!this.mode) return;
-    this.mode = null;
-    clearInterval(this.timer); this.timer = null;
-    const c = AUD.ctx;
-    if (c) {
-      AUD.music.gain.cancelScheduledValues(c.currentTime);
-      AUD.music.gain.setTargetAtTime(0, c.currentTime, .065);
-    }
-  },
-  intensity() {
-    if (!race || race.phase !== 'run') return 0;
-    return clamp(1 - roundRemaining(race) / race.T);
-  },
-  pump() {
-    const c = AUD.ctx;
-    if (!c || !this.mode || c.state !== 'running' || document.hidden) return;
-    const energy = this.intensity();
-    const lift = this.mode === 'idle' ? -12 : this.mode === 'tension' ? 6 + energy * 4 : energy * 4;
-    const beat = 60 / (this.game.bpm + lift) / 2;
-    if (this.next < c.currentTime - .05) this.next = c.currentTime + .02;
-    while (this.next < c.currentTime + .12) {
-      if (store.settings.music) this.note(this.step, this.next, beat, energy);
-      this.next += beat; this.step++;
-    }
-  },
-  note(step, t, beat, energy = 0) {
-    const c = AUD.ctx, bus = AUD.music, g = this.game;
-    const i = step % g.melody.length, meter = g.melody.length === 24 ? 6 : 8;
-    const bar = Math.floor(step / meter) % 4, slot = step % meter;
-    const idle = this.mode === 'idle', lift = idle ? 0 : energy;
-    const root = g.key + [0, 0, 5, 7][bar], third = g.minor && bar !== 3 ? 3 : 4;
-    const rhythm = g.drums[step % g.drums.length];
-    t += (step % 2) * beat * g.swing;
-    const strength = idle ? .32 : .6 + lift * .18;
-    if (rhythm === 'k') DRUM.kick(c, bus, t, .4 * strength);
-    if (rhythm === 's') DRUM.clap(c, bus, t, .12 * strength);
-    if (!idle && step % 2 === 1) {
-      if (!sampleVoice(c, bus, 'music-shaker', t, .12 * strength)) DRUM.hat(c, bus, t, .05 * strength);
-    }
-    if (!idle && (slot === 3 || slot === meter - 1)) sampleVoice(c, bus, 'music-bongo', t, .2 * strength);
-    if (slot % 2 === 0) voice(c, bus, {
-      f: mtof(root - 24 + (slot % 4 === 2 ? 7 : 0)), t,
-      dur: beat * 1.1, type: 'triangle', hold: .15, lp: 650, vol: idle ? .12 : .22
-    });
-    if (slot % 4 === 1) [0, third, 7].forEach((note, j) => voice(c, bus, {
-      f: mtof(root - 12 + note), t: t + j * .012, dur: beat * 1.3,
-      type: 'triangle', lp: 1800, attack: .008, vol: idle ? .025 : .043
-    }));
-    const note = g.melody[i];
-    if (note !== null) {
-      const instrument = INSTRUMENTS[g.instrument], recording = MUSIC_SAMPLES[g.instrument];
-      const accent = slot === 0 ? 1 : slot % 2 === 0 ? .88 : .76;
-      const volume = (idle ? .13 : .27) * accent;
-      const duration = Math.min(beat * 1.8, recording.length);
-      if (!sampleVoice(c, bus, recording.file, t, volume, 2 ** ((g.key + note - recording.note) / 12), duration)) {
-        voice(c, bus, { ...instrument, f: mtof(g.key + note), t, dur: duration, vol: idle ? .075 : .13 });
-      }
-    }
-    // A short drum pickup answers the hook at the end of each four-bar phrase.
-    if (!idle && bar === 3 && slot === meter - 1) {
-      sampleVoice(c, bus, 'music-bongo', t + beat * .45, .12);
-      sampleVoice(c, bus, 'music-shaker', t + beat * .7, .09);
-    }
+    this.mode = null; this.audio?.pause();
+    if (AUD.ctx) AUD.music.gain.setTargetAtTime(0, AUD.ctx.currentTime, .04);
   }
 };
+document.addEventListener('visibilitychange', () => {
+  if (!Music.audio) return;
+  if (document.hidden) Music.audio.pause();
+  else if (Music.mode && store.settings.music) Music.play(Music.mode);
+});
 // browsers only allow audio after a user gesture
 ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, function unlock() {
-  if (AUD.get()) { GameSound.prepare(curGame(), true); if (!Music.mode) Music.play(race && race.phase === 'run' ? 'race' : 'idle'); else Music.next = AUD.ctx.currentTime + .05; }
+  if (AUD.get()) { GameSound.prepare(curGame(), true); Music.play(Music.mode || (race && race.phase === 'run' ? 'race' : 'idle')); }
 }, { once: true }));
 
 /* ================= Assets ================= */
@@ -1336,7 +1288,7 @@ langBtn.onclick = () => {
 const soundBtn = document.getElementById('soundBtn');
 soundBtn.onclick = () => { store.settings.sound = !store.settings.sound; save(); AUD.applyVol(); if (!store.settings.sound) GameSound.stop(); else GameSound.prepare(curGame(), true); updateUI(); };
 const musicBtn = document.getElementById('musicBtn');
-musicBtn.onclick = () => { store.settings.music = !store.settings.music; save(); AUD.applyVol(); if (store.settings.music && AUD.get()) { GameSound.prepare(curGame(), true); if (!Music.mode) Music.play('idle'); } updateUI(); };
+musicBtn.onclick = () => { store.settings.music = !store.settings.music; save(); AUD.applyVol(); if (store.settings.music) Music.play(race && race.phase === 'run' ? 'race' : 'idle'); else Music.stop(); updateUI(); };
 const musicVol = document.getElementById('musicVol'), sfxVol = document.getElementById('sfxVol');
 musicVol.oninput = e => { store.settings.musicVol = +e.target.value; document.getElementById('musicVolVal').textContent = store.settings.musicVol + '%'; save(); AUD.applyVol(); };
 sfxVol.oninput = e => { store.settings.sfxVol = +e.target.value; document.getElementById('sfxVolVal').textContent = store.settings.sfxVol + '%'; save(); AUD.applyVol(); };

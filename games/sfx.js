@@ -112,9 +112,9 @@ const GameSound = {
   files: new Map(), buffers: new Map(), loading: new Map(), playing: new Set(), last: new Map(), takes: new Map(),
   names(id) {
     const p = GAME_SOUNDS[id];
-    return p ? [...new Set([...p.textures.map(x => x[0]), ...Object.values(p.events), ...(p.water ? ['splash1 splash2 splash3 paddle paddle2 bubble1 bubble2 bubble3'] : []), ...this.musicNames(id)].join(' ').split(' ').filter(Boolean))] : [];
+    return p ? [...new Set([...p.textures.map(x => x[0]), ...Object.values(p.events), ...(p.water ? ['splash1 splash2 splash3 paddle paddle2 bubble1 bubble2 bubble3'] : []), ...this.cueNames(id)].join(' ').split(' ').filter(Boolean))] : [];
   },
-  musicNames(id) { const recording = MUSIC_SAMPLES[GAME_AUDIO[id]?.instrument]; return recording ? [recording.file, 'music-shaker', 'music-bongo'] : []; },
+  cueNames(id) { const recording = MUSIC_SAMPLES[GAME_AUDIO[id]?.instrument]; return recording ? [recording.file] : []; },
   fetch(name) {
     if (!this.files.has(name)) {
       const task = fetch('assets/sfx/' + name + '.mp3', { priority: 'low' })
@@ -125,7 +125,7 @@ const GameSound = {
     return this.files.get(name);
   },
   prepare(id, decode = false) {
-    if (!store.settings.sound && !store.settings.music) return Promise.resolve();
+    if (!store.settings.sound) return Promise.resolve();
     const c = decode ? AUD.get() : AUD.ctx;
     return Promise.all(this.names(id).map(name => {
       const bytes = this.fetch(name);

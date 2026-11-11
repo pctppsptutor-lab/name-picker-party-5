@@ -24,4 +24,4 @@ Game-specific MP3 effects load only for the selected game and use the existing S
 
 Run the dependency-free audio lifecycle checks with `node tests/sfx.test.cjs`.
 
-Music uses original four-phrase pentatonic hooks, recorded VCSL lead instruments and percussion, with synthesized accompaniment as a loading fallback. Foreground effects briefly lower the music and take priority over ambient effects.
+Each game streams its own Kevin MacLeod BGM from `assets/bgm/` after a user gesture. Music credits and CC BY 4.0 sources are in `assets/bgm/credits.html`. Short action/result jingles retain VCSL samples; foreground effects briefly lower the music.

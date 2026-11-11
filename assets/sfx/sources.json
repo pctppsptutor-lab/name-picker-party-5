@@ -205,16 +205,6 @@
     "duration": 0.3,
     "bytes": 2760
   },
-  "music-bongo": {
-    "source": "Membranophones/Struck Membranophones/Bongos/BongoL_Hit1_v2_rr1_Mid.wav",
-    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Membranophones/Struck%20Membranophones/Bongos/BongoL_Hit1_v2_rr1_Mid.wav",
-    "license": "CC0-1.0",
-    "author": "Versilian Studios LLC / VCSL contributors",
-    "baseMidi": null,
-    "trimStart": 0.0039229024943310655,
-    "duration": 0.6,
-    "bytes": 7567
-  },
   "splash3": {
     "source": "water/splash_07.ogg",
     "start": 0,
@@ -254,16 +244,6 @@
     "duration": 1.25,
     "bytes": 15404,
     "measuredMidi": 60.037
-  },
-  "music-shaker": {
-    "source": "Idiophones/Struck Idiophones/Shaker, Small/Mid_ShakerDouble_Down_rr1.wav",
-    "url": "https://raw.githubusercontent.com/sgossner/VCSL/c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e/Idiophones/Struck%20Idiophones/Shaker%2C%20Small/Mid_ShakerDouble_Down_rr1.wav",
-    "license": "CC0-1.0",
-    "author": "Versilian Studios LLC / VCSL contributors",
-    "baseMidi": null,
-    "trimStart": 0.0,
-    "duration": 0.26528344671201814,
-    "bytes": 3806
   },
   "paddle2": {
     "source": "water/splash_11.ogg",
