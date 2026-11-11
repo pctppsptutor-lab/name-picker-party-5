@@ -35,7 +35,9 @@ button:disabled{cursor:not-allowed;opacity:.5}
 /* top bar */
 .top{display:flex;align-items:center;gap:12px;padding:10px 22px 6px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;color:#fff;font-family:var(--title);font-weight:700;font-size:28px;line-height:1.3;text-shadow:0 2px 0 rgba(0,0,0,.28)}
-.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:24px;line-height:1.35;background:linear-gradient(135deg,#ffd84a,#ff9f43);box-shadow:0 4px 0 #c46a00}
+.logo{width:44px;height:44px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;font-size:24px;line-height:1.35;background:linear-gradient(135deg,#ffd84a,#ff9f43);box-shadow:0 4px 0 #c46a00}
+.brand{min-width:0;max-width:100%}
+.brand>span{min-width:0}
 .brand small{display:block;font-family:var(--font);font-size:13px;line-height:1.3;font-weight:600;color:#cbd5e1;text-shadow:none;margin-top:-2px}
 .classBtn{--c:var(--sun);--cd:var(--sun-d);color:#3d2600;padding:8px 16px;font-size:16px;display:flex;align-items:center;gap:8px;min-height:42px}
 .settingsPanel .classBtn{width:100%;margin-bottom:10px;text-align:left}
@@ -265,6 +267,7 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
 <main class="layout">
   <section class="stageWrap" id="stageWrap" aria-label="Game stage">
     <button type="button" class="toolBtn stageExit" id="stageExitBtn">Exit full screen</button>
+    <img id="stageLogo" src="assets/brand/edupia-tutor.png" alt="EDUPIA Tutor" width="1054" height="1379" hidden>
     <canvas id="stage" width="1920" height="1080" title="Click or press Space to pick a name"></canvas>
     <div id="result" class="result hidden" role="dialog" aria-modal="true" aria-labelledby="resName">
       <div class="card">
@@ -973,6 +976,17 @@ cv.addEventListener('pointerdown', e => {
   const x = (e.clientX - rect.left) * (W / rect.width), y = (e.clientY - rect.top) * (H / rect.height);
   addRipple(x, y);
 });
+const stageLogo = document.getElementById('stageLogo');
+function drawStageLogo() {
+  if (!stageLogo.complete || !stageLogo.naturalWidth) return;
+  const y = document.fullscreenElement === stageView || stageView.classList.contains('stage-expanded') ? 76 : 16;
+  const h = 100, w = h * stageLogo.naturalWidth / stageLogo.naturalHeight;
+  ctx.save(); ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+  ctx.globalAlpha = 1; ctx.shadowColor = 'transparent';
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(16, y, 88, 112, 10); ctx.fill();
+  ctx.drawImage(stageLogo, 16 + (88 - w) / 2, y + 6, w, h);
+  ctx.restore();
+}
 function frame(now) {
   // Save canvas work on the animated menu while leaving rounds at the display refresh rate.
   if (!race && now - lastNow < 30) { requestAnimationFrame(frame); return; }
@@ -983,6 +997,7 @@ function frame(now) {
   drawRipples(now);
   const impl = curImpl();
   if (impl) renderGeneric(impl, now, t, dt);
+  drawStageLogo();
   requestAnimationFrame(frame);
 }
 
