@@ -755,11 +755,34 @@ const Music = {
 /* ================= Assets ================= */
 const IMGSETS = {};
 let IMG = {};          // images of the game being shown
+const imageLoads = new Map();
 function loadImages(set, base, names, priority = 'auto') {
   const dict = IMGSETS[set] = IMGSETS[set] || {};
-  return Promise.all(names.map(n => dict[n] ? 0 : new Promise(res => {
-    const im = new Image(); im.fetchPriority = priority; im.onload = () => { dict[n] = im; res(); }; im.onerror = res; im.src = base + n + '.webp';
-  })));
+  return Promise.all(names.map(n => {
+    if (dict[n]) return;
+    const src = base + n + '.webp';
+    const pending = imageLoads.get(src);
+    if (pending) {
+      if (priority === 'high') pending.image.fetchPriority = 'high';
+      return pending.promise;
+    }
+    const image = new Image();
+    image.fetchPriority = priority;
+    const promise = new Promise(resolve => {
+      image.onload = () => { dict[n] = image; imageLoads.delete(src); resolve(); };
+      image.onerror = () => { imageLoads.delete(src); resolve(); };
+    });
+    imageLoads.set(src, { image, promise });
+    image.src = src;
+    return promise;
+  }));
+}
+function winnerAsset(r, d) {
+  return r?.game ? 'c' + d.av + '_' + (r.game.resultPose || 'win') : 'duck' + d.sp + '_win';
+}
+function preloadWinner(r) {
+  const g = r.game || gameAssets('g1');
+  return loadImages(g.id, g.base, [winnerAsset(r, r.winner)], 'high');
 }
 
 /* ================= Stage / shared canvas helpers ================= */
@@ -1080,10 +1103,10 @@ function startGeneric(cls, T, winnerStu, racers) {
   const players = racers.map(s => ({ name: s.name, gender: cls.mode === 'numbers' ? null : s.gender, isWinner: s === winnerStu, seed: Math.random(), x: 0, y: 0 }));
   players.forEach(p => { p.av = pickAv(p.gender); });
   const winner = players.find(p => p.isWinner), decoys = shuffle(players.filter(p => !p.isWinner));
-  // a quarter of rounds have no twist: the winner is simply revealed after a near-miss
   const r = race = { classId: cls.id, game: g, T, TW: T - 3.2, players, winner, decoys, decoy: decoys[0] || null, plain: !decoys.length || (window.FORCE_PLAIN ?? !store.settings.plotTwist),
     t0: performance.now(), now: 0, phase: 'run', banner: g.startBanner, confetti: [], cues: {}, lastTick: -1, fx: [] };
   g.setup(r);
+  preloadWinner(r);
   document.body.classList.add('running');
   SFX.sting('start'); Music.play('race');
   updateUI();
@@ -1227,7 +1250,16 @@ function stopAnsTimer() {
 function showResult(d) {
   stopAnsTimer();
   document.getElementById('resName').textContent = d.name;
-  if (race && race.game) document.getElementById('resImg').src = race.game.base + 'c' + d.av + '_' + (race.game.resultPose || 'win') + '.webp';
+  const image = document.getElementById('resImg'), r = race;
+  const g = r?.game || gameAssets('g1'), key = winnerAsset(r, d), src = g.base + key + '.webp';
+  const fallback = g.base + (r?.game ? 'c' + d.av + '_' + g.previewPose : 'duck' + d.sp + '_swim') + '.webp';
+  image.dataset.winnerSrc = src;
+  image.fetchPriority = 'high';
+  image.onerror = () => { image.onerror = null; image.src = fallback; };
+  image.src = IMGSETS[g.id]?.[key] ? src : fallback;
+  loadImages(g.id, g.base, [key], 'high').then(() => {
+    if (image.dataset.winnerSrc === src && IMGSETS[g.id]?.[key]) image.src = src;
+  });
   const id = race?.game?.id || curGame();
   const game = GAMES.find(item => item.id === id);
   resultEl.dataset.game = id;
