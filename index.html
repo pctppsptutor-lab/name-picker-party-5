@@ -514,12 +514,15 @@ function parseLine(line) {
 }
 function roster(cls) {
   if (cls.mode === 'numbers') return Array.from({ length: cls.count }, (_, i) => ({ name: 'No. ' + (i + 1), gender: null, manual: false }));
-  const seen = {}, out = [];
-  for (const raw of cls.text.split(/\r?\n/)) {
-    const line = raw.trim(); if (!line) continue;
-    let { name, tag } = parseLine(line); if (!name) continue;
-    if (seen[name]) name = name + ' (' + (++seen[name]) + ')'; else seen[name] = 1;
-    const over = cls.gender[name];
+  const lines = cls.text.split(/\r?\n/).map(parseLine).filter(p => p.name);
+  const reserved = new Set(lines.map(p => p.name)), seen = new Map(), used = new Set(), out = [];
+  for (let { name, tag } of lines) {
+    const base = name;
+    let count = seen.get(base) || 0;
+    if (count) do { name = base + ' (' + (++count) + ')'; } while (used.has(name) || reserved.has(name));
+    else count = 1;
+    seen.set(base, count); used.add(name);
+    const over = Object.hasOwn(cls.gender, name) ? cls.gender[name] : null;
     out.push({ name, gender: over || tag || guessGender(name), manual: !!(over || tag) });
   }
   return out;
@@ -749,12 +752,16 @@ function loadImages(set, base, names, priority = 'auto') {
     image.fetchPriority = priority;
     const promise = new Promise(resolve => {
       image.onload = () => { dict[n] = image; imageLoads.delete(src); resolve(); };
-      image.onerror = () => { imageLoads.delete(src); resolve(); };
+      let retries = 0;
+      image.onerror = () => {
+        if (retries++ === 0) { setTimeout(() => { image.src = src; }, 300); return; }
+        imageLoads.delete(src); resolve(n);
+      };
     });
     imageLoads.set(src, { image, promise });
     image.src = src;
     return promise;
-  }));
+  })).then(results => results.filter(Boolean));
 }
 function winnerAsset(r, d) {
   return r?.game ? 'c' + d.av + '_' + (r.game.resultPose || 'win') : 'duck' + d.sp + '_win';
@@ -901,9 +908,10 @@ function roundRemaining(r) {
   return r.T * .15 * clamp((r.T - r.now) / (r.T - r.TW - TWIST_END));
 }
 function tickRace(dt) {
-  const r = race, scale = !r.plain && r.slowUntil && performance.now() < r.slowUntil ? r.slowF : 1;
-  const fraction = clamp((roundRemaining(r) - dt * scale) / r.T);
-  const t = r.now = r.plain ? Math.min(r.T, r.now + dt)
+  const r = race, elapsed = clamp((performance.now() - r.t0) / 1000, 0, r.T);
+  dt = Math.max(0, elapsed - (r.elapsed || 0)); r.elapsed = elapsed;
+  const fraction = clamp(1 - elapsed / r.T);
+  const t = r.now = r.plain ? elapsed
     : fraction > .5 ? r.TW * (1 - fraction) / .5
     : fraction > .15 ? r.TW + TWIST_END * (.5 - fraction) / .35
     : fraction > 0 ? r.T - (r.T - r.TW - TWIST_END) * fraction / .15 : r.T;
@@ -1130,8 +1138,9 @@ function prepareGame(g) {
     g.previewPose = g.assets.find(n => n.startsWith('c0_'))?.slice(3);
     const later = n => n.startsWith('vfx_') || (/^c\d+_/.test(n) && !n.endsWith('_' + g.previewPose));
     g.deferredAssets = g.assets.filter(later);
-    g.loading = loadImages(g.id, g.base, g.assets.filter(n => !later(n)), 'high').then(() => {
-      g.ready = true;
+    g.loading = loadImages(g.id, g.base, g.assets.filter(n => !later(n)), 'high').then(failed => {
+      g.ready = !failed.length;
+      if (failed.length) g.loading = null;
       updateUI();
     });
   }
@@ -1150,7 +1159,7 @@ function loadGameDetails(g, starting = false) {
       const playing = starting || race?.phase === 'run';
       await loadImages(g.id, g.base, remaining.splice(0, playing ? remaining.length : 4), playing ? 'auto' : 'low');
     }
-    return !remaining.length;
+    return !remaining.length && g.deferredAssets.every(n => !!IMGSETS[g.id][n]);
   })().then(complete => {
     if (!complete) g.detailsLoading = null;
   });
@@ -1398,15 +1407,27 @@ function toast(msg) { const t = document.createElement('div'); t.className = 'to
 
 /* ================= Class page ================= */
 const page = document.getElementById('classPage');
-let draft = null, editId = null, importedCalled = {};
-function openClasses() { if (race && race.phase === 'run') return; SFX.whoosh(); document.getElementById('classSaveError').textContent = ''; importedCalled = {}; draft = JSON.parse(JSON.stringify(store.classes)); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); setTimeout(() => document.getElementById('className').focus(), 40); }
+let draft = null, draftBase = null, editId = null, importedCalled = {};
+function openClasses() { if (race && race.phase === 'run') return; SFX.whoosh(); document.getElementById('classSaveError').textContent = ''; importedCalled = {}; draftBase = JSON.stringify(store.classes); draft = JSON.parse(draftBase); editId = store.activeId; page.classList.remove('hidden'); renderClassPage(); backupNote(); setTimeout(() => document.getElementById('className').focus(), 40); }
 function closeClasses() {
   if (!draft) return;
+  // shortcut: optimistic conflict check; use Web Locks if simultaneous saves must be atomic.
+  const latest = loadStore();
+  if (JSON.stringify(latest.classes) !== draftBase) {
+    store = latest; AUD.applyVol(); updateUI();
+    const error = document.getElementById('classSaveError'), reload = document.createElement('button');
+    error.textContent = curLang() === 'vi'
+      ? 'Lớp đã thay đổi ở cửa sổ khác. Bản sửa này chưa được lưu. Bạn có thể sao lưu hoặc tải lại danh sách. '
+      : 'Classes changed in another window. Your edits have not been saved. You can back them up or reload the list. ';
+    reload.className = 'smallBtn'; reload.textContent = curLang() === 'vi' ? 'Bỏ bản sửa, tải danh sách mới' : 'Discard edits and reload';
+    reload.onclick = openClasses; error.appendChild(reload);
+    return;
+  }
   SFX.pop();
   const previous = store;
-  const called = { ...store.called, ...importedCalled };
+  const called = { ...latest.called, ...importedCalled };
   for (const k of Object.keys(called)) if (!draft.find(c => c.id === k)) delete called[k];
-  store = { ...store, classes: draft, activeId: editId, called };
+  store = { ...latest, classes: draft, activeId: editId, called };
   if (!save()) {
     store = previous;
     document.getElementById('classSaveError').textContent = curLang() === 'vi'
@@ -1414,7 +1435,7 @@ function closeClasses() {
       : 'Your list has not been saved. Try again or choose Save backup file.';
     return;
   }
-  draft = null; page.classList.add('hidden');
+  draft = null; draftBase = null; page.classList.add('hidden');
   if (race && race.phase === 'done') continueGame();
   updateUI();
   document.getElementById('settingsDetails').open = true;
@@ -1732,10 +1753,13 @@ drawerSearch.oninput = e => { drawerQuery = e.target.value; renderDrawer(); };
 
 /* ================= Keyboard & Remote Clicker Shortcuts ================= */
 document.addEventListener('keydown', e => {
+  if (e.isComposing) return;
   if (e.key === 'Escape' && stageView.classList.contains('stage-expanded')) {
     e.preventDefault(); stageExitBtn.click(); return;
   }
   if (importDialog.open) return;
+  const tag = (e.target.tagName || '').toLowerCase();
+  if ((['input', 'textarea', 'select'].includes(tag) || e.target.isContentEditable) && e.key !== 'Escape') return;
   if (!drawerModal.classList.contains('hidden')) {
     if (e.key === 'Escape' || e.code === 'KeyB' || e.code === 'Period' || e.code === 'KeyG') {
       e.preventDefault(); closeDrawer(); return;
@@ -1747,7 +1771,6 @@ document.addEventListener('keydown', e => {
     }
     return;
   }
-  const tag = (e.target.tagName || '').toLowerCase();
   if (['input', 'textarea', 'select'].includes(tag)) return;
 
   if (e.code === 'KeyG' && !e.ctrlKey && !e.metaKey && !e.altKey) {

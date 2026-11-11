@@ -1,6 +1,6 @@
 # Name Picker Party 5
 
-The last six classroom name-picker mini-games (25–30), on the same engine and look as Name Picker Party 1–4. Local only for now.
+The last six classroom name-picker mini-games (25–30), on the same engine and look as Name Picker Party 1–4.
 
 ## How to run
 
@@ -15,7 +15,7 @@ From this folder run `python -m http.server 8769` and open http://localhost:8769
 | 29 Stubborn Vending Machine | A coin turns the coil, the capsule rolls over a chute, seesaw and lever into one of ten trays. | The capsule sticks on the seesaw; a can with legs kicks the spare lever. |
 | 30 Golden Carrot Bunny Dash | Bunnies race through the vegetable rows to bring the golden carrot to the basket. | The first golden carrot is a balloon and floats away; a mole pushes the real one to another bunny. |
 
-About one round in four has no twist. The winner is always chosen the moment you press Pick.
+Rounds last 7 or 10 seconds. Plot Twist is off by default and can be enabled in Settings. The winner is chosen when you press Pick.
 
 
 ## Sound effects
@@ -25,3 +25,5 @@ Game-specific MP3 effects load only for the selected game and use the existing S
 Run the dependency-free audio lifecycle checks with `node tests/sfx.test.cjs`.
 
 Each game streams its own Kevin MacLeod BGM from `assets/bgm/` after a user gesture. Music credits and CC BY 4.0 sources are in `assets/bgm/credits.html`. Short action/result jingles retain VCSL samples; foreground effects briefly lower the music.
+
+Regression checks: `node tests/core.test.cjs` and `node tests/sw.test.cjs`. A BGM becomes available offline after that game’s track has loaded once.
