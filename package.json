@@ -1,10 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "node tools/build.cjs",
-    "check:build": "node tools/build.cjs --check"
-  },
-  "devDependencies": {
-    "esbuild": "0.28.2"
+    "build": "node tools/check-redirect.cjs",
+    "check:build": "node tools/check-redirect.cjs"
   }
 }
