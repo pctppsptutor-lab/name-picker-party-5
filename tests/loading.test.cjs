@@ -1,0 +1,25 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const app=path.resolve(__dirname,'..'),html=fs.readFileSync(path.join(app,'index.html'),'utf8');
+const start=html.indexOf('const GAME_SCRIPTS = '),source=html.slice(start,html.indexOf('function prepareGame(',start));
+const id=Object.keys(JSON.parse(/const GAME_SCRIPTS = (.+);/.exec(source)[1]))[0],modules={},scripts=[];
+const loader={gameAssets:id=>modules[id],document:{createElement:()=>({remove(){}}),head:{appendChild(s){scripts.push(s);}}}};
+vm.createContext(loader);vm.runInContext(source,loader);
+(async()=>{
+ const first=loader.loadGameScript(id),duplicate=loader.loadGameScript(id);assert.equal(first,duplicate);assert.equal(scripts.length,1);
+ scripts[0].onerror();await assert.rejects(first,/download failed/);
+ const retry=loader.loadGameScript(id);assert.equal(scripts.length,2);modules[id]={assets:['c0_idle']};scripts[1].onload();await retry;
+ await loader.loadGameScript(id);assert.equal(scripts.length,2,'loaded modules must not download twice');
+ delete modules[id];const invalid=loader.loadGameScript(id);scripts[2].onload();await assert.rejects(invalid,/Invalid game/);
+ const events={},deleted=[],opened=[],data=new Map();let network=0;
+ const cache={async match(request){return data.get(request.url||request)?.clone();},async put(request,response){data.set(request.url||request,response.clone());}};
+ const sw={URL,Headers,Request,Response,self:{location:{origin:'https://example.test'},clients:{async claim(){}},addEventListener(n,f){events[n]=f;}},caches:{async open(n){opened.push(n);return cache;},async keys(){return keys;},async delete(n){deleted.push(n);}},async fetch(){network++;return new Response('network');}};
+ vm.createContext(sw);vm.runInContext(fs.readFileSync(path.join(app,'sw.js'),'utf8')+'\nglobalThis.names=[CACHE_NAME,ASSET_CACHE_NAME];',sw);
+ const [shell,media]=sw.names,prefix=shell.split('shell-')[0],keys=[shell,media,prefix+'shell-old',prefix+'assets-old','name-picker-vol99-assets-keep'];
+ let activation;events.activate({waitUntil(p){activation=p;}});await activation;
+ assert.deepEqual(deleted.sort(),[prefix+'assets-old',prefix+'shell-old'].sort());assert.ok(!deleted.includes(media));
+ const request=new Request('https://example.test/assets/g1/duck0_swim.webp');data.set(request.url,new Response('cached sprite'));
+ let response,background;events.fetch({request,respondWith(p){response=p;},waitUntil(p){background=p;}});
+ assert.equal(await(await response).text(),'cached sprite');await background;assert.equal(network,0);assert.equal(opened.at(-1),media);
+ assert.ok(!html.includes('fonts.googleapis.com'),'fonts must load locally');assert.equal((html.match(/<script src=/g)||[]).length,1,'one shared runtime');
+ console.log('PASS loading: module dedupe/retry/validation, persistent media cache, old cache cleanup, cache hits, local fonts and one runtime');
+})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -7,9 +7,14 @@
 <meta name="theme-color" content="#0d172a">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+@font-face { font-family: 'Baloo 2'; font-style: normal; font-weight: 500 800; font-display: swap; src: url(assets/fonts/wXKrE3kTposypRyd51ncANwr.woff2) format('woff2'); unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A; }
+@font-face { font-family: 'Baloo 2'; font-style: normal; font-weight: 500 800; font-display: swap; src: url(assets/fonts/wXKrE3kTposypRyd51fcANwr.woff2) format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Baloo 2'; font-style: normal; font-weight: 500 800; font-display: swap; src: url(assets/fonts/wXKrE3kTposypRyd51bcANwr.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Baloo 2'; font-style: normal; font-weight: 500 800; font-display: swap; src: url(assets/fonts/wXKrE3kTposypRyd51jcAA.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 500 700; font-stretch: 100%; font-display: swap; src: url(assets/fonts/X7n64b87HvSqjb_WIi2yDCRwoQ_k7367_DWs89XyHw.woff2) format('woff2'); unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 500 700; font-stretch: 100%; font-display: swap; src: url(assets/fonts/X7n64b87HvSqjb_WIi2yDCRwoQ_k7367_DWg89XyHw.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 500 700; font-stretch: 100%; font-display: swap; src: url(assets/fonts/X7n64b87HvSqjb_WIi2yDCRwoQ_k7367_DWu89U.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 :root{
   --bg1:#0d172a; --bg2:#132340; --ink:#0f172a; --muted:#475569; --line:#dbe3f0; --panel:#ffffff; --soft:#f1f5f9;
   --blue:#2563eb; --blue-d:#1d4ed8; --violet:#0369a1; --violet-d:#075985; --sun:#ffc531; --sun-d:#d99a00;
@@ -267,7 +272,7 @@ textarea{font-family:inherit;font-size:17px;width:100%;min-height:260px;border:2
 <main class="layout">
   <section class="stageWrap" id="stageWrap" aria-label="Game stage">
     <button type="button" class="toolBtn stageExit" id="stageExitBtn">Exit full screen</button>
-    <img id="stageLogo" src="assets/brand/edupia-tutor.png" alt="EDUPIA Tutor" width="1054" height="1379" hidden>
+    <img id="stageLogo" src="assets/brand/edupia-tutor.webp" alt="EDUPIA Tutor" width="1054" height="1379" hidden>
     <canvas id="stage" width="1920" height="1080" title="Click or press Space to pick a name"></canvas>
     <div id="result" class="result hidden" role="dialog" aria-modal="true" aria-labelledby="resName">
       <div class="card">
@@ -427,19 +432,7 @@ function makeFakes(r, from) {
 }
 const activeFake = (r, t) => (r.fakes || []).find(f => t >= f.at && t < f.at + f.dur) || null;
 </script>
-<script src="games/bgm.js"></script>
-<script src="games/sfx.js"></script>
-<script src="games/i18n.js"></script>
-<script src="games/fx.js"></script>
-<script src="games/decor.js"></script>
-<script src="games/bases.js"></script>
-<script src="games/scenes.js"></script>
-<script src="games/g25-weather.js"></script>
-<script src="games/g26-time.js"></script>
-<script src="games/g27-puppies.js"></script>
-<script src="games/g28-cloak.js"></script>
-<script src="games/g29-vending.js"></script>
-<script src="games/g30-bunny.js"></script>
+<script src="games/dist/runtime.js"></script>
 <script>
 'use strict';
 const CURRENT_VOL = 5;
@@ -1148,6 +1141,22 @@ function charImg(av, pose, x, y, h, opt = {}) {
 const curGame = () => store.settings.game5 || 'g25';
 const curImpl = () => GAME_IMPL[curGame()] || null;
 const gameAssets = id => GAME_IMPL[id];
+const GAME_SCRIPTS = {"g25": "games/dist/g25.js", "g26": "games/dist/g26.js", "g27": "games/dist/g27.js", "g28": "games/dist/g28.js", "g29": "games/dist/g29.js", "g30": "games/dist/g30.js"};
+const gameScriptLoads = new Map();
+function loadGameScript(id) {
+  if (gameAssets(id)?.assets) return Promise.resolve();
+  if (gameScriptLoads.has(id)) return gameScriptLoads.get(id);
+  const script = document.createElement('script');
+  const pending = new Promise((resolve, reject) => {
+    script.src = GAME_SCRIPTS[id]; script.async = true;
+    script.onload = () => { script.remove(); gameAssets(id)?.assets ? resolve() : reject(new Error('Invalid game module')); };
+    script.onerror = () => { script.remove(); reject(new Error('Game download failed')); };
+    document.head.appendChild(script);
+  });
+  gameScriptLoads.set(id, pending);
+  pending.then(() => gameScriptLoads.delete(id), () => gameScriptLoads.delete(id));
+  return pending;
+}
 function prepareGame(g) {
   if (!g.loading) {
     g.previewPose = g.assets.find(n => n.startsWith('c0_'))?.slice(3);
@@ -1186,9 +1195,16 @@ function activateGame(id) {
   GameSound.stop(); GameSound.prepare(id);
   race = null; hideResult();
   IMG = IMGSETS[id] = IMGSETS[id] || {};
+  if (!gameAssets(id)?.assets) {
+    updateUI();
+    return loadGameScript(id).then(() => { if (curGame() === id) return activateGame(id); }).catch(() => {
+      if (curGame() === id) toast(curLang() === 'vi' ? 'Chưa tải được game. Bấm chọn lại để thử.' : 'Game could not load. Select it again to retry.');
+    });
+  }
   prepareGame(gameAssets(id));
   if (AUD.ctx) Music.play('idle');
   updateUI();
+  return gameAssets(id).loading;
 }
 
 function drawBurst(f, k) {
@@ -1283,6 +1299,7 @@ const GAMES = [
   { id: 'g29', n: '29', name: 'Give Me My Snack!', icon: '🥤' },
   { id: 'g30', n: '30', name: 'Bunny Carrot Race', icon: '🥕' }
 ];
+for (const g of GAMES) if (GAME_SCRIPTS[g.id]) GAME_IMPL[g.id] = { id: g.id, title: g.name };
 document.getElementById('gameTabs').innerHTML = GAMES.map(g =>
   `<button class="tab" data-game="${g.id}"><span class="ico">${g.icon}</span><span><b>GAME ${g.n}</b><span class="nm">${g.name}</span></span></button>`).join('') +
   `<button class="tab randTab" id="randTab"><span class="ico">🎲</span><span><b id="randTabHdr">RANDOM</b><span class="nm" id="randTabNm">Surprise Game</span></span></button>`;

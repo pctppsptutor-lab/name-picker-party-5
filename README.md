@@ -27,3 +27,11 @@ Run the dependency-free audio lifecycle checks with `node tests/sfx.test.cjs`.
 Each game streams its own Kevin MacLeod BGM from `assets/bgm/` after a user gesture. Music credits and CC BY 4.0 sources are in `assets/bgm/credits.html`. Short action/result jingles retain VCSL samples; foreground effects briefly lower the music.
 
 Regression checks: `node tests/core.test.cjs` and `node tests/sw.test.cjs`. A BGM becomes available offline after that game’s track has loaded once.
+
+## Build and loading
+
+Run `npm ci` then `npm run build` after editing HTML, game source, the service worker or assets. Commit the generated `games/dist/` files and `sw.js` together. `npm run check:build` checks that generated files and cache hashes match the source.
+
+The page loads one minified shared runtime; each game module loads when selected and can retry after a network error. Visited games remain available offline after their resources have been cached. A game not visited online yet needs a connection for its first load.
+
+Media cache versions depend on asset contents, so code-only updates retain images, music and fonts. An asset change creates a fresh media cache. The supplied logo uses lossless WebP; fonts are the same Google Fonts files hosted locally, with their OFL licenses in `assets/fonts/`.

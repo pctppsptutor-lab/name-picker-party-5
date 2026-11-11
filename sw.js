@@ -1,44 +1,35 @@
-const CACHE_NAME = 'name-picker-vol5-v36';
+const CACHE_NAME = 'name-picker-vol5-shell-bd2c01db5fea366cd99b';
+const ASSET_CACHE_NAME = 'name-picker-vol5-assets-fe09d092af2006931c52';
 const PRECACHE = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon.svg",
-  "./assets/brand/edupia-tutor.png",
   "./assets/bgm/credits.html",
   "./assets/sfx/credits.html",
-  "./games/bgm.js",
-  "./games/sfx.js",
-  "./games/i18n.js",
-  "./games/fx.js",
-  "./games/decor.js",
-  "./games/bases.js",
-  "./games/scenes.js",
-  "./games/g25-weather.js",
-  "./games/g26-time.js",
-  "./games/g27-puppies.js",
-  "./games/g28-cloak.js",
-  "./games/g29-vending.js",
-  "./games/g30-bunny.js"
+  "./games/dist/runtime.js",
 ];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting())
+    Promise.all([
+      caches.open(CACHE_NAME).then(c => c.addAll(PRECACHE)),
+      caches.open(ASSET_CACHE_NAME).then(c => c.match('./assets/brand/edupia-tutor.webp').then(hit => hit || c.add('./assets/brand/edupia-tutor.webp')))
+    ]).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.filter(k => k.startsWith('name-picker-vol5-') && k !== CACHE_NAME).map(k => caches.delete(k))
+      keys.filter(k => k.startsWith('name-picker-vol5-') && k !== CACHE_NAME && k !== ASSET_CACHE_NAME).map(k => caches.delete(k))
     )).then(() => self.clients.claim())
   );
 });
 
 // Cache the complete small BGM once, then satisfy native media range requests offline.
 async function bgmResponse(request) {
-  const cache = await caches.open(CACHE_NAME).catch(() => null);
+  const cache = await caches.open(ASSET_CACHE_NAME).catch(() => null);
   let full = await cache?.match(request.url).catch(() => undefined);
   if (!full) {
     const headers = new Headers(request.headers); headers.delete('range');
@@ -66,8 +57,8 @@ self.addEventListener('fetch', e => {
   if (url.origin === self.location.origin && /\/assets\/bgm\/g\d+\.mp3$/i.test(url.pathname)) {
     e.respondWith(bgmResponse(e.request).catch(() => Response.error())); return;
   }
-  const asset = /\.(webp|wav|mp3|svg|woff2?)$/i.test(url.pathname) || url.hostname.endsWith('googleapis.com') || url.hostname.endsWith('gstatic.com');
-  const cache = caches.open(CACHE_NAME).catch(() => null);
+  const asset = /\.(webp|png|wav|mp3|svg|woff2?)$/i.test(url.pathname) || url.hostname.endsWith('googleapis.com') || url.hostname.endsWith('gstatic.com');
+  const cache = caches.open(asset ? ASSET_CACHE_NAME : CACHE_NAME).catch(() => null);
   const cached = cache.then(c => c?.match(e.request)).catch(() => undefined);
   let write;
   const network = cached.then(hit => {
